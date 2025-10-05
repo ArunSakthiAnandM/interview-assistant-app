@@ -1,0 +1,43 @@
+.home-container {
+  padding: 20px;
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+
+  .introduction {
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+  }
+
+  .features-section {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+
+    .list-header {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .features-list {
+      list-style-type: disc;
+      padding-left: 20px;
+
+      li {
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .description {
+    font-size: 16px;
+    color: #666;
+  }
+}
