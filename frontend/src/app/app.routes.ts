@@ -6,14 +6,14 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () => import('../components/home/home').then((m) => m.Home),
   },
-  // {
-  //   path: 'login',
-  //   loadComponent: () => import('./pages/login/login.component').then((m) => m.LoginComponent),
-  // },
-  // {
-  //   path: 'enroll',
-  //   loadComponent: () => import('./pages/enroll/enroll.component').then((m) => m.EnrollComponent),
-  // },
+  {
+    path: 'login',
+    loadComponent: () => import('../components/login/login').then((m) => m.Login),
+  },
+  {
+    path: 'enroll',
+    loadComponent: () => import('../components/enroll/enroll').then((m) => m.Enroll),
+  },
   // {
   //   path: 'create-organisation',
   //   loadComponent: () =>
