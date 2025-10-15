@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-organisation',
   imports: [],
   templateUrl: './organisation.html',
-  styleUrl: './organisation.scss'
+  styleUrl: './organisation.scss',
 })
-export class Organisation {
-
-}
+export class Organisation {}

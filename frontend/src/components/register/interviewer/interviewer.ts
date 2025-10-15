@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-interviewer',
   imports: [],
   templateUrl: './interviewer.html',
-  styleUrl: './interviewer.scss'
+  styleUrl: './interviewer.scss',
 })
-export class Interviewer {
-
-}
+export class Interviewer {}
