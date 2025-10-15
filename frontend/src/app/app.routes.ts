@@ -11,32 +11,19 @@ export const routes: Routes = [
     loadComponent: () => import('../components/login/login').then((m) => m.Login),
   },
   {
-    path: 'enroll',
-    loadComponent: () => import('../components/enroll/enroll').then((m) => m.Enroll),
+    path: 'register/organisation',
+    loadComponent: () =>
+      import('../components/register/organisation/organisation').then((m) => m.Organisation),
   },
-  // {
-  //   path: 'create-organisation',
-  //   loadComponent: () =>
-  //     import('./pages/create-organisation/create-organisation.component').then(
-  //       (m) => m.CreateOrganisationComponent
-  //     ),
-  // },
-  // {
-  //   path: 'organisation/:organisationId',
-  //   loadComponent: () =>
-  //     import('./pages/organisation/organisation.component').then((m) => m.OrganisationComponent),
-  // },
-  // {
-  //   path: 'organisation/:organisationId/create-interview',
-  //   loadComponent: () =>
-  //     import('./pages/create-interview/create-interview.component').then(
-  //       (m) => m.CreateInterviewComponent
-  //     ),
-  // },
-  // {
-  //   path: 'organisation/:organisationId/interview/:interviewId',
-  //   loadComponent: () =>
-  //     import('./pages/interview/interview.component').then((m) => m.InterviewComponent),
-  // },
+  {
+    path: 'register/interviewer',
+    loadComponent: () =>
+      import('../components/register/interviewer/interviewer').then((m) => m.Interviewer),
+  },
+  {
+    path: 'register/candidate',
+    loadComponent: () =>
+      import('../components/register/candidate/candidate').then((m) => m.Candidate),
+  },
   { path: '**', redirectTo: '/home', pathMatch: 'full' },
 ];
