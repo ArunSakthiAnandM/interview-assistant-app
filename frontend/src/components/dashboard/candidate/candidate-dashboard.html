@@ -1,0 +1,270 @@
+<div class="candidate-dashboard">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Candidate Dashboard</h1>
+      <p class="subtitle">Welcome, {{ authStore.userName() }}</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="updateProfile()">
+      <mat-icon>edit</mat-icon>
+      Update Profile
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>event</mat-icon>
+        <mat-card-title>Total Applications</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalApplications }}</div>
+        <div class="stat-label">Applied positions</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>schedule</mat-icon>
+        <mat-card-title>Upcoming Interviews</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.upcomingInterviews }}</div>
+        <div class="stat-label">Scheduled</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>check_circle</mat-icon>
+        <mat-card-title>Completed</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.completedInterviews }}</div>
+        <div class="stat-label">Interviews done</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>stars</mat-icon>
+        <mat-card-title>Offers</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value success">{{ stats.offers }}</div>
+        <div class="stat-label">Job offers</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <mat-card class="upcoming-interviews">
+      <mat-card-header>
+        <mat-card-title>Upcoming Interviews</mat-card-title>
+        <button mat-icon-button (click)="refreshInterviews()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        @if (isLoadingInterviews()) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+        } @else if (upcomingInterviews().length === 0) {
+        <div class="empty-state">
+          <mat-icon>event_available</mat-icon>
+          <p>No upcoming interviews scheduled</p>
+        </div>
+        } @else {
+        <div class="interview-list">
+          @for (interview of upcomingInterviews(); track interview.id) {
+          <div class="interview-card">
+            <div class="card-header">
+              <div class="company-logo">
+                {{ interview.companyName.charAt(0) }}
+              </div>
+              <div class="interview-info">
+                <h3>{{ interview.position }}</h3>
+                <p class="company">{{ interview.companyName }}</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{ interview.scheduledDate | date : 'fullDate' }}</span>
+              </div>
+              <div class="info-row">
+                <mat-icon>schedule</mat-icon>
+                <span
+                  >{{ interview.scheduledDate | date : 'shortTime' }} ({{
+                    interview.duration
+                  }}
+                  min)</span
+                >
+              </div>
+              <div class="info-row">
+                <mat-icon>person</mat-icon>
+                <span>{{ interview.interviewerName }}</span>
+              </div>
+              @if (interview.location) {
+              <div class="info-row">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ interview.location }}</span>
+              </div>
+              } @if (interview.meetingLink) {
+              <div class="info-row">
+                <mat-icon>videocam</mat-icon>
+                <a [href]="interview.meetingLink" target="_blank">Join Video Call</a>
+              </div>
+              }
+            </div>
+            <div class="card-actions">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="viewInterviewDetails(interview.id)"
+              >
+                View Details
+              </button>
+              @if (isInterviewSoon(interview.scheduledDate)) {
+              <button mat-raised-button color="accent" (click)="joinInterview(interview)">
+                <mat-icon>videocam</mat-icon>
+                Join Now
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <div class="sidebar">
+      <mat-card class="application-status">
+        <mat-card-header>
+          <mat-card-title>Application Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="status-list">
+            <div class="status-item">
+              <div class="status-icon pending">
+                <mat-icon>hourglass_empty</mat-icon>
+              </div>
+              <div class="status-details">
+                <span class="label">Pending Review</span>
+                <span class="count">{{ applicationStatus.pending }}</span>
+              </div>
+            </div>
+            <div class="status-item">
+              <div class="status-icon scheduled">
+                <mat-icon>event</mat-icon>
+              </div>
+              <div class="status-details">
+                <span class="label">Interview Scheduled</span>
+                <span class="count">{{ applicationStatus.scheduled }}</span>
+              </div>
+            </div>
+            <div class="status-item">
+              <div class="status-icon selected">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="status-details">
+                <span class="label">Selected</span>
+                <span class="count">{{ applicationStatus.selected }}</span>
+              </div>
+            </div>
+            <div class="status-item">
+              <div class="status-icon rejected">
+                <mat-icon>cancel</mat-icon>
+              </div>
+              <div class="status-details">
+                <span class="label">Not Selected</span>
+                <span class="count">{{ applicationStatus.rejected }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="profile-completion">
+        <mat-card-header>
+          <mat-card-title>Profile Completion</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="completion-info">
+            <div class="completion-circle">
+              <span class="percentage">{{ profileCompletion }}%</span>
+            </div>
+            <p class="completion-text">
+              @if (profileCompletion === 100) { Your profile is complete! } @else { Complete your
+              profile to get better opportunities }
+            </p>
+          </div>
+          <div class="checklist">
+            <div class="checklist-item" [class.completed]="checks.basicInfo">
+              <mat-icon>{{
+                checks.basicInfo ? 'check_circle' : 'radio_button_unchecked'
+              }}</mat-icon>
+              <span>Basic Information</span>
+            </div>
+            <div class="checklist-item" [class.completed]="checks.education">
+              <mat-icon>{{
+                checks.education ? 'check_circle' : 'radio_button_unchecked'
+              }}</mat-icon>
+              <span>Education Details</span>
+            </div>
+            <div class="checklist-item" [class.completed]="checks.skills">
+              <mat-icon>{{ checks.skills ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>Skills & Expertise</span>
+            </div>
+            <div class="checklist-item" [class.completed]="checks.resume">
+              <mat-icon>{{ checks.resume ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>Resume Upload</span>
+            </div>
+          </div>
+          @if (profileCompletion < 100) {
+          <button mat-raised-button color="primary" (click)="completeProfile()">
+            Complete Profile
+          </button>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <mat-card class="interview-history">
+    <mat-card-header>
+      <mat-card-title>Interview History</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (interviewHistory().length === 0) {
+      <div class="empty-state">
+        <mat-icon>history</mat-icon>
+        <p>No interview history yet</p>
+      </div>
+      } @else {
+      <div class="history-list">
+        @for (history of interviewHistory(); track history.id) {
+        <div class="history-item">
+          <div class="history-icon">
+            <mat-icon [style.color]="getOutcomeColor(history.outcome)">
+              {{ getOutcomeIcon(history.outcome) }}
+            </mat-icon>
+          </div>
+          <div class="history-details">
+            <h4>{{ history.position }}</h4>
+            <p class="company">{{ history.companyName }}</p>
+            <span class="date">{{ history.interviewDate | date : 'mediumDate' }}</span>
+          </div>
+          <div class="history-outcome">
+            <mat-chip [style.background-color]="getOutcomeColor(history.outcome)">
+              {{ history.outcome }}
+            </mat-chip>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
