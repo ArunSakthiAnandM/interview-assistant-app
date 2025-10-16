@@ -1,1 +1,308 @@
-<p>organisation works!</p>
+<div class="registration-container">
+  <mat-card class="registration-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h1>Organisation Registration</h1>
+      </mat-card-title>
+      <mat-card-subtitle>
+        Register your organization to start managing interviews
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-stepper linear #stepper>
+        <!-- Step 1: Organisation Details -->
+        <mat-step [stepControl]="orgDetailsForm" label="Organisation Details">
+          <form [formGroup]="orgDetailsForm" class="form-section">
+            <h2>Basic Information</h2>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Organisation Name</mat-label>
+              <input matInput formControlName="name" required />
+              <mat-icon matPrefix>business</mat-icon>
+              @if (orgDetailsForm.get('name')?.invalid && orgDetailsForm.get('name')?.touched) {
+              <mat-error>{{ getErrorMessage(orgDetailsForm, 'name') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Registration Number (Optional)</mat-label>
+              <input matInput formControlName="registrationNumber" />
+              <mat-icon matPrefix>badge</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Contact Email</mat-label>
+              <input matInput type="email" formControlName="contactEmail" required />
+              <mat-icon matPrefix>email</mat-icon>
+              @if (orgDetailsForm.get('contactEmail')?.invalid &&
+              orgDetailsForm.get('contactEmail')?.touched) {
+              <mat-error>{{ getErrorMessage(orgDetailsForm, 'contactEmail') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Contact Phone</mat-label>
+              <input matInput type="tel" formControlName="contactPhone" required />
+              <mat-icon matPrefix>phone</mat-icon>
+              @if (orgDetailsForm.get('contactPhone')?.invalid &&
+              orgDetailsForm.get('contactPhone')?.touched) {
+              <mat-error>{{ getErrorMessage(orgDetailsForm, 'contactPhone') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Website (Optional)</mat-label>
+              <input matInput type="url" formControlName="website" />
+              <mat-icon matPrefix>language</mat-icon>
+              @if (orgDetailsForm.get('website')?.invalid && orgDetailsForm.get('website')?.touched)
+              {
+              <mat-error>{{ getErrorMessage(orgDetailsForm, 'website') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description (Optional)</mat-label>
+              <textarea
+                matInput
+                formControlName="description"
+                rows="4"
+                placeholder="Tell us about your organisation"
+              ></textarea>
+              <mat-icon matPrefix>description</mat-icon>
+            </mat-form-field>
+
+            <div class="button-group">
+              <button mat-button type="button" (click)="goBack()">Cancel</button>
+              <button
+                mat-raised-button
+                color="primary"
+                matStepperNext
+                [disabled]="orgDetailsForm.invalid"
+              >
+                Next
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Step 2: Address -->
+        <mat-step [stepControl]="addressForm" label="Address">
+          <form [formGroup]="addressForm" class="form-section">
+            <h2>Organisation Address</h2>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Street Address</mat-label>
+              <input matInput formControlName="street" required />
+              <mat-icon matPrefix>location_on</mat-icon>
+              @if (addressForm.get('street')?.invalid && addressForm.get('street')?.touched) {
+              <mat-error>{{ getErrorMessage(addressForm, 'street') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" required />
+                @if (addressForm.get('city')?.invalid && addressForm.get('city')?.touched) {
+                <mat-error>{{ getErrorMessage(addressForm, 'city') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>State/Province</mat-label>
+                <input matInput formControlName="state" required />
+                @if (addressForm.get('state')?.invalid && addressForm.get('state')?.touched) {
+                <mat-error>{{ getErrorMessage(addressForm, 'state') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Country</mat-label>
+                <input matInput formControlName="country" required />
+                @if (addressForm.get('country')?.invalid && addressForm.get('country')?.touched) {
+                <mat-error>{{ getErrorMessage(addressForm, 'country') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Postal Code</mat-label>
+                <input matInput formControlName="postalCode" required />
+                @if (addressForm.get('postalCode')?.invalid &&
+                addressForm.get('postalCode')?.touched) {
+                <mat-error>{{ getErrorMessage(addressForm, 'postalCode') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="button-group">
+              <button mat-button matStepperPrevious type="button">Back</button>
+              <button
+                mat-raised-button
+                color="primary"
+                matStepperNext
+                [disabled]="addressForm.invalid"
+              >
+                Next
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Step 3: Admin Account -->
+        <mat-step [stepControl]="adminForm" label="Admin Account">
+          <form [formGroup]="adminForm" class="form-section">
+            <h2>Admin User Account</h2>
+            <p class="info-text">Create an admin account to manage your organisation</p>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Admin Name</mat-label>
+              <input matInput formControlName="adminName" required />
+              <mat-icon matPrefix>person</mat-icon>
+              @if (adminForm.get('adminName')?.invalid && adminForm.get('adminName')?.touched) {
+              <mat-error>{{ getErrorMessage(adminForm, 'adminName') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Admin Email</mat-label>
+              <input matInput type="email" formControlName="adminEmail" required />
+              <mat-icon matPrefix>email</mat-icon>
+              @if (adminForm.get('adminEmail')?.invalid && adminForm.get('adminEmail')?.touched) {
+              <mat-error>{{ getErrorMessage(adminForm, 'adminEmail') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <input matInput type="password" formControlName="adminPassword" required />
+              <mat-icon matPrefix>lock</mat-icon>
+              @if (adminForm.get('adminPassword')?.invalid &&
+              adminForm.get('adminPassword')?.touched) {
+              <mat-error>{{ getErrorMessage(adminForm, 'adminPassword') }}</mat-error>
+              }
+              <mat-hint
+                >Minimum 8 characters with uppercase, lowercase, number & special character
+              </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput type="password" formControlName="confirmPassword" required />
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              @if (adminForm.hasError('passwordMismatch') &&
+              adminForm.get('confirmPassword')?.touched) {
+              <mat-error>Passwords do not match</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="button-group">
+              <button mat-button matStepperPrevious type="button">Back</button>
+              <button
+                mat-raised-button
+                color="primary"
+                matStepperNext
+                [disabled]="adminForm.invalid"
+              >
+                Next
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Step 4: KYC Documents -->
+        <mat-step [stepControl]="kycForm" label="KYC Documents">
+          <div class="form-section">
+            <h2>Upload KYC Documents</h2>
+            <p class="info-text">
+              Upload at least one document for verification. Your registration will be reviewed
+              manually.
+            </p>
+
+            <form [formGroup]="kycForm">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Document Type</mat-label>
+                <mat-select formControlName="documentType">
+                  <mat-option [value]="KYCDocumentType.BUSINESS_LICENSE">
+                    Business License
+                  </mat-option>
+                  <mat-option [value]="KYCDocumentType.TAX_CERTIFICATE">
+                    Tax Certificate
+                  </mat-option>
+                  <mat-option [value]="KYCDocumentType.INCORPORATION_CERTIFICATE">
+                    Incorporation Certificate
+                  </mat-option>
+                  <mat-option [value]="KYCDocumentType.BANK_STATEMENT"> Bank Statement </mat-option>
+                  <mat-option [value]="KYCDocumentType.OTHER">Other Document</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <app-file-upload
+                [label]="'Upload ' + getDocumentTypeName(kycForm.get('documentType')?.value)"
+                (fileSelected)="onKYCFileSelected($event)"
+                (uploadError)="snackBar.open($event, 'Close', { duration: 3000 })"
+              >
+              </app-file-upload>
+            </form>
+
+            <!-- Uploaded Documents List -->
+            @if (uploadedDocuments().length > 0) {
+            <div class="uploaded-documents">
+              <h3>Uploaded Documents ({{ uploadedDocuments().length }})</h3>
+              <div class="document-list">
+                @for (doc of uploadedDocuments(); track $index) {
+                <mat-card class="document-card">
+                  <mat-card-content>
+                    <div class="document-info">
+                      <mat-icon class="doc-icon">description</mat-icon>
+                      <div class="doc-details">
+                        <p class="doc-type">{{ getDocumentTypeName(doc.documentType) }}</p>
+                        <p class="doc-name">{{ doc.documentName }}</p>
+                        <p class="doc-size">
+                          {{ fileUploadService.formatFileSize(doc.fileSize) }}
+                        </p>
+                      </div>
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="removeKYCDocument($index)"
+                        [disabled]="isLoading()"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+                }
+              </div>
+            </div>
+            } @if (isLoading()) {
+            <div class="loading-indicator">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Uploading document...</p>
+            </div>
+            }
+
+            <div class="button-group">
+              <button mat-button matStepperPrevious type="button" [disabled]="isLoading()">
+                Back
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="onSubmit()"
+                [disabled]="uploadedDocuments().length === 0 || isLoading()"
+              >
+                @if (isLoading()) {
+                <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+                Submitting... } @else { Submit Registration }
+              </button>
+            </div>
+          </div>
+        </mat-step>
+      </mat-stepper>
+    </mat-card-content>
+  </mat-card>
+</div>
