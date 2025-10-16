@@ -1,0 +1,56 @@
+<div class="file-upload-container">
+  <div
+    class="upload-area"
+    [class.dragging]="isDragging()"
+    [class.has-file]="selectedFileName()"
+    [class.has-error]="errorMessage()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    @if (!selectedFileName()) {
+    <div class="upload-prompt">
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+      <p class="upload-text">
+        <strong>{{ label() }}</strong>
+      </p>
+      <p class="upload-hint">Drag and drop or click to browse</p>
+      <p class="upload-info">Maximum file size: {{ maxSizeFormatted }}</p>
+      <p class="upload-info">Allowed types: {{ allowedTypes }}</p>
+    </div>
+    } @else {
+    <div class="file-selected">
+      <mat-icon class="file-icon">description</mat-icon>
+      <p class="file-name">{{ selectedFileName() }}</p>
+      <button mat-icon-button color="warn" (click)="clearFile()" type="button" class="clear-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    }
+
+    <input
+      #fileInput
+      type="file"
+      [accept]="accept()"
+      [multiple]="multiple()"
+      (change)="onFileChange($event)"
+      class="file-input"
+      hidden
+    />
+  </div>
+
+  @if (errorMessage()) {
+  <p class="error-message">{{ errorMessage() }}</p>
+  }
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="fileInput.click()"
+    type="button"
+    class="browse-button"
+  >
+    <mat-icon>attach_file</mat-icon>
+    Browse Files
+  </button>
+</div>
