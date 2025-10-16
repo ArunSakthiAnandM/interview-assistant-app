@@ -1,0 +1,203 @@
+<div class="organisation-dashboard">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Organisation Dashboard</h1>
+      <p class="subtitle">{{ authStore.currentUser()?.organisationName || 'Welcome' }}</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="createInterview()">
+      <mat-icon>add</mat-icon>
+      Create Interview
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>people</mat-icon>
+        <mat-card-title>Interviewers</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalInterviewers }}</div>
+        <div class="stat-label">{{ stats.activeInterviewers }} active</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>event</mat-icon>
+        <mat-card-title>Total Interviews</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalInterviews }}</div>
+        <div class="stat-label">{{ stats.scheduledInterviews }} scheduled</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>person_search</mat-icon>
+        <mat-card-title>Candidates</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalCandidates }}</div>
+        <div class="stat-label">{{ stats.selectedCandidates }} selected</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>trending_up</mat-icon>
+        <mat-card-title>Success Rate</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.successRate }}%</div>
+        <div class="stat-label">This month</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <mat-card class="upcoming-interviews">
+      <mat-card-header>
+        <mat-card-title>Upcoming Interviews</mat-card-title>
+        <button mat-icon-button (click)="refreshInterviews()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        @if (isLoadingInterviews()) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+        } @else if (upcomingInterviews().length === 0) {
+        <div class="empty-state">
+          <mat-icon>event_available</mat-icon>
+          <p>No upcoming interviews</p>
+          <button mat-raised-button color="primary" (click)="createInterview()">
+            Schedule Interview
+          </button>
+        </div>
+        } @else {
+        <div class="interview-list">
+          @for (interview of upcomingInterviews(); track interview.id) {
+          <div class="interview-item" (click)="viewInterview(interview.id)">
+            <div class="interview-time">
+              <div class="date">{{ interview.scheduledDate | date : 'MMM' }}</div>
+              <div class="day">{{ interview.scheduledDate | date : 'd' }}</div>
+            </div>
+            <div class="interview-details">
+              <h3>{{ interview.position }}</h3>
+              <p class="candidate">{{ interview.candidateName }}</p>
+              <div class="metadata">
+                <span class="time">
+                  <mat-icon>schedule</mat-icon>
+                  {{ interview.scheduledDate | date : 'shortTime' }}
+                </span>
+                <span class="duration">
+                  <mat-icon>timer</mat-icon>
+                  {{ interview.duration }} min
+                </span>
+                <span class="interviewer">
+                  <mat-icon>person</mat-icon>
+                  {{ interview.interviewerName }}
+                </span>
+              </div>
+            </div>
+            <div class="interview-actions">
+              <mat-chip [style.background-color]="getStatusColor(interview.status)">
+                {{ interview.status }}
+              </mat-chip>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="interviewers-section">
+      <mat-card-header>
+        <mat-card-title>Team Interviewers</mat-card-title>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="inviteInterviewer()">
+            <mat-icon>person_add</mat-icon>
+            <span>Invite Interviewer</span>
+          </button>
+          <button mat-menu-item (click)="manageInterviewers()">
+            <mat-icon>manage_accounts</mat-icon>
+            <span>Manage Team</span>
+          </button>
+        </mat-menu>
+      </mat-card-header>
+      <mat-card-content>
+        @if (interviewers().length === 0) {
+        <div class="empty-state">
+          <mat-icon>group_add</mat-icon>
+          <p>No interviewers yet</p>
+          <button mat-raised-button color="primary" (click)="inviteInterviewer()">
+            Invite Interviewer
+          </button>
+        </div>
+        } @else {
+        <mat-list>
+          @for (interviewer of interviewers(); track interviewer.id) {
+          <mat-list-item>
+            <div matListItemAvatar class="avatar">
+              {{ interviewer.name.charAt(0) }}
+            </div>
+            <div matListItemTitle>{{ interviewer.name }}</div>
+            <div matListItemLine>{{ interviewer.email }}</div>
+            <div matListItemMeta>
+              <mat-chip [class.active]="interviewer.isActive">
+                {{ interviewer.isActive ? 'Active' : 'Inactive' }}
+              </mat-chip>
+            </div>
+          </mat-list-item>
+          }
+        </mat-list>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="analytics-section">
+    <mat-card-header>
+      <mat-card-title>Interview Analytics</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="analytics-grid">
+        <div class="analytic-item">
+          <mat-icon>event_note</mat-icon>
+          <div class="analytic-content">
+            <span class="analytic-label">This Week</span>
+            <span class="analytic-value">{{ analytics.thisWeek }}</span>
+          </div>
+        </div>
+        <div class="analytic-item">
+          <mat-icon>check_circle</mat-icon>
+          <div class="analytic-content">
+            <span class="analytic-label">Completed</span>
+            <span class="analytic-value">{{ analytics.completed }}</span>
+          </div>
+        </div>
+        <div class="analytic-item">
+          <mat-icon>hourglass_empty</mat-icon>
+          <div class="analytic-content">
+            <span class="analytic-label">Pending</span>
+            <span class="analytic-value">{{ analytics.pending }}</span>
+          </div>
+        </div>
+        <div class="analytic-item">
+          <mat-icon>cancel</mat-icon>
+          <div class="analytic-content">
+            <span class="analytic-label">Cancelled</span>
+            <span class="analytic-value">{{ analytics.cancelled }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
