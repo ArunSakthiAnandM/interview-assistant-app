@@ -1,0 +1,162 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">System Overview & Management</p>
+  </div>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>business</mat-icon>
+        <mat-card-title>Organisations</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalOrganisations }}</div>
+        <div class="stat-label">
+          <span class="pending">{{ stats.pendingOrganisations }} pending approval</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>people</mat-icon>
+        <mat-card-title>Total Users</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalUsers }}</div>
+        <div class="stat-label">
+          <span>{{ stats.activeUsers }} active</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>event</mat-icon>
+        <mat-card-title>Interviews</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalInterviews }}</div>
+        <div class="stat-label">
+          <span>{{ stats.todayInterviews }} scheduled today</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>trending_up</mat-icon>
+        <mat-card-title>Success Rate</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.successRate }}%</div>
+        <div class="stat-label">
+          <span>This month</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <mat-card class="pending-approvals">
+      <mat-card-header>
+        <mat-card-title>Pending Organisation Approvals</mat-card-title>
+        <button mat-icon-button (click)="loadPendingOrganisations()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        @if (isLoadingOrgs()) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+        } @else if (pendingOrganisations().length === 0) {
+        <div class="empty-state">
+          <mat-icon>check_circle</mat-icon>
+          <p>No pending approvals</p>
+        </div>
+        } @else {
+        <div class="org-list">
+          @for (org of pendingOrganisations(); track org.id) {
+          <div class="org-item">
+            <div class="org-info">
+              <h3>{{ org.name }}</h3>
+              <p>{{ org.email }}</p>
+              <span class="registration-date"
+                >Registered: {{ org.registrationDate | date : 'short' }}</span
+              >
+            </div>
+            <div class="org-actions">
+              <button mat-raised-button color="primary" (click)="viewOrganisation(org.id)">
+                <mat-icon>visibility</mat-icon>
+                View
+              </button>
+              <button mat-raised-button color="accent" (click)="approveOrganisation(org.id)">
+                <mat-icon>check</mat-icon>
+                Approve
+              </button>
+              <button mat-raised-button color="warn" (click)="rejectOrganisation(org.id)">
+                <mat-icon>close</mat-icon>
+                Reject
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="recent-activity">
+      <mat-card-header>
+        <mat-card-title>Recent Activity</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (recentActivity().length === 0) {
+        <div class="empty-state">
+          <mat-icon>info</mat-icon>
+          <p>No recent activity</p>
+        </div>
+        } @else {
+        <mat-list>
+          @for (activity of recentActivity(); track activity.id) {
+          <mat-list-item>
+            <mat-icon matListItemIcon>{{ activity.icon }}</mat-icon>
+            <div matListItemTitle>{{ activity.title }}</div>
+            <div matListItemLine>{{ activity.description }}</div>
+            <span matListItemMeta>{{ activity.timestamp | date : 'short' }}</span>
+          </mat-list-item>
+          }
+        </mat-list>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="system-health">
+    <mat-card-header>
+      <mat-card-title>System Health</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="health-metrics">
+        <div class="metric">
+          <span class="metric-label">API Response Time</span>
+          <span class="metric-value success">{{ systemHealth.apiResponseTime }}ms</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Database Status</span>
+          <span class="metric-value success">{{ systemHealth.databaseStatus }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Active Sessions</span>
+          <span class="metric-value">{{ systemHealth.activeSessions }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Server Uptime</span>
+          <span class="metric-value">{{ systemHealth.uptime }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
