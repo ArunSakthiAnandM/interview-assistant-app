@@ -1,0 +1,144 @@
+.profile {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  .page-header {
+    margin-bottom: 32px;
+
+    h1 {
+      font-size: 32px;
+      font-weight: 500;
+      margin: 0 0 8px 0;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.6);
+      margin: 0;
+    }
+  }
+
+  .profile-grid {
+    display: grid;
+    gap: 24px;
+  }
+
+  .profile-info {
+    mat-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        font-weight: 600;
+      }
+
+      .user-info {
+        flex: 1;
+
+        mat-card-title {
+          font-size: 24px;
+          margin-bottom: 4px;
+        }
+
+        mat-card-subtitle {
+          font-size: 14px;
+          margin-bottom: 8px;
+        }
+
+        .role-chip {
+          font-size: 11px;
+          background-color: #1976d2;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .edit-form {
+    mat-card-content {
+      padding: 24px;
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        h3 {
+          font-size: 16px;
+          font-weight: 500;
+          margin: 16px 0 0 0;
+        }
+
+        mat-form-field {
+          width: 100%;
+        }
+
+        mat-card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          margin-top: 16px;
+          padding: 0;
+
+          button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  .security-section {
+    mat-card-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: flex-start;
+      }
+    }
+  }
+
+  .danger-zone {
+    mat-card-header {
+      mat-card-title {
+        color: #f44336;
+      }
+    }
+
+    mat-card-content {
+      padding: 24px;
+
+      p {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.6);
+        margin: 0 0 16px 0;
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+}

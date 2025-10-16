@@ -1,0 +1,129 @@
+<div class="profile">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p class="subtitle">Manage your personal information</p>
+  </div>
+
+  <div class="profile-grid">
+    <mat-card class="profile-info">
+      <mat-card-header>
+        <div class="avatar">
+          {{ authStore.userName().charAt(0) || 'U' }}
+        </div>
+        <div class="user-info">
+          <mat-card-title>{{ authStore.userName() }}</mat-card-title>
+          <mat-card-subtitle>{{ authStore.currentUser()?.email }}</mat-card-subtitle>
+          <mat-chip class="role-chip">{{ authStore.currentUser()?.role }}</mat-chip>
+        </div>
+      </mat-card-header>
+    </mat-card>
+
+    <mat-card class="edit-form">
+      <mat-card-header>
+        <mat-card-title>Personal Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="profileForm">
+          <mat-form-field appearance="outline">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" required />
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" required />
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" required />
+            <mat-icon matPrefix>email</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Mobile</mat-label>
+            <input matInput formControlName="mobile" type="tel" />
+            <mat-icon matPrefix>phone</mat-icon>
+          </mat-form-field>
+
+          @if (authStore.isCandidate()) {
+          <h3>Professional Details</h3>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Skills</mat-label>
+            <textarea
+              matInput
+              formControlName="skills"
+              rows="3"
+              placeholder="e.g., JavaScript, React, Node.js"
+            ></textarea>
+            <mat-icon matPrefix>code</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Experience (years)</mat-label>
+            <input matInput formControlName="experience" type="number" min="0" />
+            <mat-icon matPrefix>work</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Highest Education</mat-label>
+            <input
+              matInput
+              formControlName="education"
+              placeholder="e.g., Bachelor's in Computer Science"
+            />
+            <mat-icon matPrefix>school</mat-icon>
+          </mat-form-field>
+          }
+
+          <mat-card-actions>
+            <button mat-button type="button" (click)="resetForm()">Cancel</button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="button"
+              (click)="saveProfile()"
+              [disabled]="profileForm.invalid || isSaving()"
+            >
+              @if (isSaving()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              Saving... } @else { Save Changes }
+            </button>
+          </mat-card-actions>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="security-section">
+      <mat-card-header>
+        <mat-card-title>Security</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <button mat-raised-button (click)="changePassword()">
+          <mat-icon>lock</mat-icon>
+          Change Password
+        </button>
+        <button mat-raised-button (click)="enableTwoFactor()">
+          <mat-icon>security</mat-icon>
+          Enable 2FA
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="danger-zone">
+      <mat-card-header>
+        <mat-card-title>Danger Zone</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Once you delete your account, there is no going back. Please be certain.</p>
+        <button mat-raised-button color="warn" (click)="deleteAccount()">
+          <mat-icon>delete_forever</mat-icon>
+          Delete Account
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
