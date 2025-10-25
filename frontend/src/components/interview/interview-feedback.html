@@ -1,0 +1,90 @@
+<div class="interview-feedback">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div>
+      <h1>Submit Interview Feedback</h1>
+      <p class="subtitle">Provide detailed feedback for the candidate</p>
+    </div>
+  </div>
+
+  <mat-card>
+    <form [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <div class="form-section">
+          <h3>Rating</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Overall Rating</mat-label>
+            <mat-select formControlName="rating" required>
+              <mat-option [value]="1">1 - Poor</mat-option>
+              <mat-option [value]="2">2 - Below Average</mat-option>
+              <mat-option [value]="3">3 - Average</mat-option>
+              <mat-option [value]="4">4 - Good</mat-option>
+              <mat-option [value]="5">5 - Excellent</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <h3>Comments</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Detailed Comments</mat-label>
+            <textarea
+              matInput
+              formControlName="comments"
+              rows="5"
+              placeholder="Provide your detailed feedback..."
+            ></textarea>
+          </mat-form-field>
+
+          <h3>Strengths</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Key Strengths</mat-label>
+            <textarea
+              matInput
+              formControlName="strengths"
+              rows="3"
+              placeholder="List the candidate's strengths..."
+            ></textarea>
+          </mat-form-field>
+
+          <h3>Areas for Improvement</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Weaknesses</mat-label>
+            <textarea
+              matInput
+              formControlName="weaknesses"
+              rows="3"
+              placeholder="List areas that need improvement..."
+            ></textarea>
+          </mat-form-field>
+
+          <h3>Recommendation</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Outcome</mat-label>
+            <mat-select formControlName="outcome" required>
+              <mat-option value="SELECTED">Selected</mat-option>
+              <mat-option value="SELECTED_NEXT_ROUND">Selected for Next Round</mat-option>
+              <mat-option value="REJECTED">Not Selected</mat-option>
+              <mat-option value="ON_HOLD">On Hold</mat-option>
+              <mat-option value="PENDING">Pending Decision</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button type="button" (click)="goBack()">Cancel</button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="feedbackForm.invalid || isSubmitting()"
+        >
+          @if (isSubmitting()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          Submitting... } @else { Submit Feedback }
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>
