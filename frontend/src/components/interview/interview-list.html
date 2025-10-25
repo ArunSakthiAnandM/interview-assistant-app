@@ -1,0 +1,209 @@
+<div class="interview-list">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Interviews</h1>
+      <p class="subtitle">Manage and track all interviews</p>
+    </div>
+    @if (authStore.canManageInterviews()) {
+    <button mat-raised-button color="primary" (click)="createInterview()">
+      <mat-icon>add</mat-icon>
+      Create Interview
+    </button>
+    }
+  </div>
+
+  <mat-card class="filters-card">
+    <div class="filters-container">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          placeholder="Search by position or candidate..."
+        />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="applyFilters()" multiple>
+          <mat-option value="SCHEDULED">Scheduled</mat-option>
+          <mat-option value="IN_PROGRESS">In Progress</mat-option>
+          <mat-option value="COMPLETED">Completed</mat-option>
+          <mat-option value="CANCELLED">Cancelled</mat-option>
+          <mat-option value="NO_SHOW">No Show</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date From</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerFrom"
+          [(ngModel)]="dateFrom"
+          (ngModelChange)="applyFilters()"
+        />
+        <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFrom></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date To</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerTo"
+          [(ngModel)]="dateTo"
+          (ngModelChange)="applyFilters()"
+        />
+        <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+        <mat-datepicker #pickerTo></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-raised-button (click)="clearFilters()">
+        <mat-icon>clear</mat-icon>
+        Clear
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="results-card">
+    <div class="results-header">
+      <div class="results-count">
+        Showing {{ filteredInterviews().length }} of
+        {{ interviewStore.totalInterviews() }} interviews
+      </div>
+      <mat-button-toggle-group [(value)]="viewMode">
+        <mat-button-toggle value="list">
+          <mat-icon>view_list</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="grid">
+          <mat-icon>grid_view</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading interviews...</p>
+    </div>
+    } @else if (filteredInterviews().length === 0) {
+    <div class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <h3>No interviews found</h3>
+      <p>Try adjusting your filters or create a new interview</p>
+      @if (authStore.canManageInterviews()) {
+      <button mat-raised-button color="primary" (click)="createInterview()">
+        Create Interview
+      </button>
+      }
+    </div>
+    } @else { @if (viewMode === 'list') {
+    <div class="list-view">
+      @for (interview of filteredInterviews(); track interview.id) {
+      <div class="interview-row" (click)="viewInterview(interview.id)">
+        <div class="interview-date">
+          <div class="month">{{ interview.scheduledDate | date : 'MMM' }}</div>
+          <div class="day">{{ interview.scheduledDate | date : 'd' }}</div>
+        </div>
+        <div class="interview-info">
+          <h3>{{ interview.title }}</h3>
+          <div class="meta-info">
+            <span class="candidate">
+              <mat-icon>person</mat-icon>
+              Candidate ID: {{ interview.candidateId || 'Not assigned' }}
+            </span>
+            <span class="time">
+              <mat-icon>schedule</mat-icon>
+              {{ interview.scheduledDate | date : 'shortTime' }}
+            </span>
+            <span class="duration">
+              <mat-icon>timer</mat-icon>
+              {{ interview.duration }} min
+            </span>
+            <span class="type">
+              <mat-icon>category</mat-icon>
+              {{ interview.type }}
+            </span>
+          </div>
+        </div>
+        <div class="interview-status">
+          <mat-chip [style.background-color]="getStatusColor(interview.status)">
+            {{ interview.status }}
+          </mat-chip>
+        </div>
+        <div class="interview-actions" (click)="$event.stopPropagation()">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="viewInterview(interview.id)">
+              <mat-icon>visibility</mat-icon>
+              <span>View Details</span>
+            </button>
+            @if (interview.status === 'SCHEDULED' && authStore.isInterviewer()) {
+            <button mat-menu-item (click)="startInterview(interview.id)">
+              <mat-icon>play_arrow</mat-icon>
+              <span>Start Interview</span>
+            </button>
+            } @if (interview.status === 'COMPLETED' && authStore.isInterviewer()) {
+            <button mat-menu-item (click)="submitFeedback(interview.id)">
+              <mat-icon>rate_review</mat-icon>
+              <span>Submit Feedback</span>
+            </button>
+            } @if (authStore.canManageInterviews()) {
+            <button mat-menu-item (click)="editInterview(interview.id)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="cancelInterview(interview.id)" class="danger">
+              <mat-icon>cancel</mat-icon>
+              <span>Cancel Interview</span>
+            </button>
+            }
+          </mat-menu>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <div class="grid-view">
+      @for (interview of filteredInterviews(); track interview.id) {
+      <mat-card class="interview-card" (click)="viewInterview(interview.id)">
+        <mat-card-header>
+          <div class="card-header-content">
+            <h3>{{ interview.title }}</h3>
+            <mat-chip [style.background-color]="getStatusColor(interview.status)">
+              {{ interview.status }}
+            </mat-chip>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="card-detail">
+            <mat-icon>person</mat-icon>
+            <span>Candidate: {{ interview.candidateId || 'Not assigned' }}</span>
+          </div>
+          <div class="card-detail">
+            <mat-icon>calendar_today</mat-icon>
+            <span>{{ interview.scheduledDate | date : 'medium' }}</span>
+          </div>
+          <div class="card-detail">
+            <mat-icon>timer</mat-icon>
+            <span>{{ interview.duration }} minutes</span>
+          </div>
+          <div class="card-detail">
+            <mat-icon>category</mat-icon>
+            <span>{{ interview.type }} - Round {{ interview.round }}</span>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary">View Details</button>
+        </mat-card-actions>
+      </mat-card>
+      }
+    </div>
+    } }
+  </mat-card>
+</div>
