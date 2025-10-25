@@ -1,0 +1,92 @@
+<div class="interview-detail">
+  @if (isLoading()) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading interview details...</p>
+  </div>
+  } @else if (interview()) {
+  <div class="detail-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-info">
+      <h1>{{ interview()!.title }}</h1>
+      <mat-chip [style.background-color]="getStatusColor(interview()!.status)">
+        {{ interview()!.status }}
+      </mat-chip>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Interview Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="detail-row">
+          <label>Type:</label>
+          <span>{{ interview()!.type }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Round:</label>
+          <span>{{ interview()!.round }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Scheduled:</label>
+          <span>{{ interview()!.scheduledDate | date : 'full' }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Duration:</label>
+          <span>{{ interview()!.duration }} minutes</span>
+        </div>
+        @if (interview()!.location) {
+        <div class="detail-row">
+          <label>Location:</label>
+          <span>{{ interview()!.location }}</span>
+        </div>
+        } @if (interview()!.description) {
+        <div class="detail-row">
+          <label>Description:</label>
+          <p>{{ interview()!.description }}</p>
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Actions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="actions-list">
+          @if (interview()!.status === 'SCHEDULED') {
+          <button mat-raised-button color="primary" (click)="startInterview()">
+            <mat-icon>play_arrow</mat-icon>
+            Start Interview
+          </button>
+          } @if (interview()!.status === 'COMPLETED' && authStore.isInterviewer()) {
+          <button mat-raised-button color="accent" (click)="submitFeedback()">
+            <mat-icon>rate_review</mat-icon>
+            Submit Feedback
+          </button>
+          }
+          <button mat-raised-button (click)="editInterview()">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+          <button mat-raised-button color="warn" (click)="cancelInterview()">
+            <mat-icon>cancel</mat-icon>
+            Cancel Interview
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  } @else {
+  <div class="error-state">
+    <mat-icon>error</mat-icon>
+    <h3>Interview not found</h3>
+    <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+  </div>
+  }
+</div>
