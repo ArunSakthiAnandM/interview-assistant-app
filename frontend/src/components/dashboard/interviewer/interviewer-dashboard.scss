@@ -1,0 +1,303 @@
+.interviewer-dashboard {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .dashboard-header {
+    margin-bottom: 32px;
+
+    .header-content {
+      h1 {
+        font-size: 32px;
+        font-weight: 500;
+        margin: 0 0 8px 0;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.6);
+        margin: 0;
+      }
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+
+    .stat-card {
+      mat-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 16px 0 16px;
+
+        mat-icon {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+          color: #1976d2;
+        }
+
+        mat-card-title {
+          font-size: 14px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      mat-card-content {
+        padding: 16px;
+
+        .stat-value {
+          font-size: 36px;
+          font-weight: 600;
+          color: rgba(0, 0, 0, 0.87);
+          margin-bottom: 8px;
+        }
+
+        .stat-label {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
+    }
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  mat-card {
+    mat-card-header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+      mat-card-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+    }
+
+    mat-card-content {
+      padding: 16px;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(0, 0, 0, 0.6);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      color: rgba(0, 0, 0, 0.38);
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+
+  .assigned-interviews {
+    .interview-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .interview-card {
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 8px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          transform: translateY(-2px);
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: start;
+          margin-bottom: 12px;
+
+          .interview-info {
+            flex: 1;
+
+            h3 {
+              font-size: 16px;
+              font-weight: 500;
+              margin: 0 0 4px 0;
+            }
+
+            .candidate-name {
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.6);
+              margin: 0;
+            }
+          }
+
+          mat-chip {
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+          }
+        }
+
+        .card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-bottom: 12px;
+
+          .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+          }
+        }
+
+        .card-actions {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+
+          button {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .quick-actions {
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      button {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 16px;
+        text-align: left;
+
+        mat-icon {
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  .recent-feedback {
+    .feedback-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .feedback-item {
+        padding: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 8px;
+
+        .feedback-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: start;
+          margin-bottom: 12px;
+
+          .candidate-info {
+            h4 {
+              font-size: 15px;
+              font-weight: 500;
+              margin: 0 0 4px 0;
+            }
+
+            .position {
+              font-size: 13px;
+              color: rgba(0, 0, 0, 0.6);
+            }
+          }
+
+          .rating {
+            display: flex;
+            gap: 2px;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+              color: #ffc107;
+
+              &.filled {
+                color: #ff9800;
+              }
+            }
+          }
+        }
+
+        .feedback-summary {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.75);
+          margin: 0 0 8px 0;
+          line-height: 1.5;
+        }
+
+        .feedback-date {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.45);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,196 @@
+<div class="interviewer-dashboard">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Interviewer Dashboard</h1>
+      <p class="subtitle">Welcome, {{ authStore.userName() }}</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>event</mat-icon>
+        <mat-card-title>Total Interviews</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalInterviews }}</div>
+        <div class="stat-label">All time</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>schedule</mat-icon>
+        <mat-card-title>Scheduled</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.scheduled }}</div>
+        <div class="stat-label">{{ stats.today }} today</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>check_circle</mat-icon>
+        <mat-card-title>Completed</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.completed }}</div>
+        <div class="stat-label">This month</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-icon>pending_actions</mat-icon>
+        <mat-card-title>Pending Feedback</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.pendingFeedback }}</div>
+        <div class="stat-label">Action required</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <mat-card class="assigned-interviews">
+      <mat-card-header>
+        <mat-card-title>My Assigned Interviews</mat-card-title>
+        <div class="header-actions">
+          <mat-button-toggle-group [(value)]="filterType" (change)="onFilterChange()">
+            <mat-button-toggle value="upcoming">Upcoming</mat-button-toggle>
+            <mat-button-toggle value="pending">Pending</mat-button-toggle>
+            <mat-button-toggle value="completed">Completed</mat-button-toggle>
+          </mat-button-toggle-group>
+          <button mat-icon-button (click)="refreshAssignedInterviews()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (isLoadingInterviews()) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+        } @else if (assignedInterviews().length === 0) {
+        <div class="empty-state">
+          <mat-icon>event_available</mat-icon>
+          <p>No {{ filterType }} interviews</p>
+        </div>
+        } @else {
+        <div class="interview-list">
+          @for (interview of assignedInterviews(); track interview.id) {
+          <div class="interview-card" (click)="viewInterview(interview.id)">
+            <div class="card-header">
+              <div class="interview-info">
+                <h3>{{ interview.position }}</h3>
+                <p class="candidate-name">{{ interview.candidateName }}</p>
+              </div>
+              <mat-chip [style.background-color]="getStatusColor(interview.status)">
+                {{ interview.status }}
+              </mat-chip>
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ interview.scheduledDate | date : 'medium' }}</span>
+              </div>
+              <div class="info-row">
+                <mat-icon>timer</mat-icon>
+                <span>{{ interview.duration }} minutes</span>
+              </div>
+              @if (interview.location) {
+              <div class="info-row">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ interview.location }}</span>
+              </div>
+              }
+            </div>
+            <div class="card-actions">
+              @if (interview.status === 'SCHEDULED') {
+              <button
+                mat-stroked-button
+                color="primary"
+                (click)="startInterview(interview.id); $event.stopPropagation()"
+              >
+                <mat-icon>play_arrow</mat-icon>
+                Start Interview
+              </button>
+              } @if (interview.status === 'COMPLETED' && !interview.hasFeedback) {
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="submitFeedback(interview.id); $event.stopPropagation()"
+              >
+                <mat-icon>rate_review</mat-icon>
+                Submit Feedback
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="quick-actions">
+      <mat-card-header>
+        <mat-card-title>Quick Actions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="viewAllInterviews()">
+            <mat-icon>list</mat-icon>
+            View All Interviews
+          </button>
+          <button mat-raised-button (click)="viewSchedule()">
+            <mat-icon>calendar_month</mat-icon>
+            My Schedule
+          </button>
+          <button mat-raised-button (click)="viewProfile()">
+            <mat-icon>person</mat-icon>
+            My Profile
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="recent-feedback">
+    <mat-card-header>
+      <mat-card-title>Recent Feedback Submitted</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (recentFeedback().length === 0) {
+      <div class="empty-state">
+        <mat-icon>feedback</mat-icon>
+        <p>No feedback submitted yet</p>
+      </div>
+      } @else {
+      <div class="feedback-list">
+        @for (feedback of recentFeedback(); track feedback.id) {
+        <div class="feedback-item">
+          <div class="feedback-header">
+            <div class="candidate-info">
+              <h4>{{ feedback.candidateName }}</h4>
+              <span class="position">{{ feedback.position }}</span>
+            </div>
+            <div class="rating">
+              <mat-icon
+                [class.filled]="i < feedback.rating"
+                *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+              >
+                {{ i < feedback.rating ? 'star' : 'star_border' }}
+              </mat-icon>
+            </div>
+          </div>
+          <p class="feedback-summary">{{ feedback.summary }}</p>
+          <span class="feedback-date">{{ feedback.submittedAt | date : 'short' }}</span>
+        </div>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
