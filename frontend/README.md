@@ -12,6 +12,7 @@
 
 - [Project Overview](#-project-overview)
 - [Features](#-features)
+- [Application Flow](#-application-flow)
 - [Technology Stack](#-technology-stack)
 - [Getting Started](#-getting-started)
 - [Project Structure](#-project-structure)
@@ -19,6 +20,7 @@
 - [Development](#-development)
 - [Security](#-security)
 - [Deployment](#-deployment)
+- [API Documentation](#-api-documentation)
 - [Contributing](#-contributing)
 
 ---
@@ -117,7 +119,368 @@ The Interview Assistant App is a full-featured platform designed to streamline t
 
 ---
 
-## 🛠️ Technology Stack
+## � Application Flow
+
+### Complete User Journey
+
+#### 1. **Landing Page → Registration**
+
+```
+Home Component → Registration Selection → Role-based Registration Form
+```
+
+**Flow Details**:
+
+- User visits landing page (`/home`)
+- Clicks "Register" → Directed to role selection
+- Routes:
+  - Organization: `/register/organisation` (✅ Complete)
+  - Candidate: `/register/candidate` (🚧 TODO)
+  - Interviewer: Invitation-only (🚧 TODO)
+
+#### 2. **Organization Registration Flow**
+
+```
+1. Basic Info → 2. Address → 3. KYC Upload → 4. Admin Setup → 5. OTP Verification → Pending Approval
+```
+
+**API Calls** (See [API.md](./API.md) for details):
+
+1. `POST /organisations/register` - Submit registration
+2. `POST /otp/send` - Send OTP to admin email
+3. `POST /otp/verify` - Verify OTP
+4. `POST /organisations/:id/kyc` - Upload KYC documents (PDF, images)
+
+**State Changes**:
+
+- Organization created with `verificationStatus: PENDING`
+- Admin user account created
+- Email notification sent to admin team
+- Redirect to waiting page
+
+#### 3. **Admin Approval Flow**
+
+```
+Admin Dashboard → Pending Organizations → Review KYC → Approve/Reject → Notification
+```
+
+**API Calls**:
+
+1. `GET /organisations` - List pending organizations
+2. `GET /organisations/:id` - View details and KYC
+3. `PUT /organisations/:id/verify` - Approve organization
+4. `PUT /organisations/:id/reject` - Reject with reason
+5. `POST /notifications/email` - Send approval/rejection email
+
+**State Changes**:
+
+- `verificationStatus: VERIFIED` or `REJECTED`
+- Organization can now login (if approved)
+- Rejection reason stored in database
+
+#### 4. **Login & Authentication**
+
+```
+Login Page → Credentials → Role Detection → Role-based Dashboard
+```
+
+**API Calls**:
+
+1. `POST /auth/login` - Authenticate user
+2. Response includes:
+   - Access token (JWT, expires 1 hour)
+   - Refresh token (expires 7 days)
+   - User profile with role
+
+**Auth Flow**:
+
+- Store tokens in `AuthStore`
+- Setup auto-refresh (5 min before expiry)
+- Inject JWT in all API requests (via `AuthInterceptor`)
+- Navigate based on role:
+  - `ADMIN` → `/dashboard/admin`
+  - `ORG_ADMIN` → `/dashboard/organisation`
+  - `INTERVIEWER` → `/dashboard/interviewer`
+  - `CANDIDATE` → `/dashboard/candidate`
+
+**Guards Applied**:
+
+- All dashboards protected by `authGuard`
+- Role-specific guards prevent cross-role access
+
+#### 5. **Organization Admin Flow**
+
+**Dashboard** (`/dashboard/organisation`):
+
+- View metrics: Total interviews, active candidates, team size
+- Quick actions: Create interview, invite interviewer
+- Recent interviews list
+- Team management
+
+**Interview Creation** (`/interviews/create`):
+
+```
+Step 1: Basic Info → Step 2: Candidate Selection → Step 3: Interviewer Assignment → Step 4: Schedule → Submit
+```
+
+**API Calls**:
+
+1. `GET /candidates` - Fetch candidate list
+2. `GET /interviewers/organisation/:id` - Fetch interviewers
+3. `POST /interviews/create` - Create interview
+4. `POST /interviews/:id/invite` - Generate candidate invite link
+5. `POST /notifications/email` - Send interview invitations
+
+**Created Interview**:
+
+- Status: `SCHEDULED`
+- Email/SMS notifications sent to candidate and interviewers
+- Calendar invites generated (TODO: backend)
+
+#### 6. **Interviewer Registration & Assignment**
+
+**Invitation Flow**:
+
+```
+Org Admin → Invite Interviewer → Email with Link → Register → Approval
+```
+
+**API Calls**:
+
+1. `POST /interviewers/invite` - Send invitation email
+2. `POST /interviewers/register` - Complete registration
+3. `POST /otp/send` - Verify email
+4. `POST /otp/verify` - Confirm verification
+
+**Dashboard** (`/dashboard/interviewer`):
+
+- View assigned interviews (today, upcoming, past)
+- Filters: Status, type, date range
+- Quick actions: Start interview, submit feedback
+
+#### 7. **Interview Lifecycle**
+
+```
+SCHEDULED → IN_PROGRESS → COMPLETED → FEEDBACK → OUTCOME
+```
+
+**Before Interview**:
+
+- **Reminders**: Automated emails 24h, 1h before (via `NotificationService`)
+  - API: `POST /notifications/email` (type: `INTERVIEW_REMINDER`)
+  - API: `POST /notifications/sms` (type: `INTERVIEW_REMINDER`)
+
+**During Interview** (Interviewer actions):
+
+- Navigate to `/interviews/:id`
+- Click "Start Interview"
+  - API: `PUT /interviews/:id/status` → Status: `IN_PROGRESS`
+- Conduct interview (video call link in details)
+- Click "Complete Interview"
+  - API: `PUT /interviews/:id/status` → Status: `COMPLETED`
+
+**After Interview** (Feedback submission):
+
+- Navigate to `/interviews/:id/feedback`
+- Fill feedback form:
+  - Rating (1-5 stars)
+  - Comments
+  - Strengths (multi-select)
+  - Weaknesses (multi-select)
+  - Outcome: `SELECTED`, `SELECTED_NEXT_ROUND`, `REJECTED`, `ON_HOLD`, `PENDING`
+- Submit:
+  - API: `POST /interviews/:id/feedback`
+  - Email notification to candidate (if outcome is `SELECTED` or `REJECTED`)
+
+**Outcome Notifications**:
+
+- Selected: `POST /notifications/email` (type: `CANDIDATE_SELECTED`)
+- Rejected: `POST /notifications/email` (type: `CANDIDATE_REJECTED`)
+
+#### 8. **Candidate Flow**
+
+**Registration** (🚧 TODO):
+
+```
+1. Basic Info → 2. OTP Verification → 3. Profile Setup → 4. Resume Upload → Dashboard
+```
+
+**API Calls** (Planned):
+
+1. `POST /candidates/register` - Initial registration
+2. `POST /otp/send` - Send OTP to email and mobile
+3. `POST /otp/verify` - Verify both email and mobile
+4. `POST /files/upload` - Upload resume (PDF only)
+5. `PUT /candidates/profile/update` - Complete profile
+
+**Dashboard** (`/dashboard/candidate`):
+
+- Profile completion tracker (30% → 100%)
+- Upcoming interviews
+- Interview history
+- Applications status
+
+**Interview Invitation**:
+
+- Receive email with interview link
+- Click link → Redirect to `/interviews/:id`
+- View interview details: Date, time, interviewers, location (video link)
+- Add to personal calendar (TODO)
+
+**Post-Interview**:
+
+- Status visible in dashboard
+- Receive outcome notification via email
+- View feedback (if org allows)
+
+#### 9. **Admin Dashboard Flow**
+
+**System Monitoring** (`/dashboard/admin`):
+
+- Platform metrics:
+  - Total organizations (verified, pending, rejected)
+  - Total users by role
+  - Total interviews (by status)
+  - System activity (last 24h)
+- Organization approvals queue
+- User management
+- System settings
+
+**Organization Approval**:
+
+1. Click "Review" on pending org
+2. View organization details + KYC documents
+3. Download and verify documents:
+   - Business License
+   - Tax Certificate
+   - Incorporation Certificate
+   - Bank Statement
+4. Decision:
+   - **Approve**: `PUT /organisations/:id/verify`
+   - **Reject**: `PUT /organisations/:id/reject` (with reason)
+5. Auto-notification sent to org admin
+
+#### 10. **State Management Flow**
+
+**AuthStore**:
+
+```
+Login → Store User + Tokens → Auto Refresh → Logout → Clear Store
+```
+
+**Signal Updates**:
+
+- `setUser()` - On login success
+- `clearUser()` - On logout
+- `isAuthenticated()` - Computed signal
+- `hasPermission(perm)` - Permission checks
+
+**NotificationStore**:
+
+```
+Service Call → Success/Error → Add Notification → Auto Dismiss (3s)
+```
+
+**Types**:
+
+- `success`, `error`, `warning`, `info`
+- Stack in top-right corner
+- Auto-dismiss with countdown
+
+**InterviewStore**:
+
+```
+Load Interviews → Apply Filters → Computed Filtered List → Update UI
+```
+
+**Filters**:
+
+- Status: All, Scheduled, In Progress, Completed, Cancelled
+- Type: All, Technical, HR, Managerial, Coding, Behavioral
+- Date Range: Custom date picker
+- Search: By title or candidate name
+
+**UIStore**:
+
+```
+User Preferences → Dark/Light Theme → Sidebar Collapsed → Compact Mode
+```
+
+**Persisted** in localStorage:
+
+- Theme preference
+- Sidebar state
+- View preferences (list/grid)
+
+#### 11. **HTTP Interceptor Flow**
+
+**Request Interceptor** (`AuthInterceptor`):
+
+```
+API Call → Check Auth Required → Inject JWT Token → Send Request
+```
+
+**Error Interceptor** (`ErrorInterceptor`):
+
+```
+API Error → Check Status Code → Handle Error → Show Notification → Return Error
+```
+
+**Error Handling**:
+
+- `401` - Token expired → Auto refresh → Retry request
+- `403` - Forbidden → Show error, redirect to dashboard
+- `404` - Not found → Show error
+- `500` - Server error → Show error with retry option
+
+#### 12. **File Upload Flow**
+
+**Component** (`FileUploadComponent`):
+
+```
+Select File → Validate → Show Preview → Upload with Progress → Success/Error
+```
+
+**Validation**:
+
+- File type: PDF, JPEG, PNG only
+- File size: Max 5MB
+- Virus scan (backend TODO)
+
+**API Call**:
+
+- `POST /files/upload` (multipart/form-data)
+- Response includes file URL (S3/Azure Blob)
+
+**Use Cases**:
+
+- Organization KYC documents
+- Candidate resume
+- Interview attachments
+
+#### 13. **Real-time Updates** (🚧 TODO)
+
+**Planned WebSocket Integration**:
+
+```
+Connect → Subscribe to Channels → Receive Updates → Update Store → UI Refresh
+```
+
+**Channels**:
+
+- `interview.status.{interviewId}` - Interview status changes
+- `interview.feedback.{interviewId}` - New feedback submitted
+- `organisation.verified.{orgId}` - Organization approval
+- `notification.{userId}` - Personal notifications
+
+**Libraries** (Planned):
+
+- `socket.io-client` or `@microsoft/signalr`
+- Backend: Spring Boot WebSocket
+
+---
+
+## �🛠️ Technology Stack
 
 ### Frontend
 
@@ -744,6 +1107,36 @@ COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
+
+---
+
+## 📖 API Documentation
+
+For complete API reference including all endpoints, request/response structures, authentication, and error handling, see:
+
+### **[API.md](./API.md)**
+
+**API Documentation Includes**:
+
+- 🔐 **Authentication Endpoints** - Login, logout, refresh token, verify token
+- 🏢 **Organisation Management** - Register, verify, reject, KYC upload
+- 👤 **Candidate Management** - Register, profile CRUD, verification
+- 👨‍💼 **Interviewer Management** - Register, invite, assignments
+- 📅 **Interview Management** - Create, update, delete, feedback, scheduling
+- 📱 **OTP Verification** - Send, verify, resend with cooldown
+- 📎 **File Management** - Upload, download, delete with validation
+- 📧 **Notification Service** - Email/SMS notifications (11 types)
+- 📦 **Common Structures** - Response formats, enums, pagination
+- ⚠️ **Error Handling** - Error codes, status codes, validation errors
+
+**API Base URL**: `http://localhost:8080/api/v1`
+
+**Quick Links**:
+
+- [Authentication](./API.md#-authentication)
+- [Organisation APIs](./API.md#-organisation-management)
+- [Interview APIs](./API.md#-interview-management)
+- [Error Handling](./API.md#%EF%B8%8F-error-handling)
 
 ---
 
