@@ -109,3 +109,56 @@ npm run lint         # Run linter
 - Check folder-specific AGENT.md files for detailed requirements
 - Ensure all new code follows the established patterns
 - Maintain consistency with existing codebase structure
+
+## Documentation Policy
+
+### **IMPORTANT: Update README.md, Don't Create New Files**
+
+When making changes to the project:
+
+- ❌ **DO NOT create separate .md files** to document changes (e.g., CHANGES.md, BUGFIXES.md, ENHANCEMENTS.md, etc.)
+- ✅ **DO update the README.md file** directly to reflect the current state of the project
+
+### What to Update in README.md
+
+When you make changes, update the relevant sections in README.md:
+
+1. **Features Section**: Update completed ✅ or pending 🚧 features
+2. **Project Structure**: Add/remove components, services, or folders
+3. **Architecture Section**: Document new patterns or architectural decisions
+4. **Getting Started**: Update if setup steps change
+5. **Configuration**: Add new environment variables or configuration
+6. **Security**: Document new security measures
+7. **Known Issues**: Add/remove known issues as they're discovered/fixed
+
+### Example Workflow
+
+When you:
+
+- **Add a new feature** → Update "Features" section, mark as ✅
+- **Fix a bug** → Remove from "Known Issues" if listed
+- **Add a component** → Update "Project Structure" section
+- **Change architecture** → Update "Architecture" section
+- **Add dependencies** → Update "Technology Stack" section
+
+### Maintaining README.md
+
+The README.md should always represent the **current, final version** of the project:
+
+- Keep it concise but comprehensive
+- Remove outdated information
+- Update version numbers and dates
+- Ensure all links work
+- Keep the table of contents synchronized
+
+### When to Create New Documentation
+
+Only create separate documentation files for:
+
+- **API Documentation** (e.g., API.md) - Detailed API endpoint documentation
+- **CONTRIBUTING.md** - Contribution guidelines for open source projects
+- **CHANGELOG.md** - Version history (if using semantic versioning)
+- **LICENSE** - Project license
+- Folder-specific **AGENT.md** files (already exist)
+
+**Remember**: README.md is the single source of truth for project documentation!
