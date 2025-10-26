@@ -1,0 +1,19 @@
+<div class="otp-input-container">
+  <div class="otp-inputs">
+    @for (digit of otpDigits(); track $index) {
+    <input
+      #otpInput
+      type="text"
+      inputmode="numeric"
+      maxlength="1"
+      class="otp-digit"
+      [value]="digit"
+      [disabled]="disabled()"
+      (input)="onInput($event, $index)"
+      (keydown)="onKeyDown($event, $index)"
+      (paste)="onPaste($event)"
+      autocomplete="off"
+    />
+    }
+  </div>
+</div>
