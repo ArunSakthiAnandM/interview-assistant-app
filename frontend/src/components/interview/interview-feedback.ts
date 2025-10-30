@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -16,7 +16,6 @@ import { NotificationStore } from '../../store/notification.store';
 @Component({
   selector: 'app-interview-feedback',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatIconModule,

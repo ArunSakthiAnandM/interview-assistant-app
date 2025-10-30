@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -23,7 +23,7 @@ interface InterviewerOption {
 @Component({
   selector: 'app-interview-create',
   imports: [
-    CommonModule,
+    DatePipe,
     ReactiveFormsModule,
     MatCardModule,
     MatStepperModule,

@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,7 +44,7 @@ interface SystemHealth {
 @Component({
   selector: 'app-admin-dashboard',
   imports: [
-    CommonModule,
+    DatePipe,
     MatCardModule,
     MatIconModule,
     MatButtonModule,

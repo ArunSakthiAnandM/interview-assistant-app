@@ -33,7 +33,7 @@ Each component should have:
 
 ```typescript
 import { Component, ChangeDetectionStrategy, input, output, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { inject } from '@angular/core';
 
 @Component({
@@ -42,7 +42,7 @@ import { inject } from '@angular/core';
   styleUrl: './component-name.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   // DO NOT set standalone: true - it's default
-  imports: [CommonModule /* other imports */],
+  imports: [DatePipe /* Import specific pipes/directives as needed, NOT CommonModule */],
   host: {
     // Use host object instead of @HostBinding/@HostListener
     '[class.active]': 'isActive()',

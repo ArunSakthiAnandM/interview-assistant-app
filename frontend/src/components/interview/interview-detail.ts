@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Location, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +14,7 @@ import { Interview, InterviewStatus } from '../../models';
 @Component({
   selector: 'app-interview-detail',
   imports: [
-    CommonModule,
+    DatePipe,
     MatCardModule,
     MatIconModule,
     MatButtonModule,

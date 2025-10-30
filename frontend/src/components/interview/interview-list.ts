@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -23,7 +23,7 @@ import { InterviewStatus, InterviewType } from '../../models';
 @Component({
   selector: 'app-interview-list',
   imports: [
-    CommonModule,
+    DatePipe,
     FormsModule,
     MatCardModule,
     MatIconModule,

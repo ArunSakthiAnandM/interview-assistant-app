@@ -1,5 +1,4 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +13,6 @@ import { NotificationStore } from '../../store/notification.store';
 @Component({
   selector: 'app-profile',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatIconModule,

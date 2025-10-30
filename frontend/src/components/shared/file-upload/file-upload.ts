@@ -1,5 +1,4 @@
 import { Component, input, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -12,7 +11,7 @@ import { FILE_CONFIG } from '../../../constants';
  */
 @Component({
   selector: 'app-file-upload',
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [MatButtonModule, MatIconModule, MatProgressBarModule],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.scss',
 })

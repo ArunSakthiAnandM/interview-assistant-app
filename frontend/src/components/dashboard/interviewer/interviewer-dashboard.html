@@ -177,12 +177,11 @@
               <span class="position">{{ feedback.position }}</span>
             </div>
             <div class="rating">
-              <mat-icon
-                [class.filled]="i < feedback.rating"
-                *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
-              >
-                {{ i < feedback.rating ? 'star' : 'star_border' }}
-              </mat-icon>
+              @for (star of [1, 2, 3, 4, 5]; track $index) {
+                <mat-icon [class.filled]="$index < feedback.rating">
+                  {{ $index < feedback.rating ? 'star' : 'star_border' }}
+                </mat-icon>
+              }
             </div>
           </div>
           <p class="feedback-summary">{{ feedback.summary }}</p>

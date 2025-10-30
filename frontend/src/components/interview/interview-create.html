@@ -18,9 +18,11 @@
                 placeholder="e.g., Senior Frontend Developer Interview"
                 required
               />
-              <mat-error *ngIf="basicDetailsGroup.get('title')?.hasError('required')">
-                Title is required
-              </mat-error>
+              @if (basicDetailsGroup.get('title')?.hasError('required')) {
+                <mat-error>
+                  Title is required
+                </mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -110,12 +112,11 @@
             <mat-form-field appearance="outline">
               <mat-label>Interviewers</mat-label>
               <mat-select formControlName="interviewerIds" multiple required>
-                <mat-option
-                  *ngFor="let interviewer of availableInterviewers()"
-                  [value]="interviewer.id"
-                >
-                  {{ interviewer.name }}
-                </mat-option>
+                @for (interviewer of availableInterviewers(); track interviewer.id) {
+                  <mat-option [value]="interviewer.id">
+                    {{ interviewer.name }}
+                  </mat-option>
+                }
               </mat-select>
               <mat-hint>Select one or more interviewers</mat-hint>
             </mat-form-field>

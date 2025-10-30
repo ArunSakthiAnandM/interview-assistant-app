@@ -696,11 +696,12 @@ This project strictly follows Angular 20 modern patterns:
 
 - All components are standalone (no NgModules)
 - `standalone: true` is not explicitly set (default in Angular 20)
+- Import only specific pipes/directives needed (e.g., `DatePipe`), NOT `CommonModule`
 
 ```typescript
 @Component({
   selector: 'app-example',
-  imports: [CommonModule, MatButtonModule],
+  imports: [DatePipe, MatButtonModule],
   templateUrl: './example.html',
 })
 export class ExampleComponent {}
