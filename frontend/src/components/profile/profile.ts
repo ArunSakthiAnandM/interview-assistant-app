@@ -7,8 +7,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
 import { AuthStore } from '../../store/auth.store';
 import { NotificationStore } from '../../store/notification.store';
+import { API_CONFIG, API_ENDPOINTS } from '../../constants';
+import { ApiResponse } from '../../models';
 
 @Component({
   selector: 'app-profile',
@@ -21,6 +25,7 @@ import { NotificationStore } from '../../store/notification.store';
     MatInputModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
@@ -28,6 +33,8 @@ import { NotificationStore } from '../../store/notification.store';
 export class Profile implements OnInit {
   authStore = inject(AuthStore);
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
+  private dialog = inject(MatDialog);
   private notificationStore = inject(NotificationStore);
 
   profileForm!: FormGroup;
@@ -37,53 +44,117 @@ export class Profile implements OnInit {
     this.initializeForm();
   }
 
+  /**
+   * Initialize form with current user data
+   */
   private initializeForm(): void {
     const user = this.authStore.currentUser();
 
     this.profileForm = this.fb.group({
-      firstName: [user?.firstName || '', [Validators.required]],
-      lastName: [user?.lastName || '', [Validators.required]],
-      email: [user?.email || '', [Validators.required, Validators.email]],
-      mobile: [''],
+      firstName: [user?.firstName || '', [Validators.required, Validators.minLength(2)]],
+      lastName: [user?.lastName || '', [Validators.required, Validators.minLength(2)]],
+      email: [
+        { value: user?.email || '', disabled: true },
+        [Validators.required, Validators.email],
+      ],
+      mobile: ['', [Validators.pattern(/^\+?[1-9]\d{1,14}$/)]],
       skills: [''],
-      experience: [0],
+      experience: [0, [Validators.min(0), Validators.max(50)]],
       education: [''],
     });
   }
 
+  /**
+   * Reset form to original values
+   */
   resetForm(): void {
     this.initializeForm();
-    this.notificationStore.info('Form reset', 'Info');
+    this.notificationStore.info('Form reset');
   }
 
+  /**
+   * Save profile changes
+   */
   saveProfile(): void {
     if (this.profileForm.invalid) {
-      this.notificationStore.error('Please fill all required fields', 'Validation Error');
+      this.markFormGroupTouched(this.profileForm);
+      this.notificationStore.error('Please fill all required fields correctly');
       return;
     }
 
     this.isSaving.set(true);
 
-    // TODO: Implement API call to update profile
-    // PUT /api/v1/users/{userId}/profile
-    setTimeout(() => {
-      this.notificationStore.success('Profile updated successfully', 'Success');
-      this.isSaving.set(false);
-    }, 1500);
+    const profileData = {
+      ...this.profileForm.value,
+      email: this.authStore.currentUser()?.email, // Include email even though it's disabled
+    };
+
+    // Determine endpoint based on user role
+    const role = this.authStore.userRole();
+    let endpoint = '';
+
+    if (role === 'CANDIDATE') {
+      endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.UPDATE_PROFILE}`;
+    } else {
+      // For other roles, use a generic user profile update endpoint
+      endpoint = `${API_CONFIG.BASE_URL}/users/${this.authStore.currentUser()?.id}/profile`;
+    }
+
+    this.http.put<ApiResponse<any>>(endpoint, profileData).subscribe({
+      next: (response) => {
+        this.notificationStore.success('Profile updated successfully');
+        this.isSaving.set(false);
+
+        // Update the auth store with new user data
+        if (response.data) {
+          this.authStore.setUser({ ...this.authStore.currentUser()!, ...response.data });
+        }
+      },
+      error: (error) => {
+        console.error('Profile update error:', error);
+        this.notificationStore.error(
+          error.error?.message || 'Failed to update profile. Please try again.'
+        );
+        this.isSaving.set(false);
+      },
+    });
   }
 
+  /**
+   * Mark all form fields as touched
+   */
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach((key) => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  /**
+   * Open change password dialog
+   */
   changePassword(): void {
-    // TODO: Open change password dialog
-    this.notificationStore.info('Change password feature coming soon', 'Feature');
+    // TODO: Implement change password dialog
+    this.notificationStore.info('Change password feature coming soon');
   }
 
+  /**
+   * Enable two-factor authentication
+   */
   enableTwoFactor(): void {
-    // TODO: Open 2FA setup dialog
-    this.notificationStore.info('2FA feature coming soon', 'Feature');
+    // TODO: Implement 2FA setup dialog
+    this.notificationStore.info('Two-factor authentication feature coming soon');
   }
 
+  /**
+   * Delete account (requires confirmation)
+   */
   deleteAccount(): void {
-    // TODO: Open confirmation dialog
-    this.notificationStore.warning('Delete account feature requires confirmation', 'Warning');
+    // TODO: Implement delete account confirmation dialog
+    this.notificationStore.warning('Please contact support to delete your account');
   }
 }
