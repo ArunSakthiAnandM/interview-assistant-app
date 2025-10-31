@@ -1,14 +1,80 @@
 <div class="header-container">
   <header class="header">
-    <div class="logo">Interview Assistant</div>
+    <div class="logo" [routerLink]="APP_ROUTES.HOME">
+      <mat-icon>interview</mat-icon>
+      <span>Interview Assistant</span>
+    </div>
+
     <nav class="nav-links">
+      @if (!authStore.isAuthenticated()) {
+      <!-- Guest Navigation -->
       <a routerLink="/home" routerLinkActive="active-link">Home</a>
-      <a routerLink="/register/organisation" routerLinkActive="active-link"
-        >Register Organisation</a
-      >
+      <a routerLink="/register/organisation" routerLinkActive="active-link">Register Organisation</a>
       <a routerLink="/register/interviewer" routerLinkActive="active-link">Register Interviewer</a>
       <a routerLink="/register/candidate" routerLinkActive="active-link">Register Candidate</a>
-      <a routerLink="/login" routerLinkActive="active-link">Login</a>
+      <button mat-raised-button color="primary" routerLink="/login">Login</button>
+      } @else {
+      <!-- Authenticated Navigation -->
+      <a routerLink="/home" routerLinkActive="active-link">Home</a>
+
+      @if (authStore.canManageOrganisation()) {
+      <a routerLink="/dashboard/organisation" routerLinkActive="active-link">Dashboard</a>
+      }
+
+      @if (authStore.isInterviewer()) {
+      <a routerLink="/interviews" routerLinkActive="active-link">Interviews</a>
+      }
+
+      @if (authStore.isCandidate()) {
+      <a routerLink="/dashboard/candidate" routerLinkActive="active-link">My Interviews</a>
+      }
+
+      <!-- User Menu -->
+      <div class="user-menu">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="userMenu"
+          class="profile-button"
+          [matTooltip]="authStore.userName()"
+        >
+          <div class="profile-avatar">
+            {{ authStore.userName().charAt(0).toUpperCase() }}
+          </div>
+        </button>
+
+        <mat-menu #userMenu="matMenu" class="user-dropdown">
+          <div class="user-info">
+            <div class="user-avatar-large">
+              {{ authStore.userName().charAt(0).toUpperCase() }}
+            </div>
+            <div class="user-details">
+              <p class="user-name">{{ authStore.userName() }}</p>
+              <p class="user-email">{{ authStore.currentUser()?.email }}</p>
+              <span class="user-role">{{ authStore.currentUser()?.role }}</span>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item (click)="goToDashboard()">
+            <mat-icon>dashboard</mat-icon>
+            <span>Dashboard</span>
+          </button>
+
+          <button mat-menu-item (click)="goToProfile()">
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </button>
+
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item (click)="logout()" class="logout-button">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+      }
     </nav>
   </header>
 </div>

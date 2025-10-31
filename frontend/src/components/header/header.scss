@@ -1,31 +1,218 @@
 .header-container {
   width: 100%;
-  background-color: #282c34;
-  padding: 10px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem 2rem;
+
     .logo {
-      font-size: 1.5em;
-      color: #61dafb;
-      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
     }
+
     .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
       a {
-        color: white;
+        color: rgba(255, 255, 255, 0.9);
         text-decoration: none;
-        margin-left: 20px;
-        font-size: 1em;
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+
         &.active-link {
-          border-bottom: 2px solid #61dafb;
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
         }
+
         &:hover {
-          color: #61dafb;
-          cursor: pointer;
+          background: rgba(255, 255, 255, 0.15);
+          color: white;
+        }
+      }
+
+      button[mat-raised-button] {
+        background: white;
+        color: #1e3a8a;
+        font-weight: 600;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.9);
+        }
+      }
+
+      .user-menu {
+        .profile-button {
+          padding: 0;
+          width: 44px;
+          height: 44px;
+
+          .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+
+            &:hover {
+              transform: scale(1.1);
+            }
+          }
         }
       }
     }
   }
 }
+
+// User dropdown menu styling
+.user-dropdown {
+  min-width: 280px;
+
+  .user-info {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+
+    .user-avatar-large {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-details {
+      overflow: hidden;
+
+      .user-name {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-email {
+        margin: 0 0 0.5rem;
+        font-size: 0.875rem;
+        opacity: 0.9;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-role {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  button[mat-menu-item] {
+    height: 48px;
+
+    mat-icon {
+      margin-right: 0.75rem;
+      color: #667eea;
+    }
+
+    &:hover {
+      background: rgba(102, 126, 234, 0.08);
+    }
+
+    &.logout-button {
+      color: #dc2626;
+
+      mat-icon {
+        color: #dc2626;
+      }
+
+      &:hover {
+        background: rgba(220, 38, 38, 0.08);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .header-container {
+    .header {
+      padding: 0.75rem 1rem;
+
+      .nav-links {
+        gap: 1rem;
+
+        a {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    .header {
+      .nav-links {
+        a:not(.active-link) {
+          display: none;
+        }
+
+        button[mat-raised-button] {
+          font-size: 0.875rem;
+          padding: 0.5rem 1rem;
+        }
+      }
+    }
+  }
+}
+
