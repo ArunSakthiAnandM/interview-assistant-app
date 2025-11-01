@@ -656,8 +656,10 @@ Send invitation to register as interviewer.
 ```json
 {
   "email": "newinterviewer@techcorp.com",
-  "organisationId": "org-uuid",
-  "invitedBy": "admin-uuid"
+  "firstName": "Sarah",
+  "lastName": "Williams",
+  "designation": "Senior Engineer",
+  "department": "Engineering"
 }
 ```
 

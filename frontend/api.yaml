@@ -1,0 +1,2133 @@
+openapi: 3.0.3
+info:
+  title: Interview Assistant App API
+  description: |
+    Complete API reference for the Interview Assistant platform backend. 
+    This API handles authentication, organization management, candidate management, 
+    interview scheduling, and file uploads for interview management platform.
+  version: 1.0.0
+  contact:
+    name: Interview Assistant Development Team
+    email: support@interviewassistant.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.interviewassistant.com/api/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization endpoints
+  - name: Organisation
+    description: Organisation registration and management
+  - name: Candidate
+    description: Candidate registration and profile management
+  - name: Interviewer
+    description: Interviewer management and invitations
+  - name: Interview
+    description: Interview scheduling, management, and feedback
+  - name: OTP
+    description: OTP verification for email and mobile
+  - name: File
+    description: File upload and management
+  - name: Notification
+    description: Email and SMS notification services
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ==================== Authentication ====================
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with email and password
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginCredentials'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Logout user and invalidate tokens
+      operationId: logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Refresh access token using refresh token
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          refreshToken:
+                            type: string
+                          expiresIn:
+                            type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/verify:
+    post:
+      tags:
+        - Authentication
+      summary: Verify token
+      description: Verify if current token is valid
+      operationId: verifyToken
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          valid:
+                            type: boolean
+                          expiresAt:
+                            type: string
+                            format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== Organisation ====================
+  /organisations/register:
+    post:
+      tags:
+        - Organisation
+      summary: Register new organisation
+      description: Register a new organisation with KYC documents
+      operationId: registerOrganisation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganisationRegistrationRequest'
+      responses:
+        '201':
+          description: Organisation registered successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Organisation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /organisations/{id}:
+    get:
+      tags:
+        - Organisation
+      summary: Get organisation by ID
+      description: Get organisation details by ID
+      operationId: getOrganisation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organisation retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Organisation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /organisations/{id}/verify:
+    put:
+      tags:
+        - Organisation
+      summary: Verify organisation
+      description: Verify organisation (Admin only)
+      operationId: verifyOrganisation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Organisation verified successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          verificationStatus:
+                            $ref: '#/components/schemas/VerificationStatus'
+                          updatedAt:
+                            type: string
+                            format: date-time
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /organisations/{id}/reject:
+    put:
+      tags:
+        - Organisation
+      summary: Reject organisation
+      description: Reject organisation (Admin only)
+      operationId: rejectOrganisation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: Reason for rejection
+      responses:
+        '200':
+          description: Organisation rejected
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          verificationStatus:
+                            $ref: '#/components/schemas/VerificationStatus'
+                          rejectionReason:
+                            type: string
+                          updatedAt:
+                            type: string
+                            format: date-time
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /organisations/{id}/kyc:
+    post:
+      tags:
+        - Organisation
+      summary: Upload KYC documents
+      description: Upload KYC documents for organisation
+      operationId: uploadKYC
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - documentType
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload (PDF, JPEG, PNG, max 5MB)
+                documentType:
+                  $ref: '#/components/schemas/KYCDocumentType'
+      responses:
+        '200':
+          description: KYC document uploaded successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/KYCDocument'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+
+  # ==================== Candidate ====================
+  /candidates/register:
+    post:
+      tags:
+        - Candidate
+      summary: Register new candidate
+      description: Register a new candidate
+      operationId: registerCandidate
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CandidateRegistrationRequest'
+      responses:
+        '201':
+          description: Candidate registered successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Candidate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /candidates/profile:
+    get:
+      tags:
+        - Candidate
+      summary: Get candidate profile
+      description: Get current candidate profile (requires authentication)
+      operationId: getCandidateProfile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Candidate'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /candidates/profile/update:
+    put:
+      tags:
+        - Candidate
+      summary: Update candidate profile
+      description: Update candidate profile
+      operationId: updateCandidateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CandidateUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Candidate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /candidates/{id}:
+    get:
+      tags:
+        - Candidate
+      summary: Get candidate by ID
+      description: Get candidate by ID (restricted access)
+      operationId: getCandidate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidate retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Candidate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== Interviewer ====================
+  /interviewers/register:
+    post:
+      tags:
+        - Interviewer
+      summary: Register new interviewer
+      description: Register a new interviewer (linked to organisation)
+      operationId: registerInterviewer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewerRegistrationRequest'
+      responses:
+        '201':
+          description: Interviewer registered successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interviewer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /interviewers/{id}:
+    get:
+      tags:
+        - Interviewer
+      summary: Get interviewer by ID
+      description: Get interviewer details by ID
+      operationId: getInterviewer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviewer retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interviewer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /interviewers/organisation/{orgId}:
+    get:
+      tags:
+        - Interviewer
+      summary: Get interviewers by organisation
+      description: Get all interviewers for an organisation
+      operationId: getInterviewersByOrganisation
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Interviewers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInterviewerResponse'
+
+  /interviewers/invite:
+    post:
+      tags:
+        - Interviewer
+      summary: Send interviewer invitation
+      description: Send invitation to register as interviewer
+      operationId: inviteInterviewer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewerInviteRequest'
+      responses:
+        '200':
+          description: Invitation sent successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          inviteToken:
+                            type: string
+                          email:
+                            type: string
+                          expiresAt:
+                            type: string
+                            format: date-time
+
+  # ==================== Interview ====================
+  /interviews/create:
+    post:
+      tags:
+        - Interview
+      summary: Create new interview
+      description: Create a new interview
+      operationId: createInterview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewCreateRequest'
+      responses:
+        '201':
+          description: Interview created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /interviews/{id}:
+    get:
+      tags:
+        - Interview
+      summary: Get interview by ID
+      description: Get interview details by ID
+      operationId: getInterview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interview'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - Interview
+      summary: Update interview details
+      description: Update interview details
+      operationId: updateInterview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewUpdateRequest'
+      responses:
+        '200':
+          description: Interview updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    
+    delete:
+      tags:
+        - Interview
+      summary: Delete interview
+      description: Delete interview
+      operationId: deleteInterview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /interviews/organisation/{orgId}:
+    get:
+      tags:
+        - Interview
+      summary: Get interviews by organisation
+      description: Get all interviews for an organisation
+      operationId: getInterviewsByOrganisation
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/InterviewStatus'
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/InterviewType'
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Interviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInterviewResponse'
+
+  /interviews/candidate/{candidateId}:
+    get:
+      tags:
+        - Interview
+      summary: Get interviews by candidate
+      description: Get all interviews for a candidate
+      operationId: getInterviewsByCandidate
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Interview'
+
+  /interviews/{id}/status:
+    put:
+      tags:
+        - Interview
+      summary: Update interview status
+      description: Update interview status
+      operationId: updateInterviewStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  $ref: '#/components/schemas/InterviewStatus'
+      responses:
+        '200':
+          description: Interview status updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interview'
+
+  /interviews/{id}/feedback:
+    post:
+      tags:
+        - Interview
+      summary: Submit interview feedback
+      description: Submit interview feedback
+      operationId: submitFeedback
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewFeedbackRequest'
+      responses:
+        '200':
+          description: Feedback submitted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Interview'
+
+  /interviews/{id}/invite:
+    post:
+      tags:
+        - Interview
+      summary: Generate candidate invite link
+      description: Generate candidate invite link
+      operationId: generateInviteLink
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Invite link generated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CandidateInviteLink'
+
+  # ==================== OTP ====================
+  /otp/send:
+    post:
+      tags:
+        - OTP
+      summary: Send OTP
+      description: Send OTP to email or mobile
+      operationId: sendOTP
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTPSendRequest'
+      responses:
+        '200':
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /otp/verify:
+    post:
+      tags:
+        - OTP
+      summary: Verify OTP
+      description: Verify OTP
+      operationId: verifyOTP
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTPVerificationRequest'
+      responses:
+        '200':
+          description: OTP verified successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/OTPVerificationResponse'
+        '400':
+          description: Invalid or expired OTP
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/OTPVerificationResponse'
+
+  /otp/resend:
+    post:
+      tags:
+        - OTP
+      summary: Resend OTP
+      description: Resend OTP (same as /otp/send but with cooldown check)
+      operationId: resendOTP
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTPSendRequest'
+      responses:
+        '200':
+          description: OTP resent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  # ==================== File ====================
+  /files/upload:
+    post:
+      tags:
+        - File
+      summary: Upload file
+      description: Upload file (KYC documents, resumes, etc.)
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload (PDF, JPEG, PNG, max 5MB)
+                documentType:
+                  type: string
+                  description: Optional document type
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/FileUploadResponse'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+
+  /files/{fileId}:
+    get:
+      tags:
+        - File
+      summary: Get file
+      description: Download or get file URL
+      operationId: getFile
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/FileUploadResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags:
+        - File
+      summary: Delete file
+      description: Delete file
+      operationId: deleteFile
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== Notification ====================
+  /notifications/email:
+    post:
+      tags:
+        - Notification
+      summary: Send email notification
+      description: Send email notification (internal use)
+      operationId: sendEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailNotificationRequest'
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /notifications/sms:
+    post:
+      tags:
+        - Notification
+      summary: Send SMS notification
+      description: Send SMS notification (internal use)
+      operationId: sendSMS
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SMSNotificationRequest'
+      responses:
+        '200':
+          description: SMS sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+# ==================== Components ====================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+  schemas:
+    # ==================== Common Schemas ====================
+    ApiResponse:
+      type: object
+      required:
+        - success
+        - message
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the request was successful
+        data:
+          type: object
+          description: Response data (varies by endpoint)
+        message:
+          type: string
+          description: Human-readable message
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the response
+
+    ApiError:
+      type: object
+      required:
+        - success
+        - message
+        - statusCode
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          default: false
+        message:
+          type: string
+        error:
+          type: string
+        statusCode:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+
+    ValidationError:
+      type: object
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+
+    PaginationMeta:
+      type: object
+      required:
+        - currentPage
+        - pageSize
+        - totalPages
+        - totalItems
+        - hasNext
+        - hasPrevious
+      properties:
+        currentPage:
+          type: integer
+          minimum: 0
+        pageSize:
+          type: integer
+          minimum: 1
+        totalPages:
+          type: integer
+          minimum: 0
+        totalItems:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+
+    # ==================== Enums ====================
+    UserRole:
+      type: string
+      enum:
+        - ADMIN
+        - ORG_ADMIN
+        - INTERVIEWER
+        - CANDIDATE
+
+    VerificationStatus:
+      type: string
+      enum:
+        - PENDING
+        - VERIFIED
+        - REJECTED
+
+    InterviewType:
+      type: string
+      enum:
+        - TECHNICAL
+        - HR
+        - MANAGERIAL
+        - CODING
+        - BEHAVIORAL
+        - SYSTEM_DESIGN
+
+    InterviewStatus:
+      type: string
+      enum:
+        - SCHEDULED
+        - IN_PROGRESS
+        - COMPLETED
+        - CANCELLED
+        - NO_SHOW
+
+    InterviewOutcome:
+      type: string
+      enum:
+        - SELECTED
+        - SELECTED_NEXT_ROUND
+        - REJECTED
+        - ON_HOLD
+        - PENDING
+
+    OTPType:
+      type: string
+      enum:
+        - EMAIL
+        - MOBILE
+
+    KYCDocumentType:
+      type: string
+      enum:
+        - BUSINESS_LICENSE
+        - TAX_CERTIFICATE
+        - INCORPORATION_CERTIFICATE
+        - BANK_STATEMENT
+        - OTHER
+
+    EmailNotificationType:
+      type: string
+      enum:
+        - INTERVIEW_INVITATION
+        - INTERVIEW_REMINDER
+        - INTERVIEW_CANCELLED
+        - INTERVIEW_RESCHEDULED
+        - INTERVIEW_FEEDBACK
+        - CANDIDATE_SELECTED
+        - CANDIDATE_REJECTED
+        - ORGANISATION_VERIFIED
+        - ORGANISATION_REJECTED
+        - WELCOME
+        - PASSWORD_RESET
+
+    SMSNotificationType:
+      type: string
+      enum:
+        - INTERVIEW_REMINDER
+        - OTP_VERIFICATION
+        - INTERVIEW_CANCELLED
+        - URGENT_UPDATE
+
+    # ==================== Authentication ====================
+    LoginCredentials:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: SecurePass123!
+
+    AuthResponse:
+      type: object
+      required:
+        - accessToken
+        - expiresIn
+        - user
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: JWT refresh token
+        expiresIn:
+          type: integer
+          description: Token expiration time in seconds
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - role
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        firstName:
+          type: string
+        lastName:
+          type: string
+        organisationId:
+          type: string
+        organisationName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # ==================== Organisation ====================
+    OrganisationRegistrationRequest:
+      type: object
+      required:
+        - name
+        - address
+        - contactEmail
+        - contactPhone
+        - adminEmail
+        - adminName
+        - adminPassword
+      properties:
+        name:
+          type: string
+          example: TechCorp Solutions
+        registrationNumber:
+          type: string
+          example: REG-2025-12345
+        address:
+          $ref: '#/components/schemas/Address'
+        contactEmail:
+          type: string
+          format: email
+          example: contact@techcorp.com
+        contactPhone:
+          type: string
+          example: +1-555-1234
+        website:
+          type: string
+          format: uri
+          example: https://techcorp.com
+        description:
+          type: string
+          example: Leading software development company
+        adminEmail:
+          type: string
+          format: email
+          example: admin@techcorp.com
+        adminName:
+          type: string
+          example: John Doe
+        adminPassword:
+          type: string
+          format: password
+
+    Organisation:
+      type: object
+      required:
+        - id
+        - name
+        - address
+        - contactEmail
+        - contactPhone
+        - verificationStatus
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        registrationNumber:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        contactEmail:
+          type: string
+          format: email
+        contactPhone:
+          type: string
+        website:
+          type: string
+          format: uri
+        description:
+          type: string
+        kycDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/KYCDocument'
+        verificationStatus:
+          $ref: '#/components/schemas/VerificationStatus'
+        adminUserId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Address:
+      type: object
+      required:
+        - street
+        - city
+        - state
+        - country
+        - postalCode
+      properties:
+        street:
+          type: string
+          example: 123 Business Park
+        city:
+          type: string
+          example: San Francisco
+        state:
+          type: string
+          example: California
+        country:
+          type: string
+          example: USA
+        postalCode:
+          type: string
+          example: "94105"
+
+    KYCDocument:
+      type: object
+      required:
+        - documentType
+        - documentName
+        - fileUrl
+        - fileSize
+        - uploadedAt
+      properties:
+        id:
+          type: string
+        documentType:
+          $ref: '#/components/schemas/KYCDocumentType'
+        documentName:
+          type: string
+        fileUrl:
+          type: string
+          format: uri
+        fileSize:
+          type: integer
+          description: File size in bytes
+        uploadedAt:
+          type: string
+          format: date-time
+
+    # ==================== Candidate ====================
+    CandidateRegistrationRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - mobile
+        - password
+      properties:
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Smith
+        email:
+          type: string
+          format: email
+          example: jane.smith@example.com
+        mobile:
+          type: string
+          example: +1-555-5678
+        password:
+          type: string
+          format: password
+
+    Candidate:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required:
+            - firstName
+            - lastName
+            - mobile
+            - mobileVerified
+            - emailVerified
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            mobile:
+              type: string
+            mobileVerified:
+              type: boolean
+            emailVerified:
+              type: boolean
+            resume:
+              type: string
+              format: uri
+              description: URL to resume
+            skills:
+              type: array
+              items:
+                type: string
+            experience:
+              type: integer
+              description: Years of experience
+            education:
+              type: array
+              items:
+                $ref: '#/components/schemas/Education'
+            linkedinUrl:
+              type: string
+              format: uri
+            githubUrl:
+              type: string
+              format: uri
+            portfolioUrl:
+              type: string
+              format: uri
+
+    CandidateUpdateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        mobile:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        experience:
+          type: integer
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/Education'
+        linkedinUrl:
+          type: string
+          format: uri
+        githubUrl:
+          type: string
+          format: uri
+        portfolioUrl:
+          type: string
+          format: uri
+
+    Education:
+      type: object
+      required:
+        - institution
+        - degree
+        - fieldOfStudy
+        - startDate
+        - current
+      properties:
+        institution:
+          type: string
+          example: Stanford University
+        degree:
+          type: string
+          example: Bachelor of Science
+        fieldOfStudy:
+          type: string
+          example: Computer Science
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        current:
+          type: boolean
+        grade:
+          type: string
+          example: 3.8 GPA
+
+    # ==================== Interviewer ====================
+    InterviewerRegistrationRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - organisationId
+        - designation
+      properties:
+        firstName:
+          type: string
+          example: Robert
+        lastName:
+          type: string
+          example: Johnson
+        email:
+          type: string
+          format: email
+          example: robert.j@techcorp.com
+        organisationId:
+          type: string
+        department:
+          type: string
+          example: Engineering
+        designation:
+          type: string
+          example: Senior Software Engineer
+        expertise:
+          type: array
+          items:
+            type: string
+          example: [JavaScript, System Design, Architecture]
+
+    Interviewer:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required:
+            - firstName
+            - lastName
+            - organisationId
+            - designation
+            - isActive
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            organisationId:
+              type: string
+            department:
+              type: string
+            designation:
+              type: string
+            mobile:
+              type: string
+            expertise:
+              type: array
+              items:
+                type: string
+            yearsOfExperience:
+              type: integer
+            isActive:
+              type: boolean
+
+    InterviewerInviteRequest:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - designation
+      properties:
+        email:
+          type: string
+          format: email
+          example: newinterviewer@techcorp.com
+        firstName:
+          type: string
+          example: Sarah
+        lastName:
+          type: string
+          example: Williams
+        designation:
+          type: string
+          example: Senior Engineer
+        department:
+          type: string
+          example: Engineering
+
+    PaginatedInterviewerResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Interviewer'
+            pagination:
+              $ref: '#/components/schemas/PaginationMeta'
+
+    # ==================== Interview ====================
+    InterviewCreateRequest:
+      type: object
+      required:
+        - title
+        - interviewerIds
+        - duration
+        - type
+        - round
+      properties:
+        title:
+          type: string
+          example: Senior Frontend Developer - Round 1
+        description:
+          type: string
+          example: Technical interview focusing on React and TypeScript
+        candidateEmail:
+          type: string
+          format: email
+          description: Email of candidate to invite
+        interviewerIds:
+          type: array
+          items:
+            type: string
+        scheduledDate:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          description: Duration in minutes
+          example: 60
+        type:
+          $ref: '#/components/schemas/InterviewType'
+        round:
+          type: integer
+          minimum: 1
+          example: 1
+        location:
+          type: string
+          example: https://meet.google.com/abc-defg-hij
+
+    InterviewUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        scheduledDate:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        location:
+          type: string
+        notes:
+          type: string
+
+    Interview:
+      type: object
+      required:
+        - id
+        - title
+        - organisationId
+        - interviewerIds
+        - duration
+        - type
+        - round
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        organisationId:
+          type: string
+        candidateId:
+          type: string
+        interviewerIds:
+          type: array
+          items:
+            type: string
+        scheduledDate:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          description: Duration in minutes
+        type:
+          $ref: '#/components/schemas/InterviewType'
+        round:
+          type: integer
+        status:
+          $ref: '#/components/schemas/InterviewStatus'
+        location:
+          type: string
+        notes:
+          type: string
+        feedback:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewFeedback'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    InterviewFeedbackRequest:
+      type: object
+      required:
+        - interviewerId
+        - rating
+        - outcome
+      properties:
+        interviewerId:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 4
+        comments:
+          type: string
+          example: Strong technical knowledge, good problem-solving skills
+        strengths:
+          type: array
+          items:
+            type: string
+          example: [React expertise, Clean code, Communication]
+        weaknesses:
+          type: array
+          items:
+            type: string
+          example: [Limited system design experience]
+        outcome:
+          $ref: '#/components/schemas/InterviewOutcome'
+
+    InterviewFeedback:
+      type: object
+      required:
+        - interviewerId
+        - rating
+        - outcome
+        - submittedAt
+      properties:
+        interviewerId:
+          type: string
+        rating:
+          type: integer
+        comments:
+          type: string
+        strengths:
+          type: array
+          items:
+            type: string
+        weaknesses:
+          type: array
+          items:
+            type: string
+        outcome:
+          $ref: '#/components/schemas/InterviewOutcome'
+        submittedAt:
+          type: string
+          format: date-time
+
+    CandidateInviteLink:
+      type: object
+      required:
+        - interviewId
+        - token
+        - expiresAt
+        - isUsed
+      properties:
+        interviewId:
+          type: string
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        isUsed:
+          type: boolean
+
+    PaginatedInterviewResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Interview'
+            pagination:
+              $ref: '#/components/schemas/PaginationMeta'
+
+    # ==================== OTP ====================
+    OTPSendRequest:
+      type: object
+      required:
+        - identifier
+        - type
+      properties:
+        identifier:
+          type: string
+          description: Email or mobile number
+          example: jane.smith@example.com
+        type:
+          $ref: '#/components/schemas/OTPType'
+
+    OTPVerificationRequest:
+      type: object
+      required:
+        - identifier
+        - otp
+        - verificationType
+      properties:
+        identifier:
+          type: string
+          description: Email or mobile number
+          example: jane.smith@example.com
+        otp:
+          type: string
+          minLength: 6
+          maxLength: 6
+          example: "123456"
+        verificationType:
+          $ref: '#/components/schemas/OTPType'
+
+    OTPVerificationResponse:
+      type: object
+      required:
+        - verified
+        - message
+      properties:
+        verified:
+          type: boolean
+        message:
+          type: string
+
+    # ==================== File ====================
+    FileUploadResponse:
+      type: object
+      required:
+        - fileUrl
+        - fileName
+        - fileSize
+        - mimeType
+        - uploadedAt
+      properties:
+        fileUrl:
+          type: string
+          format: uri
+          example: https://s3.amazonaws.com/files/file-uuid.pdf
+        fileName:
+          type: string
+          example: document.pdf
+        fileSize:
+          type: integer
+          description: File size in bytes
+          example: 2048576
+        mimeType:
+          type: string
+          example: application/pdf
+        uploadedAt:
+          type: string
+          format: date-time
+
+    # ==================== Notification ====================
+    EmailNotificationRequest:
+      type: object
+      required:
+        - to
+        - type
+        - data
+      properties:
+        to:
+          oneOf:
+            - type: string
+              format: email
+            - type: array
+              items:
+                type: string
+                format: email
+        type:
+          $ref: '#/components/schemas/EmailNotificationType'
+        data:
+          type: object
+          additionalProperties: true
+          description: Data object varies based on notification type
+        cc:
+          type: array
+          items:
+            type: string
+            format: email
+        bcc:
+          type: array
+          items:
+            type: string
+            format: email
+
+    SMSNotificationRequest:
+      type: object
+      required:
+        - to
+        - type
+        - data
+      properties:
+        to:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        type:
+          $ref: '#/components/schemas/SMSNotificationType'
+        data:
+          type: object
+          additionalProperties: true
+          description: Data object varies based on notification type
+
+  # ==================== Responses ====================
+  responses:
+    BadRequest:
+      description: Bad request - Invalid input or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            success: false
+            message: Validation failed
+            statusCode: 400
+            timestamp: "2025-10-26T14:30:00Z"
+
+    Unauthorized:
+      description: Unauthorized - Authentication required or failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            success: false
+            message: Invalid email or password
+            error: INVALID_CREDENTIALS
+            statusCode: 401
+            timestamp: "2025-10-26T14:30:00Z"
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            success: false
+            message: Insufficient permissions
+            error: FORBIDDEN
+            statusCode: 403
+            timestamp: "2025-10-26T14:30:00Z"
+
+    NotFound:
+      description: Not found - Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            success: false
+            message: Resource not found
+            error: RESOURCE_NOT_FOUND
+            statusCode: 404
+            timestamp: "2025-10-26T14:30:00Z"
+
+    PayloadTooLarge:
+      description: Payload too large - File size exceeds limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            success: false
+            message: File size exceeds 5MB limit
+            statusCode: 413
+            timestamp: "2025-10-26T14:30:00Z"
+
+    UnsupportedMediaType:
+      description: Unsupported media type - Invalid file type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            success: false
+            message: Invalid file type. Only PDF, JPEG, and PNG are allowed
+            statusCode: 415
+            timestamp: "2025-10-26T14:30:00Z"
