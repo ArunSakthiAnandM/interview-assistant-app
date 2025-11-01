@@ -1,13 +1,15 @@
+import { environment } from '../environments/environment.development';
+
 /**
  * Application-wide constants
  */
 
 /**
  * API configuration
- * TODO: Update these values based on your backend deployment
+ * Base URL is determined by the environment configuration
  */
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:8080/api/v1',
+  BASE_URL: environment.apiBaseUrl,
   TIMEOUT: 30000, // 30 seconds
 } as const;
 
