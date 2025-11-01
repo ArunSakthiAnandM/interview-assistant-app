@@ -2,7 +2,7 @@
 
 > A comprehensive Angular 20 application for streamlining the interview process for organizations, interviewers, and candidates. Built with modern Angular features including standalone components, signals, and zoneless change detection.
 
-[![Angular](https://img.shields.io/badge/Angular-20.3.4-red.svg)](https://angular.dev)
+[![Angular](https://img.shields.io/badge/Angular-20.3.7-red.svg)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7+-blue.svg)](https://www.typescriptlang.org/)
 [![Material](https://img.shields.io/badge/Material-20.0+-purple.svg)](https://material.angular.io)
 
@@ -101,10 +101,21 @@ The Interview Assistant App is a full-featured platform designed to streamline t
 - ✅ **Interview Detail**: Comprehensive detail view with actions
 - ✅ **Interview Feedback**: Rating and feedback submission
 
-#### 9. **Profile Management**
+#### 9. **User Interface Components** (Complete)
 
-- ✅ Personal information management
-- ✅ Security settings (password, 2FA)
+- ✅ **Login Component**: JWT-based authentication with email/password, password visibility toggle, remember me, form validation
+- ✅ **Header Component**: Dynamic navigation with profile menu, role-based links, user avatar with initials
+- ✅ **Profile Component**: User profile management with role-specific fields, candidate profile updates
+- ✅ **Home Component**: Landing page with role-based navigation
+- ✅ **Footer Component**: Application footer with links
+
+#### 10. **Profile Management**
+
+- ✅ Personal information management (name, email, mobile)
+- ✅ Candidate-specific fields (skills, experience, education)
+- ✅ Profile avatar with user initials
+- ✅ Form validation with error messages
+- ✅ Security settings (password, 2FA placeholders)
 - ✅ Account management
 
 ### Pending Features 🚧
@@ -115,14 +126,6 @@ The Interview Assistant App is a full-featured platform designed to streamline t
 - 🚧 **Video Integration**: Zoom/Google Meet integration
 - 🚧 **Analytics Dashboard**: Interview metrics and reports
 - 🚧 **Export Reports**: PDF generation for interviews and feedback
-
-#### 9. **User Interface Components** (Complete)
-
-- ✅ **Login Component**: JWT-based authentication with email/password
-- ✅ **Header Component**: Dynamic navigation with profile menu
-- ✅ **Profile Component**: User profile management with role-specific fields
-- ✅ **Home Component**: Landing page with role-based navigation
-- ✅ **Footer Component**: Application footer with links
 
 ---
 
@@ -491,7 +494,7 @@ Connect → Subscribe to Channels → Receive Updates → Update Store → UI Re
 
 ### Frontend
 
-- **Angular 20.3.4** - Standalone components, signals, zoneless change detection
+- **Angular 20.3.7** - Standalone components, signals, zoneless change detection
 - **TypeScript 5.7+** - Strict type checking
 - **Angular Material 20** - UI components library
 - **RxJS 7** - Reactive programming
@@ -509,7 +512,7 @@ Connect → Subscribe to Channels → Receive Updates → Update Store → UI Re
 
 ### Development Tools
 
-- **Angular CLI 20.3.4** - Project scaffolding and build
+- **Angular CLI 20.3.7** - Project scaffolding and build
 - **ESLint** - Linting
 - **Prettier** - Code formatting
 
@@ -632,7 +635,7 @@ frontend/
 │   │   │   ├── file-upload/           # ✅ Reusable file upload
 │   │   │   └── otp-input/             # ✅ Reusable OTP input
 │   │   ├── home/                      # ✅ Landing page
-│   │   ├── login/                     # 🚧 Login (TODO)
+│   │   ├── login/                     # ✅ Login component
 │   │   ├── profile/                   # ✅ User profile
 │   │   ├── header/                    # ✅ Navigation header
 │   │   └── footer/                    # ✅ Footer
@@ -854,6 +857,192 @@ export class MyService {
 
 ---
 
+## 🎨 Design System & Implementation Details
+
+### Authentication Flow
+
+#### Login Component Implementation
+
+**Features**:
+- Material Design login form with card layout
+- Email/password authentication with JWT
+- Form validation (email format, password minimum 8 characters)
+- Password visibility toggle
+- Remember me checkbox
+- Loading state with spinner
+- Error handling with user-friendly messages
+- Links to registration pages (Organization, Interviewer, Candidate)
+- Responsive design with gradient background
+
+**API Integration**:
+```typescript
+POST /api/v1/auth/login
+Request: { email: string, password: string }
+Response: { 
+  accessToken: string,
+  refreshToken: string,
+  expiresIn: number,
+  user: User
+}
+```
+
+**Technologies Used**:
+- `ReactiveFormsModule` for form handling
+- `MatCardModule`, `MatFormFieldModule`, `MatInputModule` for UI
+- `MatButtonModule`, `MatIconModule` for interactions
+- `MatProgressSpinnerModule` for loading state
+- Signal-based state management
+
+#### Header Component Implementation
+
+**Features**:
+- Dynamic navigation based on authentication state
+- Profile avatar with user initials (generated from name)
+- Dropdown menu with user info and actions
+- Role-based navigation links
+- Logout functionality
+- Dashboard navigation by role
+- Guest vs authenticated views
+- Material Design menu with dividers
+
+**Navigation Structure**:
+
+**Guest Users**:
+- Home
+- Register Organisation
+- Register Interviewer
+- Register Candidate
+- Login (button)
+
+**Authenticated Users**:
+- Home
+- Dashboard (role-specific route)
+- Interviews (for interviewers only)
+- Profile Avatar Menu:
+  - User info display (name, email, role)
+  - Dashboard link
+  - Profile link
+  - Logout button
+
+**Technologies Used**:
+- `MatMenuModule` for dropdown
+- `MatIconModule` for icons
+- `MatButtonModule` for actions
+- `MatTooltipModule` for hover info
+- `MatDividerModule` for separators
+- `AuthStore` for reactive authentication state
+
+#### Profile Component Implementation
+
+**Features**:
+- User information display (name, email, role)
+- Profile avatar with initial
+- Editable profile fields (first name, last name, mobile)
+- Candidate-specific fields (skills, experience, education)
+- Form validation with error messages
+- Save/Cancel actions
+- Loading state during save
+- Security section (password change, 2FA placeholders)
+- Danger zone (account deletion placeholder)
+- Role-based field display
+
+**API Integration**:
+```typescript
+// For Candidates
+PUT /api/v1/candidates/profile/update
+Request: { 
+  firstName: string,
+  lastName: string,
+  mobile: string,
+  skills: string[],
+  experience: number,
+  education: string
+}
+
+// For Other Roles
+PUT /api/v1/users/{userId}/profile
+Request: { 
+  firstName: string,
+  lastName: string,
+  mobile: string
+}
+```
+
+### Color Scheme
+
+**Primary Gradient**:
+```scss
+linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+```
+
+**Header Gradient**:
+```scss
+linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%)
+```
+
+**Login Background**:
+```scss
+linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+```
+
+### Typography
+
+- **Headers**: 2rem (32px), weight 600
+- **Body**: 1rem (16px), weight 400
+- **Small Text**: 0.875rem (14px)
+
+### Spacing
+
+- **Container Padding**: 2rem
+- **Card Padding**: 2rem
+- **Gap Between Elements**: 1rem - 1.5rem
+- **Margin**: 0.5rem - 2rem
+
+### Responsive Design
+
+**Breakpoints**:
+- **Desktop**: > 1024px (full navigation)
+- **Tablet**: 768px - 1024px (condensed navigation)
+- **Mobile**: < 768px (minimal navigation, profile icon only)
+
+**Mobile Optimizations**:
+- Reduced padding and margins
+- Smaller font sizes
+- Hidden non-essential nav links
+- Stackable profile cards
+- Touch-friendly button sizes (44px minimum)
+
+### Token Management
+
+**Storage**:
+- Access Token: `localStorage.getItem('access_token')`
+- Refresh Token: `localStorage.getItem('refresh_token')`
+- User Data: `localStorage.getItem('user_data')`
+
+**Injection**:
+- `authInterceptor` automatically adds token to all API requests
+- Skips public endpoints (login, register, OTP)
+
+**Refresh Flow**:
+```typescript
+POST /api/v1/auth/refresh
+Request: { refreshToken: string }
+Response: { 
+  accessToken: string,
+  refreshToken: string,
+  expiresIn: number
+}
+```
+
+**Logout Flow**:
+1. User clicks logout from header menu
+2. POST /api/v1/auth/logout (optional backend call)
+3. Clear tokens from localStorage
+4. Clear AuthStore state
+5. Navigate to /login
+
+---
+
 ## 💻 Development
 
 ### Code Scaffolding
@@ -971,8 +1160,29 @@ npm run lint:fix
    - Email format validation
    - Password strength requirements:
      - Minimum 8 characters
-     - Uppercase, lowercase, number, special character
+     - Uppercase, lowercase, number, special character (recommended)
    - Mobile number validation
+
+### Security Best Practices
+
+✅ **Implemented**:
+- JWT token authentication with refresh mechanism
+- HTTP-only token storage in localStorage
+- Automatic token injection via interceptor
+- Token refresh mechanism (5 min before expiry)
+- Role-based access control with computed signals
+- Route guards (auth, guest, role, permission)
+- XSS protection (Angular's built-in sanitization)
+- CSRF token support (ready for backend)
+- Password validation (minimum 8 characters)
+- Email format validation
+
+🚧 **Pending Backend Implementation**:
+- Two-Factor Authentication (2FA)
+- Password strength meter
+- Account lockout after failed login attempts
+- Session timeout warnings
+- Device management and trusted devices
 
 ### Recommended Backend Security
 
@@ -1259,4 +1469,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Built with ❤️ using Angular 20**
 
-Last Updated: October 26, 2025
+Last Updated: November 1, 2025
