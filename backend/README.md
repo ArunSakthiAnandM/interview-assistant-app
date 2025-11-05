@@ -1,268 +1,98 @@
-# Interview Organiser Backend
+# Interview Organiser Backend API
 
-> A production-grade Spring Boot application for managing interview scheduling and organization.
+A comprehensive Spring Boot application for managing the complete interview process, from candidate application to feedback collection.
 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Database-green.svg)](https://www.mongodb.com/)
-[![Maven](https://img.shields.io/badge/Maven-3.x-red.svg)](https://maven.apache.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+## 🎯 Features
 
-> 📖 **Living Documentation:** This README is the single source of truth for the project. All documentation updates, new features, and changes are reflected here. For coding guidelines and layer-specific instructions, see [AGENT.md](AGENT.md) and package-specific AGENT.md files.
+- **User Management**: Admin, Recruiter, Interviewer, and Candidate roles
+- **Candidate Tracking**: Full candidate lifecycle management
+- **Interview Scheduling**: Schedule and manage interviews with availability tracking
+- **Feedback System**: Structured feedback collection with ratings and recommendations
+- **Custom JWT Authentication**: Secure API with JWT tokens
+- **MongoDB Integration**: NoSQL database for flexible data storage
 
----
+## 🏗️ Tech Stack
 
-## 📋 Table of Contents
+- **Framework**: Spring Boot 3.5.7
+- **Language**: Java 25
+- **Database**: MongoDB
+- **Security**: Custom JWT authentication with Spring Security
+- **Build Tool**: Maven
+- **Documentation**: OpenAPI 3.0 (api.yaml)
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Configuration](#configuration)
-- [Development Guide](#development-guide)
-- [Best Practices](#best-practices)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
+## 📋 Prerequisites
 
----
-
-## 🎯 Overview
-
-This is a **production-grade Spring Boot backend** application designed for interview management. The application follows clean architecture principles with clear separation of concerns, industry-standard package organization, and comprehensive documentation.
-
-### ✨ Key Features
-
-- ✅ **Clean Architecture** - Layered architecture with clear separation
-- ✅ **Production-Ready** - Industry-standard structure and patterns
-- ✅ **Well-Documented** - Comprehensive AGENT.md files in each package
-- ✅ **MongoDB Integration** - Ready for NoSQL database operations
-- ✅ **RESTful APIs** - Following REST best practices
-- ✅ **DTO Pattern** - Separation between entities and API contracts
-- ✅ **Exception Handling** - Centralized error management
-- ✅ **Validation** - Input validation with custom validators
-- ✅ **Security Ready** - Structure for authentication/authorization
-- ✅ **Scalable** - Designed to grow with your needs
-
-### 🛠️ Technology Stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Spring Boot** | 3.5.7 | Application framework |
-| **Java** | 25 | Programming language |
-| **MongoDB** | Latest | NoSQL database |
-| **Maven** | 3.x | Build tool |
-| **Lombok** | Latest | Reduce boilerplate code |
-| **Spring Validation** | Latest | Input validation |
-| **Jackson** | Latest | JSON processing |
-
----
-
-## 🏗️ Architecture
-
-The application follows a **layered architecture** pattern:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Client / Frontend                     │
-└────────────────────┬────────────────────────────────────┘
-                     │ HTTP/REST
-┌────────────────────▼────────────────────────────────────┐
-│              Controller Layer (API)                      │
-│  • REST endpoints, validation, HTTP handling             │
-└────────────────────┬────────────────────────────────────┘
-                     │ DTOs
-┌────────────────────▼────────────────────────────────────┐
-│           Service Layer (Business Logic)                 │
-│  • Business rules, transactions, orchestration           │
-└────────────────────┬────────────────────────────────────┘
-                     │ Entities
-┌────────────────────▼────────────────────────────────────┐
-│            Repository Layer (Data Access)                │
-│  • Query methods, database operations                    │
-└────────────────────┬────────────────────────────────────┘
-                     │ MongoDB Protocol
-┌────────────────────▼────────────────────────────────────┐
-│                  MongoDB Database                        │
-└─────────────────────────────────────────────────────────┘
-
-Cross-Cutting Concerns:
-├── Exception Handling (Global)
-├── Security (Authentication/Authorization)
-├── Validation (Request validation)
-└── Logging & Monitoring
-```
-
-### Design Patterns
-
-- **Layered Architecture** - Clear separation between layers
-- **Repository Pattern** - Abstract data access
-- **DTO Pattern** - API/Entity separation
-- **Service Interface Pattern** - Interface-based design
-- **Builder Pattern** - Object creation (via Lombok)
-- **Singleton Pattern** - Constants management
-
----
-
-## 📂 Project Structure
-
-```
-src/main/java/com/interview/organiser/
-│
-├── OrganiserApplication.java          # Main Spring Boot application
-│
-├── config/                            # ⚙️ Configuration Layer
-│   └── AGENT.md                       # Configuration guidelines
-│
-├── controller/                        # 🌐 REST API Controllers
-│   ├── HealthController.java         # Health check endpoint
-│   └── AGENT.md                       # Controller best practices
-│
-├── service/                           # 💼 Business Logic Layer
-│   ├── impl/                          # Service implementations
-│   └── AGENT.md                       # Service patterns
-│
-├── repository/                        # 💾 Data Access Layer
-│   └── AGENT.md                       # Repository guidelines
-│
-├── model/                             # 📦 Data Models
-│   ├── entity/                        # MongoDB entities
-│   │   └── AGENT.md
-│   └── dto/                           # Data Transfer Objects
-│       ├── request/                   # Request DTOs
-│       ├── response/                  # Response DTOs
-│       │   └── HealthResponseDTO.java
-│       └── AGENT.md
-│
-├── exception/                         # ⚠️ Exception Handling
-│   └── AGENT.md                       # Error handling patterns
-│
-├── constants/                         # 🔤 Constants & Enums
-│   ├── AppConstants.java             # Application constants
-│   ├── ApiConstants.java             # API constants
-│   ├── enums/                         # Enumerations
-│   └── AGENT.md                       # Constants usage
-│
-├── util/                              # 🔧 Utility Classes
-│   └── AGENT.md                       # Utility guidelines
-│
-├── security/                          # 🔐 Security Layer
-│   └── AGENT.md                       # Security setup
-│
-└── validation/                        # ✅ Custom Validators
-    ├── annotations/                   # Custom validation annotations
-    ├── validators/                    # Validator implementations
-    └── AGENT.md                       # Validation patterns
-```
-
-### Package Overview
-
-| Package | Purpose | Key Files |
-|---------|---------|-----------|
-| `config/` | Application configuration | *Config.java |
-| `controller/` | REST endpoints | *Controller.java |
-| `service/` | Business logic | *Service.java, *ServiceImpl.java |
-| `repository/` | Data access | *Repository.java |
-| `model/entity/` | Database entities | *.java |
-| `model/dto/request/` | Request DTOs | *RequestDTO.java |
-| `model/dto/response/` | Response DTOs | *ResponseDTO.java |
-| `exception/` | Error handling | *Exception.java |
-| `constants/` | Constants & enums | *Constants.java |
-| `util/` | Utilities | *Util.java |
-| `security/` | Security config | SecurityConfig.java |
-| `validation/` | Custom validators | *Validator.java |
-
-> 💡 **Note:** Each package contains an `AGENT.md` file with detailed instructions, naming conventions, and code examples specific to that layer.
-
-### Git Configuration
-
-The project includes a comprehensive `.gitignore` file that excludes:
-
-**Build & Dependencies:**
-- `target/` - Maven build output
-- `*.class` - Compiled Java files
-- `*.jar`, `*.war` - Package files
-
-**IDE Files:**
-- `.idea/` - IntelliJ IDEA
-- `.vscode/` - VS Code
-- `.classpath`, `.project` - Eclipse
-
-**Operating System:**
-- `.DS_Store` - macOS
-- `Thumbs.db` - Windows
-- `*~` - Linux backup files
-
-**Security:**
-- `*.key`, `*.pem` - Private keys
-- `.env` - Environment variables
-- `application-secret.properties` - Secret configurations
-
-**Documentation Policy:**
-- Allows: `README.md`, `AGENT.md`, `**/AGENT.md`
-- Ignores: Any other `.md` files (following documentation policy)
-
-> 🔒 **Security Note:** Never commit sensitive files like private keys, passwords, or environment-specific configurations. Use environment variables or external configuration for production secrets.
-
----
+- Java 25 or higher
+- Maven 3.6+
+- MongoDB 4.4+ (running locally or remote)
+- IDE (IntelliJ IDEA, Eclipse, or VS Code recommended)
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1. Clone and Navigate
 
-Before you begin, ensure you have the following installed:
+```bash
+cd backend
+```
 
-- ☕ **Java 25** or higher
-- 📦 **Maven 3.x**
-- 🍃 **MongoDB** (optional for initial testing)
-- 🔧 **Git**
+### 2. Configure MongoDB
 
-### Installation
+Update `src/main/resources/application.properties`:
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd interview-assistant-app/backend
-   ```
+```properties
+spring.data.mongodb.uri=mongodb://localhost:27017/interview_organiser
+```
 
-2. **Build the project:**
-   ```bash
-   mvn clean install
-   ```
+Or use environment variables:
 
-3. **Run the application:**
-   ```bash
-   mvn spring-boot:run
-   ```
+```bash
+export MONGODB_URI=mongodb://localhost:27017/interview_organiser
+```
 
-   Or use the interactive script:
-   ```bash
-   ./start.sh
-   # Select option 5: Clean, Build, and Run
-   ```
+### 3. Update JWT Secret
 
-4. **Verify the application:**
-   ```bash
-   curl http://localhost:8080/api/v1/health
-   ```
+For production, update the JWT secret in `application.properties`:
 
-### Expected Response
+```properties
+jwt.secret=your-secure-secret-key-minimum-256-bits-change-this-in-production
+```
 
+### 4. Install Dependencies
+
+```bash
+./mvnw clean install
+```
+
+### 5. Run the Application
+
+```bash
+./mvnw spring-boot:run
+```
+
+Or with local profile:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+The application will start on `http://localhost:8080`
+
+### 6. Verify Health
+
+```bash
+curl http://localhost:8080/api/v1/health
+```
+
+Expected response:
 ```json
 {
   "status": "UP",
-  "message": "Service is up and running",
-  "applicationName": "organiser",
-  "version": "1.0.0",
-  "timestamp": "2025-10-26T16:00:00",
-  "environment": "dev"
+  "timestamp": "2025-11-01T10:30:00",
+  "message": "Interview Organiser API is running"
 }
 ```
 
----
-
-## 📡 API Documentation
+## 📚 API Documentation
 
 ### Base URL
 
@@ -270,492 +100,281 @@ Before you begin, ensure you have the following installed:
 http://localhost:8080/api/v1
 ```
 
-### Available Endpoints
+### Authentication Flow
 
-#### Health Check
-- **GET** `/health`
-- **Description:** Check application health status
-- **Response:** `200 OK`
-
-```bash
-curl http://localhost:8080/api/v1/health
+1. **Register**: `POST /auth/register`
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "role": "RECRUITER"
+}
 ```
 
-### API Conventions
+2. **Login**: `POST /auth/login`
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
 
-- ✅ All endpoints start with `/api/v1`
-- ✅ Use appropriate HTTP methods (GET, POST, PUT, DELETE, PATCH)
-- ✅ Return appropriate HTTP status codes
-- ✅ Use consistent response formats
-- ✅ DTOs for all request/response
+Response includes `accessToken` and `refreshToken`.
 
----
+3. **Use Token**: Include in Authorization header
+```
+Authorization: Bearer <your_access_token>
+```
+
+### Available Endpoints
+
+See `src/main/resources/API.md` for complete documentation or `api.yaml` for OpenAPI specification.
+
+| Category | Endpoints |
+|----------|-----------|
+| Health | `GET /health` |
+| Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout` |
+| Users | `GET /users`, `GET /users/{id}`, `PUT /users/{id}`, `DELETE /users/{id}` |
+| Candidates | CRUD operations on `/candidates` |
+| Interviewers | CRUD operations on `/interviewers` |
+| Interviews | CRUD operations on `/interviews` |
+| Feedback | CRUD operations on `/feedback` |
+
+## 🗂️ Project Structure
+
+```
+backend/
+├── src/main/java/com/interview/organiser/
+│   ├── OrganiserApplication.java          # Main application
+│   ├── config/                            # Configuration classes
+│   │   ├── SecurityConfig.java
+│   │   └── WebConfig.java
+│   ├── constants/                         # Constants and enums
+│   │   ├── ApiConstants.java
+│   │   ├── AppConstants.java
+│   │   └── enums/
+│   ├── controller/                        # REST controllers
+│   │   ├── AuthController.java
+│   │   ├── CandidateController.java
+│   │   ├── FeedbackController.java
+│   │   ├── HealthController.java
+│   │   ├── InterviewController.java
+│   │   ├── InterviewerController.java
+│   │   └── UserController.java
+│   ├── exception/                         # Exception handling
+│   │   ├── GlobalExceptionHandler.java
+│   │   └── ... custom exceptions
+│   ├── model/
+│   │   ├── dto/                          # Data Transfer Objects
+│   │   │   ├── request/
+│   │   │   └── response/
+│   │   └── entity/                       # MongoDB entities
+│   ├── repository/                       # MongoDB repositories
+│   ├── service/                          # Service interfaces
+│   │   └── impl/                         # Service implementations
+│   ├── util/                             # Utility classes
+│   │   ├── EntityMapper.java
+│   │   └── JwtUtil.java
+│   └── security/                         # Security components
+├── src/main/resources/
+│   ├── application.properties
+│   ├── application-local.properties
+│   ├── API.md                            # API documentation
+│   └── api.yaml                          # OpenAPI specification
+└── pom.xml                               # Maven configuration
+```
 
 ## ⚙️ Configuration
 
 ### Application Properties
 
-The application can be configured via `application.properties`:
-
+**Main Configuration** (`application.properties`):
 ```properties
-# Server Configuration
+# Application
+spring.application.name=interview-organiser
 server.port=8080
 
-# MongoDB Configuration (when ready)
-# spring.data.mongodb.uri=mongodb://localhost:27017/interview_organiser
-# spring.data.mongodb.database=interview_organiser
+# MongoDB
+spring.data.mongodb.uri=mongodb://localhost:27017/interview_organiser
+spring.data.mongodb.auto-index-creation=true
 
-# Active Profile
-spring.profiles.active=dev
-
-# Logging
-logging.level.root=INFO
-logging.level.com.interview.organiser=DEBUG
+# JWT
+jwt.secret=your-secret-key
+jwt.expiration=3600000
+jwt.refresh-expiration=604800000
 ```
+
+**Local Development** (`application-local.properties`):
+- Enhanced logging
+- Local MongoDB connection
+- Development mode enabled
 
 ### Profiles
 
-| Profile | Purpose | Activate |
-|---------|---------|----------|
-| `dev` | Development | `spring.profiles.active=dev` |
-| `test` | Testing | `spring.profiles.active=test` |
-| `prod` | Production | `spring.profiles.active=prod` |
-
-Change profile via command line:
+Run with specific profile:
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=prod
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-### MongoDB Setup
+## 🔐 Security
 
-MongoDB auto-configuration is currently **disabled** to allow the app to run without MongoDB.
+### JWT Authentication
 
-**To enable MongoDB:**
+- **Access Token**: Expires in 1 hour
+- **Refresh Token**: Expires in 7 days
+- **Password Hashing**: BCrypt with default strength
 
-1. Install and start MongoDB
-2. Edit `application.properties`:
-   - Remove the `spring.autoconfigure.exclude` line
-   - Uncomment MongoDB configuration
-   - Update connection URI if needed
+### Authorization
 
----
+User roles:
+- `ADMIN`: Full system access
+- `RECRUITER`: Manage candidates and schedule interviews
+- `INTERVIEWER`: Conduct interviews and submit feedback
+- `CANDIDATE`: Limited access to own profile
 
-## 👨‍💻 Development Guide
+### CORS Configuration
 
-### Adding New Features
+Configured to allow:
+- Origins: `http://localhost:3000`, `http://localhost:4200`
+- Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+- Credentials: Enabled
 
-Follow this checklist when adding new features:
+## 🗄️ Database Schema
 
-1. **Create Entity** in `model/entity/`
-   - Define MongoDB document
-   - Add annotations (@Document, @Id, etc.)
-   - Follow entity AGENT.md guidelines
+### MongoDB Collections
 
-2. **Create Repository** in `repository/`
-   - Extend MongoRepository
-   - Add custom query methods
-   - Follow repository AGENT.md guidelines
+1. **users**: User accounts with authentication
+2. **candidates**: Candidate profiles and status
+3. **interviewers**: Interviewer profiles with expertise
+4. **interviews**: Interview schedules and details
+5. **feedback**: Interview feedback and ratings
+6. **refresh_tokens**: JWT refresh tokens
 
-3. **Create DTOs** in `model/dto/`
-   - Request DTOs in `request/`
-   - Response DTOs in `response/`
-   - Add validation annotations
-   - Follow DTO AGENT.md guidelines
+### Indexes
 
-4. **Create Service** in `service/`
-   - Define service interface
-   - Implement in `service/impl/`
-   - Add business logic
-   - Follow service AGENT.md guidelines
-
-5. **Create Controller** in `controller/`
-   - Define REST endpoints
-   - Use DTOs for request/response
-   - Add validation
-   - Follow controller AGENT.md guidelines
-
-6. **Add Constants** (if needed) in `constants/`
-
-7. **Create Custom Exceptions** (if needed) in `exception/`
-
-8. **Write Tests** in `src/test/`
-
-### Naming Conventions
-
-| Type | Pattern | Example |
-|------|---------|---------|
-| Controller | *Controller | `InterviewController.java` |
-| Service Interface | *Service | `InterviewService.java` |
-| Service Implementation | *ServiceImpl | `InterviewServiceImpl.java` |
-| Repository | *Repository | `InterviewRepository.java` |
-| Entity | Plain name | `Interview.java` |
-| Request DTO | *RequestDTO | `CreateInterviewRequestDTO.java` |
-| Response DTO | *ResponseDTO | `InterviewResponseDTO.java` |
-| Exception | *Exception | `ResourceNotFoundException.java` |
-| Constants | *Constants | `AppConstants.java` |
-| Enum | Plain name | `InterviewStatus.java` |
-| Util | *Util | `DateTimeUtil.java` |
-
-### Code Examples
-
-#### Creating an Entity
-
-```java
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Document(collection = "interviews")
-public class Interview {
-    
-    @Id
-    private String id;
-    
-    @Indexed(unique = true)
-    private String interviewCode;
-    
-    private String candidateName;
-    private String position;
-    private LocalDateTime scheduledDate;
-    private String status;
-    
-    @CreatedDate
-    private LocalDateTime createdAt;
-    
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-}
-```
-
-#### Creating a Repository
-
-```java
-@Repository
-public interface InterviewRepository extends MongoRepository<Interview, String> {
-    
-    Optional<Interview> findByInterviewCode(String code);
-    
-    List<Interview> findByStatus(String status);
-    
-    @Query("{ 'status': ?0, 'scheduledDate': { $gte: ?1 } }")
-    List<Interview> findUpcomingInterviews(String status, LocalDate date);
-}
-```
-
-#### Creating a Service
-
-```java
-// Interface
-public interface InterviewService {
-    InterviewResponseDTO createInterview(InterviewRequestDTO request);
-    InterviewResponseDTO getInterviewById(String id);
-    List<InterviewResponseDTO> getAllInterviews();
-}
-
-// Implementation
-@Service
-@Transactional
-public class InterviewServiceImpl implements InterviewService {
-    
-    private final InterviewRepository repository;
-    
-    public InterviewServiceImpl(InterviewRepository repository) {
-        this.repository = repository;
-    }
-    
-    @Override
-    public InterviewResponseDTO createInterview(InterviewRequestDTO request) {
-        // Business logic here
-    }
-}
-```
-
-#### Creating a Controller
-
-```java
-@RestController
-@RequestMapping(AppConstants.API_BASE_PATH + "/interviews")
-public class InterviewController {
-    
-    private final InterviewService service;
-    
-    public InterviewController(InterviewService service) {
-        this.service = service;
-    }
-    
-    @PostMapping
-    public ResponseEntity<InterviewResponseDTO> create(
-            @Valid @RequestBody InterviewRequestDTO request) {
-        InterviewResponseDTO response = service.createInterview(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<InterviewResponseDTO> getById(@PathVariable String id) {
-        InterviewResponseDTO response = service.getInterviewById(id);
-        return ResponseEntity.ok(response);
-    }
-}
-```
-
----
-
-## 🎯 Best Practices
-
-### General Guidelines
-
-1. **Follow Package Structure** - Keep files in appropriate packages
-2. **Use DTOs** - Never expose entities in APIs
-3. **Validate Input** - Use validation annotations
-4. **Handle Exceptions** - Implement proper error handling
-5. **Document Code** - Add JavaDoc for public methods
-6. **Write Tests** - Unit and integration tests
-7. **Use Constants** - Avoid magic numbers/strings
-8. **Follow Naming Conventions** - Be consistent
-
-### Layer-Specific Best Practices
-
-#### Controller Layer
-- Keep controllers thin
-- Only handle HTTP concerns
-- Delegate to services
-- Use appropriate HTTP methods and status codes
-- Validate all inputs with `@Valid`
-
-#### Service Layer
-- Implement business logic here
-- Use interfaces for all services
-- Keep services focused and cohesive
-- Handle transactions appropriately
-- Use DTOs for data transfer
-
-#### Repository Layer
-- Keep repositories simple
-- Use Spring Data naming conventions
-- Add custom queries only when needed
-- Return Optional for single results
-
-#### Model Layer
-- Separate entities and DTOs
-- Use validation annotations on DTOs
-- Use Lombok to reduce boilerplate
-- Document complex structures
-
----
+Unique indexes on:
+- `users.email`
+- `candidates.email`
+- `refresh_tokens.token`
 
 ## 🧪 Testing
 
-### Running Tests
+### Run Tests
 
 ```bash
-# Run all tests
-mvn test
-
-# Run specific test
-mvn test -Dtest=HealthControllerTest
-
-# Run with coverage
-mvn clean test jacoco:report
+./mvnw test
 ```
 
-### Test Structure
-
-Create tests following the same package structure:
-
-```
-src/test/java/com/interview/organiser/
-├── controller/
-│   └── HealthControllerTest.java
-├── service/
-│   └── InterviewServiceTest.java
-└── repository/
-    └── InterviewRepositoryTest.java
-```
-
-### Testing Best Practices
-
-- Write unit tests for business logic
-- Write integration tests for APIs
-- Mock external dependencies
-- Use meaningful test names
-- Aim for high code coverage
-- Test edge cases and error scenarios
-
----
-
-## 🚢 Deployment
-
-### Building for Production
+### Test Coverage
 
 ```bash
-# Build the application
-mvn clean package -DskipTests
-
-# The JAR file will be in target/
-ls -lh target/organiser-*.jar
+./mvnw clean test jacoco:report
 ```
 
-### Running the JAR
+View report: `target/site/jacoco/index.html`
+
+## 📦 Building for Production
+
+### Create JAR
+
+```bash
+./mvnw clean package
+```
+
+### Run JAR
 
 ```bash
 java -jar target/organiser-0.0.1-SNAPSHOT.jar
 ```
 
-### Environment Variables
-
-Set production environment variables:
-
-```bash
-export SPRING_PROFILES_ACTIVE=prod
-export MONGODB_URI=mongodb://prod-server:27017/interview_organiser
-export SERVER_PORT=8080
-```
-
-### Docker (Future)
+### Docker Deployment
 
 ```dockerfile
 FROM openjdk:25-jdk-slim
-WORKDIR /app
-COPY target/organiser-*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY target/organiser-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
 ```
 
----
+Build and run:
+```bash
+docker build -t interview-organiser .
+docker run -p 8080:8080 interview-organiser
+```
 
-## 📚 Documentation
+## 🛠️ Development
 
-### AGENT.md Files
+### Adding New Endpoints
 
-Each package contains an `AGENT.md` file with:
-- Purpose and responsibilities
-- Naming conventions
-- Required annotations
-- Best practices
-- Code examples
+1. Create DTOs in `model/dto/`
+2. Create entity in `model/entity/`
+3. Create repository in `repository/`
+4. Implement service in `service/impl/`
+5. Create controller in `controller/`
+6. Update API documentation
 
-### Where to Look for Help
-
-| Need Help With... | Look Here |
-|------------------|-----------|
-| Overall Project | `AGENT.md` (root) |
-| REST APIs | `controller/AGENT.md` |
-| Business Logic | `service/AGENT.md` |
-| Database | `repository/AGENT.md` |
-| Data Models | `model/entity/AGENT.md` |
-| API DTOs | `model/dto/AGENT.md` |
-| Error Handling | `exception/AGENT.md` |
-| Constants | `constants/AGENT.md` |
-| Utilities | `util/AGENT.md` |
-| Security | `security/AGENT.md` |
-| Validation | `validation/AGENT.md` |
-
----
-
-## 🔄 Next Steps
-
-### Immediate Tasks
-- [ ] Configure MongoDB connection
-- [ ] Create your first domain entity
-- [ ] Implement repositories
-- [ ] Build business services
-- [ ] Create REST controllers
-- [ ] Add exception handling
-
-### Future Enhancements
-- [ ] Add Swagger/OpenAPI documentation
-- [ ] Implement JWT authentication
-- [ ] Add caching layer
-- [ ] Set up monitoring (Spring Actuator)
-- [ ] Implement rate limiting
-- [ ] Add comprehensive logging
-- [ ] Set up CI/CD pipeline
-- [ ] Add integration tests
-- [ ] Implement email notifications
-- [ ] Add file upload/download
-
----
-
-## 🤝 Contributing
-
-### Development Workflow
-
-1. Create a feature branch
-2. Follow the coding standards
-3. Write tests for new features
-4. Update documentation
-5. Submit a pull request
-
-### Coding Standards
+### Code Style
 
 - Follow Java naming conventions
-- Use meaningful variable names
-- Add comments for complex logic
-- Keep methods small and focused
-- Follow SOLID principles
-- Refer to AGENT.md files for guidelines
+- Use Lombok annotations (@Data, @Builder, etc.)
+- Add JavaDoc for public methods
+- Implement proper exception handling
 
----
+## 📝 TODO
+
+- [ ] Complete service implementations (UserService, CandidateService, etc.)
+- [ ] Add JWT authentication filter
+- [ ] Add role-based authorization
+- [ ] Implement unit tests
+- [ ] Add integration tests
+- [ ] Add email notifications
+- [ ] Add file upload for resumes
+- [ ] Add search and filtering enhancements
+- [ ] Add audit logging
+- [ ] Add rate limiting
+
+## 🐛 Troubleshooting
+
+### MongoDB Connection Issues
+
+```bash
+# Check if MongoDB is running
+mongosh
+
+# Start MongoDB (macOS)
+brew services start mongodb-community
+
+# Start MongoDB (Linux)
+sudo systemctl start mongod
+```
+
+### Port Already in Use
+
+Change port in `application.properties`:
+```properties
+server.port=8081
+```
+
+### JWT Token Issues
+
+Ensure the secret key is at least 256 bits (32 characters).
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
----
+## 👥 Contributors
 
-## 🙏 Acknowledgments
-
-- Spring Boot team for the excellent framework
-- MongoDB team for the database
-- All contributors and maintainers
-
----
+- Development Team
 
 ## 📞 Support
 
 For issues and questions:
-- Check the relevant `AGENT.md` file in each package
-- Review the code examples
-- Consult Spring Boot documentation
+- Create an issue in the repository
+- Email: support@intervieworganiser.com
 
 ---
 
-## 🎯 Quick Commands Reference
-
-```bash
-# Compile
-mvn clean compile
-
-# Run tests
-mvn test
-
-# Build package
-mvn clean package
-
-# Run application
-mvn spring-boot:run
-
-# Run with profile
-mvn spring-boot:run -Dspring-boot.run.profiles=prod
-
-# Use interactive script
-./start.sh
-```
-
----
-
-## 📊 Project Status
-
-- ✅ **Structure:** Complete production-grade layout
-- ✅ **Documentation:** Comprehensive AGENT.md files
-- ✅ **Sample Code:** Working health check endpoint
-- ✅ **Configuration:** Proper setup with profiles
-- ✅ **Build:** Successful compilation
-- ✅ **Health Check:** Verified and working
-
----
-
-**Built with ❤️ using Spring Boot**
-
-**Happy Coding! 🚀**
+**Note**: This is the backend API. A frontend application is needed to interact with these endpoints.
 

@@ -1,0 +1,1417 @@
+openapi: 3.0.3
+info:
+  title: Interview Organiser API
+  description: API for managing interviews, candidates, interviewers, and feedback
+  version: 1.0.0
+  contact:
+    email: support@intervieworganiser.com
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.intervieworganiser.com/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: Authentication and authorization endpoints
+  - name: Users
+    description: User management operations
+  - name: Candidates
+    description: Candidate management operations
+  - name: Interviewers
+    description: Interviewer management operations
+  - name: Interviews
+    description: Interview scheduling and management
+  - name: Feedback
+    description: Interview feedback management
+  - name: Health
+    description: Application health check
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Check application health
+      operationId: checkHealth
+      responses:
+        '200':
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      operationId: getAllUsers
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPageResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      operationId: getUserById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Users
+      summary: Update user
+      operationId: updateUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      operationId: deleteUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /candidates:
+    get:
+      tags:
+        - Candidates
+      summary: Get all candidates
+      operationId: getAllCandidates
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of candidates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidatePageResponse'
+    post:
+      tags:
+        - Candidates
+      summary: Create new candidate
+      operationId: createCandidate
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCandidateRequest'
+      responses:
+        '201':
+          description: Candidate created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /candidates/{candidateId}:
+    get:
+      tags:
+        - Candidates
+      summary: Get candidate by ID
+      operationId: getCandidateById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidate details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+        '404':
+          description: Candidate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Candidates
+      summary: Update candidate
+      operationId: updateCandidate
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCandidateRequest'
+      responses:
+        '200':
+          description: Candidate updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+        '404':
+          description: Candidate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Candidates
+      summary: Delete candidate
+      operationId: deleteCandidate
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidate deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviewers:
+    get:
+      tags:
+        - Interviewers
+      summary: Get all interviewers
+      operationId: getAllInterviewers
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: expertise
+          in: query
+          schema:
+            type: string
+        - name: available
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of interviewers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerPageResponse'
+    post:
+      tags:
+        - Interviewers
+      summary: Create new interviewer
+      operationId: createInterviewer
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInterviewerRequest'
+      responses:
+        '201':
+          description: Interviewer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerResponse'
+
+  /interviewers/{interviewerId}:
+    get:
+      tags:
+        - Interviewers
+      summary: Get interviewer by ID
+      operationId: getInterviewerById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviewer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerResponse'
+    put:
+      tags:
+        - Interviewers
+      summary: Update interviewer
+      operationId: updateInterviewer
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInterviewerRequest'
+      responses:
+        '200':
+          description: Interviewer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerResponse'
+    delete:
+      tags:
+        - Interviewers
+      summary: Delete interviewer
+      operationId: deleteInterviewer
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviewer deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviews:
+    get:
+      tags:
+        - Interviews
+      summary: Get all interviews
+      operationId: getAllInterviews
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+        - name: candidateId
+          in: query
+          schema:
+            type: string
+        - name: interviewerId
+          in: query
+          schema:
+            type: string
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of interviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewPageResponse'
+    post:
+      tags:
+        - Interviews
+      summary: Schedule new interview
+      operationId: scheduleInterview
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleInterviewRequest'
+      responses:
+        '201':
+          description: Interview scheduled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /interviews/{interviewId}:
+    get:
+      tags:
+        - Interviews
+      summary: Get interview by ID
+      operationId: getInterviewById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+    put:
+      tags:
+        - Interviews
+      summary: Update interview
+      operationId: updateInterview
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInterviewRequest'
+      responses:
+        '200':
+          description: Interview updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+    delete:
+      tags:
+        - Interviews
+      summary: Cancel interview
+      operationId: cancelInterview
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviews/{interviewId}/status:
+    patch:
+      tags:
+        - Interviews
+      summary: Update interview status
+      operationId: updateInterviewStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInterviewStatusRequest'
+      responses:
+        '200':
+          description: Interview status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /feedback:
+    get:
+      tags:
+        - Feedback
+      summary: Get all feedback
+      operationId: getAllFeedback
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: interviewId
+          in: query
+          schema:
+            type: string
+        - name: candidateId
+          in: query
+          schema:
+            type: string
+        - name: interviewerId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of feedback
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackPageResponse'
+    post:
+      tags:
+        - Feedback
+      summary: Submit feedback
+      operationId: submitFeedback
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitFeedbackRequest'
+      responses:
+        '201':
+          description: Feedback submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+
+  /feedback/{feedbackId}:
+    get:
+      tags:
+        - Feedback
+      summary: Get feedback by ID
+      operationId: getFeedbackById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: feedbackId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+    put:
+      tags:
+        - Feedback
+      summary: Update feedback
+      operationId: updateFeedback
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: feedbackId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFeedbackRequest'
+      responses:
+        '200':
+          description: Feedback updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+    delete:
+      tags:
+        - Feedback
+      summary: Delete feedback
+      operationId: deleteFeedback
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: feedbackId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          default: Bearer
+        expiresIn:
+          type: integer
+          format: int64
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        isActive:
+          type: boolean
+
+    UserPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    CreateCandidateRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - phone
+        - position
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        position:
+          type: string
+        experience:
+          type: number
+          format: double
+        skills:
+          type: array
+          items:
+            type: string
+        resumeUrl:
+          type: string
+        linkedinUrl:
+          type: string
+        githubUrl:
+          type: string
+        status:
+          type: string
+          enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+          default: APPLIED
+
+    UpdateCandidateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        position:
+          type: string
+        experience:
+          type: number
+        skills:
+          type: array
+          items:
+            type: string
+        resumeUrl:
+          type: string
+        linkedinUrl:
+          type: string
+        githubUrl:
+          type: string
+        status:
+          type: string
+          enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+
+    CandidateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        position:
+          type: string
+        experience:
+          type: number
+        skills:
+          type: array
+          items:
+            type: string
+        resumeUrl:
+          type: string
+        linkedinUrl:
+          type: string
+        githubUrl:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CandidatePageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CandidateResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    CreateInterviewerRequest:
+      type: object
+      required:
+        - userId
+        - department
+        - expertise
+      properties:
+        userId:
+          type: string
+        department:
+          type: string
+        expertise:
+          type: array
+          items:
+            type: string
+        yearsOfExperience:
+          type: integer
+        availability:
+          type: boolean
+          default: true
+
+    UpdateInterviewerRequest:
+      type: object
+      properties:
+        department:
+          type: string
+        expertise:
+          type: array
+          items:
+            type: string
+        yearsOfExperience:
+          type: integer
+        availability:
+          type: boolean
+
+    InterviewerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        department:
+          type: string
+        expertise:
+          type: array
+          items:
+            type: string
+        yearsOfExperience:
+          type: integer
+        availability:
+          type: boolean
+        totalInterviews:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    InterviewerPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewerResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    ScheduleInterviewRequest:
+      type: object
+      required:
+        - candidateId
+        - interviewerId
+        - scheduledAt
+        - interviewType
+        - round
+      properties:
+        candidateId:
+          type: string
+        interviewerId:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          description: Duration in minutes
+          default: 60
+        interviewType:
+          type: string
+          enum: [TECHNICAL, HR, CULTURAL_FIT, MANAGERIAL]
+        round:
+          type: integer
+        meetingLink:
+          type: string
+        notes:
+          type: string
+
+    UpdateInterviewRequest:
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        interviewType:
+          type: string
+          enum: [TECHNICAL, HR, CULTURAL_FIT, MANAGERIAL]
+        meetingLink:
+          type: string
+        notes:
+          type: string
+
+    UpdateInterviewStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+        reason:
+          type: string
+
+    InterviewResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        candidate:
+          $ref: '#/components/schemas/CandidateResponse'
+        interviewer:
+          $ref: '#/components/schemas/InterviewerResponse'
+        scheduledAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        interviewType:
+          type: string
+        round:
+          type: integer
+        status:
+          type: string
+        meetingLink:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    InterviewPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    SubmitFeedbackRequest:
+      type: object
+      required:
+        - interviewId
+        - rating
+        - recommendation
+      properties:
+        interviewId:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+        technicalSkills:
+          type: integer
+          minimum: 1
+          maximum: 10
+        communicationSkills:
+          type: integer
+          minimum: 1
+          maximum: 10
+        problemSolving:
+          type: integer
+          minimum: 1
+          maximum: 10
+        culturalFit:
+          type: integer
+          minimum: 1
+          maximum: 10
+        comments:
+          type: string
+        strengths:
+          type: string
+        weaknesses:
+          type: string
+        recommendation:
+          type: string
+          enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
+
+    UpdateFeedbackRequest:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+        technicalSkills:
+          type: integer
+          minimum: 1
+          maximum: 10
+        communicationSkills:
+          type: integer
+          minimum: 1
+          maximum: 10
+        problemSolving:
+          type: integer
+          minimum: 1
+          maximum: 10
+        culturalFit:
+          type: integer
+          minimum: 1
+          maximum: 10
+        comments:
+          type: string
+        strengths:
+          type: string
+        weaknesses:
+          type: string
+        recommendation:
+          type: string
+          enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
+
+    FeedbackResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        interview:
+          $ref: '#/components/schemas/InterviewResponse'
+        rating:
+          type: integer
+        technicalSkills:
+          type: integer
+        communicationSkills:
+          type: integer
+        problemSolving:
+          type: integer
+        culturalFit:
+          type: integer
+        comments:
+          type: string
+        strengths:
+          type: string
+        weaknesses:
+          type: string
+        recommendation:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    FeedbackPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedbackResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+
