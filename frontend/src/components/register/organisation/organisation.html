@@ -213,11 +213,12 @@
         </mat-step>
 
         <!-- Step 4: KYC Documents -->
-        <mat-step [stepControl]="kycForm" label="KYC Documents">
+        <mat-step [stepControl]="kycForm" label="KYC Documents (Optional)">
           <div class="form-section">
-            <h2>Upload KYC Documents</h2>
+            <h2>Upload KYC Documents (Optional)</h2>
             <p class="info-text">
-              Upload at least one document for verification. Your registration will be reviewed
+              Upload documents for verification if available. This step is optional and you can
+              submit your registration without documents. Your registration will be reviewed
               manually.
             </p>
 
@@ -293,7 +294,7 @@
                 mat-raised-button
                 color="primary"
                 (click)="onSubmit()"
-                [disabled]="uploadedDocuments().length === 0 || isLoading()"
+                [disabled]="isLoading()"
               >
                 @if (isLoading()) {
                 <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>

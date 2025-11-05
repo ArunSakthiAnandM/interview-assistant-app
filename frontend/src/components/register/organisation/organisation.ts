@@ -212,8 +212,7 @@ export class Organisation {
     if (
       this.orgDetailsForm.invalid ||
       this.addressForm.invalid ||
-      this.adminForm.invalid ||
-      this.uploadedDocuments().length === 0
+      this.adminForm.invalid
     ) {
       this.snackBar.open(ERROR_MESSAGES.VALIDATION_ERROR, 'Close', { duration: 3000 });
       return;
