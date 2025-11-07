@@ -1,1 +1,279 @@
-<p>candidate works!</p>
+<div class="candidate-registration-container">
+  <div class="registration-card">
+    <div class="registration-header">
+      <h1>Candidate Registration</h1>
+      <p class="subtitle">Join our platform to find your dream job</p>
+    </div>
+
+    <mat-stepper [linear]="true" [selectedIndex]="currentStep()" #stepper>
+      <!-- Step 1: Registration Form -->
+      <mat-step [completed]="canProceedToVerification()">
+        <ng-template matStepLabel>Registration Details</ng-template>
+
+        <form [formGroup]="registrationForm" class="registration-form">
+          <!-- Name Fields -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" placeholder="Enter your first name" />
+              <mat-icon matPrefix>person</mat-icon>
+              @if (getErrorMessage('firstName')) {
+              <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" placeholder="Enter your last name" />
+              <mat-icon matPrefix>person</mat-icon>
+              @if (getErrorMessage('lastName')) {
+              <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Email Address</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="your.email@example.com"
+            />
+            <mat-icon matPrefix>email</mat-icon>
+            @if (getErrorMessage('email')) {
+            <mat-error>{{ getErrorMessage('email') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Mobile Field -->
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Mobile Number</mat-label>
+            <input matInput type="tel" formControlName="mobile" placeholder="+1234567890" />
+            <mat-icon matPrefix>phone</mat-icon>
+            @if (getErrorMessage('mobile')) {
+            <mat-error>{{ getErrorMessage('mobile') }}</mat-error>
+            }
+            <mat-hint>Include country code (e.g., +1 for US)</mat-hint>
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Create a strong password"
+            />
+            <mat-icon matPrefix>lock</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="'Toggle password visibility'"
+            >
+              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (getErrorMessage('password')) {
+            <mat-error>{{ getErrorMessage('password') }}</mat-error>
+            }
+            <mat-hint
+              >At least 8 characters with uppercase, lowercase, number and special
+              character</mat-hint
+            >
+          </mat-form-field>
+
+          <!-- Confirm Password Field -->
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Confirm Password</mat-label>
+            <input
+              matInput
+              [type]="showConfirmPassword() ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="Re-enter your password"
+            />
+            <mat-icon matPrefix>lock</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="'Toggle confirm password visibility'"
+            >
+              <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (getErrorMessage('confirmPassword')) {
+            <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Terms and Conditions -->
+          <div class="terms-container">
+            <mat-checkbox formControlName="agreeToTerms">
+              I agree to the <a href="/terms" target="_blank">Terms and Conditions</a> and
+              <a href="/privacy" target="_blank">Privacy Policy</a>
+            </mat-checkbox>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button
+              mat-raised-button
+              type="button"
+              (click)="navigateToLogin()"
+              class="secondary-button"
+            >
+              Back to Login
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="button"
+              (click)="proceedToVerification()"
+              [disabled]="!canProceedToVerification()"
+            >
+              Continue
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 2: OTP Verification -->
+      <mat-step [completed]="canSubmit()">
+        <ng-template matStepLabel>Verify Contact Details</ng-template>
+
+        <div class="verification-container">
+          <div class="verification-intro">
+            <mat-icon class="verification-icon">verified_user</mat-icon>
+            <h2>Verify Your Contact Details</h2>
+            <p>
+              We've sent verification codes to your email and mobile number. Please enter them
+              below.
+            </p>
+          </div>
+
+          <!-- Email OTP Verification -->
+          <div class="otp-section">
+            <div class="otp-header">
+              <h3>
+                <mat-icon>email</mat-icon>
+                Email Verification
+              </h3>
+              @if (emailVerified()) {
+              <span class="verified-badge">
+                <mat-icon>check_circle</mat-icon>
+                Verified
+              </span>
+              }
+            </div>
+            <p class="otp-info">
+              Enter the 6-digit code sent to {{ registrationForm.get('email')?.value }}
+            </p>
+
+            <app-otp-input
+              [disabled]="emailVerified() || otpLoading()"
+              (otpChange)="onEmailOtpChange($event)"
+              (otpComplete)="onEmailOtpComplete($event)"
+            ></app-otp-input>
+
+            <div class="otp-actions">
+              @if (!emailVerified()) {
+              <button
+                mat-button
+                (click)="resendEmailOTP()"
+                [disabled]="!canResendEmail() || otpLoading()"
+              >
+                @if (canResendEmail()) {
+                <span>Resend OTP</span>
+                } @else {
+                <span>Resend in {{ remainingTime() }}s</span>
+                }
+              </button>
+              }
+            </div>
+          </div>
+
+          <!-- Mobile OTP Verification -->
+          <div class="otp-section">
+            <div class="otp-header">
+              <h3>
+                <mat-icon>phone</mat-icon>
+                Mobile Verification
+              </h3>
+              @if (mobileVerified()) {
+              <span class="verified-badge">
+                <mat-icon>check_circle</mat-icon>
+                Verified
+              </span>
+              }
+            </div>
+            <p class="otp-info">
+              Enter the 6-digit code sent to {{ registrationForm.get('mobile')?.value }}
+            </p>
+
+            <app-otp-input
+              [disabled]="mobileVerified() || otpLoading()"
+              (otpChange)="onMobileOtpChange($event)"
+              (otpComplete)="onMobileOtpComplete($event)"
+            ></app-otp-input>
+
+            <div class="otp-actions">
+              @if (!mobileVerified()) {
+              <button
+                mat-button
+                (click)="resendMobileOTP()"
+                [disabled]="!canResendMobile() || otpLoading()"
+              >
+                @if (canResendMobile()) {
+                <span>Resend OTP</span>
+                } @else {
+                <span>Resend in {{ remainingTime() }}s</span>
+                }
+              </button>
+              }
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button
+              mat-raised-button
+              type="button"
+              (click)="goBackToRegistration()"
+              class="secondary-button"
+            >
+              <mat-icon>arrow_back</mat-icon>
+              Back
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="button"
+              (click)="submitRegistration()"
+              [disabled]="!canSubmit() || isLoading()"
+            >
+              @if (isLoading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Registering...</span>
+              } @else {
+              <ng-container>
+                <span>Complete Registration</span>
+                <mat-icon>check_circle</mat-icon>
+              </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-stepper>
+
+    <!-- Footer -->
+    <div class="registration-footer">
+      <p>Already have an account? <a (click)="navigateToLogin()">Login here</a></p>
+    </div>
+  </div>
+</div>
