@@ -1,0 +1,84 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ApiResponse, InterviewerRegistrationRequest, Interviewer } from '../models';
+import { API_CONFIG, API_ENDPOINTS } from '../constants';
+
+/**
+ * Interviewer Service
+ * Handles interviewer registration, profile management, and interview assignments
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class InterviewerService {
+  private http = inject(HttpClient);
+
+  /**
+   * Register new interviewer
+   * TODO: Integrate with Spring Boot backend interviewer registration endpoint
+   */
+  registerInterviewer(
+    request: InterviewerRegistrationRequest
+  ): Observable<ApiResponse<Interviewer>> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.REGISTER}`;
+
+    // TODO: Replace with actual backend call
+    console.log('TODO: Register interviewer', request);
+
+    return this.http
+      .post<ApiResponse<Interviewer>>(endpoint, request)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Get interviewer by ID
+   * TODO: Integrate with Spring Boot backend
+   */
+  getInterviewer(id: string): Observable<ApiResponse<Interviewer>> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BY_ID(id)}`;
+
+    console.log('TODO: Get interviewer', id);
+
+    return this.http.get<ApiResponse<Interviewer>>(endpoint).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Get interviewers by organisation
+   * TODO: Integrate with Spring Boot backend
+   */
+  getInterviewersByOrganisation(orgId: string): Observable<ApiResponse<Interviewer[]>> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BY_ORG(orgId)}`;
+
+    console.log('TODO: Get interviewers by organisation', orgId);
+
+    return this.http.get<ApiResponse<Interviewer[]>>(endpoint).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Send interviewer invitation
+   * TODO: Integrate with Spring Boot backend
+   */
+  sendInterviewerInvite(
+    email: string,
+    firstName: string,
+    lastName: string
+  ): Observable<ApiResponse<any>> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.INVITE}`;
+
+    console.log('TODO: Send interviewer invite', email);
+
+    return this.http
+      .post<ApiResponse<any>>(endpoint, { email, firstName, lastName })
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Handle service errors
+   */
+  private handleError(error: any): Observable<never> {
+    console.error('Interviewer Service error:', error);
+    throw error;
+  }
+}
