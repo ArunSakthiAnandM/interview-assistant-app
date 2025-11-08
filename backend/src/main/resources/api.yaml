@@ -36,12 +36,12 @@ paths:
       summary: Check application health
       operationId: checkHealth
       responses:
-        '200':
+        "200":
           description: Application is healthy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                $ref: "#/components/schemas/HealthResponse"
 
   /auth/register:
     post:
@@ -54,26 +54,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
-        '201':
+        "201":
           description: User registered successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
           description: Invalid input
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
           description: User already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/login:
     post:
@@ -86,20 +86,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
           description: Invalid credentials
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/refresh:
     post:
@@ -112,20 +112,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenRequest'
+              $ref: "#/components/schemas/RefreshTokenRequest"
       responses:
-        '200':
+        "200":
           description: Token refreshed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
           description: Invalid refresh token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/logout:
     post:
@@ -136,18 +136,18 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: Logout successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '401':
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users:
     get:
@@ -174,18 +174,18 @@ paths:
             type: string
             enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPageResponse'
-        '401':
+                $ref: "#/components/schemas/UserPageResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users/{userId}:
     get:
@@ -202,18 +202,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: User details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
+                $ref: "#/components/schemas/UserResponse"
+        "404":
           description: User not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Users
@@ -232,20 +232,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: "#/components/schemas/UpdateUserRequest"
       responses:
-        '200':
+        "200":
           description: User updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
+                $ref: "#/components/schemas/UserResponse"
+        "404":
           description: User not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
         - Users
@@ -260,18 +260,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: User deleted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
           description: User not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /candidates:
     get:
@@ -296,18 +296,26 @@ paths:
           in: query
           schema:
             type: string
-            enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+            enum:
+              [
+                APPLIED,
+                SCREENING,
+                INTERVIEW_SCHEDULED,
+                INTERVIEWED,
+                SELECTED,
+                REJECTED,
+              ]
         - name: search
           in: query
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of candidates
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CandidatePageResponse'
+                $ref: "#/components/schemas/CandidatePageResponse"
     post:
       tags:
         - Candidates
@@ -320,20 +328,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCandidateRequest'
+              $ref: "#/components/schemas/CreateCandidateRequest"
       responses:
-        '201':
+        "201":
           description: Candidate created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CandidateResponse'
-        '400':
+                $ref: "#/components/schemas/CandidateResponse"
+        "400":
           description: Invalid input
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /candidates/{candidateId}:
     get:
@@ -350,18 +358,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Candidate details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CandidateResponse'
-        '404':
+                $ref: "#/components/schemas/CandidateResponse"
+        "404":
           description: Candidate not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Candidates
@@ -380,20 +388,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCandidateRequest'
+              $ref: "#/components/schemas/UpdateCandidateRequest"
       responses:
-        '200':
+        "200":
           description: Candidate updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CandidateResponse'
-        '404':
+                $ref: "#/components/schemas/CandidateResponse"
+        "404":
           description: Candidate not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
         - Candidates
@@ -408,12 +416,227 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Candidate deleted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
+                $ref: "#/components/schemas/MessageResponse"
+
+  /candidates/invite:
+    post:
+      tags:
+        - Candidates
+      summary: Invite candidate to interview
+      operationId: inviteCandidate
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteCandidateRequest"
+      responses:
+        "200":
+          description: Invitation sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /candidates/invitation/respond:
+    post:
+      tags:
+        - Candidates
+      summary: Respond to interview invitation
+      operationId: respondToInvitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RespondToInvitationRequest"
+      responses:
+        "200":
+          description: Response recorded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /organisations:
+    get:
+      tags:
+        - Organisations
+      summary: Get all organisations
+      operationId: getAllOrganisations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, VERIFIED, REJECTED]
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of organisations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationPageResponse"
+    post:
+      tags:
+        - Organisations
+      summary: Create new organisation
+      operationId: createOrganisation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrganisationRequest"
+      responses:
+        "201":
+          description: Organisation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationResponse"
+
+  /organisations/{organisationId}:
+    get:
+      tags:
+        - Organisations
+      summary: Get organisation by ID
+      operationId: getOrganisationById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organisationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Organisation details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationResponse"
+    put:
+      tags:
+        - Organisations
+      summary: Update organisation
+      operationId: updateOrganisation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organisationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrganisationRequest"
+      responses:
+        "200":
+          description: Organisation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationResponse"
+    delete:
+      tags:
+        - Organisations
+      summary: Delete organisation
+      operationId: deleteOrganisation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organisationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Organisation deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /organisations/{organisationId}/verify:
+    put:
+      tags:
+        - Organisations
+      summary: Verify organisation
+      operationId: verifyOrganisation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organisationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Organisation verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationResponse"
+
+  /organisations/{organisationId}/reject:
+    put:
+      tags:
+        - Organisations
+      summary: Reject organisation
+      operationId: rejectOrganisation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organisationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reason
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Organisation rejected successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationResponse"
 
   /interviewers:
     get:
@@ -443,12 +666,12 @@ paths:
           schema:
             type: boolean
       responses:
-        '200':
+        "200":
           description: List of interviewers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewerPageResponse'
+                $ref: "#/components/schemas/InterviewerPageResponse"
     post:
       tags:
         - Interviewers
@@ -461,14 +684,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateInterviewerRequest'
+              $ref: "#/components/schemas/CreateInterviewerRequest"
       responses:
-        '201':
+        "201":
           description: Interviewer created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewerResponse'
+                $ref: "#/components/schemas/InterviewerResponse"
 
   /interviewers/{interviewerId}:
     get:
@@ -485,12 +708,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Interviewer details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewerResponse'
+                $ref: "#/components/schemas/InterviewerResponse"
     put:
       tags:
         - Interviewers
@@ -509,14 +732,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateInterviewerRequest'
+              $ref: "#/components/schemas/UpdateInterviewerRequest"
       responses:
-        '200':
+        "200":
           description: Interviewer updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewerResponse'
+                $ref: "#/components/schemas/InterviewerResponse"
     delete:
       tags:
         - Interviewers
@@ -531,12 +754,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Interviewer deleted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
+                $ref: "#/components/schemas/MessageResponse"
 
   /interviews:
     get:
@@ -581,12 +804,12 @@ paths:
             type: string
             format: date-time
       responses:
-        '200':
+        "200":
           description: List of interviews
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewPageResponse'
+                $ref: "#/components/schemas/InterviewPageResponse"
     post:
       tags:
         - Interviews
@@ -599,14 +822,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ScheduleInterviewRequest'
+              $ref: "#/components/schemas/ScheduleInterviewRequest"
       responses:
-        '201':
+        "201":
           description: Interview scheduled successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewResponse'
+                $ref: "#/components/schemas/InterviewResponse"
 
   /interviews/{interviewId}:
     get:
@@ -623,12 +846,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Interview details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewResponse'
+                $ref: "#/components/schemas/InterviewResponse"
     put:
       tags:
         - Interviews
@@ -647,14 +870,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateInterviewRequest'
+              $ref: "#/components/schemas/UpdateInterviewRequest"
       responses:
-        '200':
+        "200":
           description: Interview updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewResponse'
+                $ref: "#/components/schemas/InterviewResponse"
     delete:
       tags:
         - Interviews
@@ -669,12 +892,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Interview cancelled successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
+                $ref: "#/components/schemas/MessageResponse"
 
   /interviews/{interviewId}/status:
     patch:
@@ -695,14 +918,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateInterviewStatusRequest'
+              $ref: "#/components/schemas/UpdateInterviewStatusRequest"
       responses:
-        '200':
+        "200":
           description: Interview status updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InterviewResponse'
+                $ref: "#/components/schemas/InterviewResponse"
 
   /feedback:
     get:
@@ -736,12 +959,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of feedback
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FeedbackPageResponse'
+                $ref: "#/components/schemas/FeedbackPageResponse"
     post:
       tags:
         - Feedback
@@ -754,14 +977,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmitFeedbackRequest'
+              $ref: "#/components/schemas/SubmitFeedbackRequest"
       responses:
-        '201':
+        "201":
           description: Feedback submitted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FeedbackResponse'
+                $ref: "#/components/schemas/FeedbackResponse"
 
   /feedback/{feedbackId}:
     get:
@@ -778,12 +1001,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Feedback details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FeedbackResponse'
+                $ref: "#/components/schemas/FeedbackResponse"
     put:
       tags:
         - Feedback
@@ -802,14 +1025,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateFeedbackRequest'
+              $ref: "#/components/schemas/UpdateFeedbackRequest"
       responses:
-        '200':
+        "200":
           description: Feedback updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FeedbackResponse'
+                $ref: "#/components/schemas/FeedbackResponse"
     delete:
       tags:
         - Feedback
@@ -824,12 +1047,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Feedback deleted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
+                $ref: "#/components/schemas/MessageResponse"
 
 components:
   securitySchemes:
@@ -910,7 +1133,7 @@ components:
           type: integer
           format: int64
         user:
-          $ref: '#/components/schemas/UserResponse'
+          $ref: "#/components/schemas/UserResponse"
 
     UserResponse:
       type: object
@@ -955,7 +1178,7 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/UserResponse'
+            $ref: "#/components/schemas/UserResponse"
         page:
           type: integer
         size:
@@ -1001,7 +1224,15 @@ components:
           type: string
         status:
           type: string
-          enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+          enum:
+            [
+              APPLIED,
+              SCREENING,
+              INTERVIEW_SCHEDULED,
+              INTERVIEWED,
+              SELECTED,
+              REJECTED,
+            ]
           default: APPLIED
 
     UpdateCandidateRequest:
@@ -1031,7 +1262,15 @@ components:
           type: string
         status:
           type: string
-          enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+          enum:
+            [
+              APPLIED,
+              SCREENING,
+              INTERVIEW_SCHEDULED,
+              INTERVIEWED,
+              SELECTED,
+              REJECTED,
+            ]
 
     CandidateResponse:
       type: object
@@ -1075,7 +1314,7 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/CandidateResponse'
+            $ref: "#/components/schemas/CandidateResponse"
         page:
           type: integer
         size:
@@ -1127,7 +1366,7 @@ components:
         id:
           type: string
         user:
-          $ref: '#/components/schemas/UserResponse'
+          $ref: "#/components/schemas/UserResponse"
         department:
           type: string
         expertise:
@@ -1153,7 +1392,7 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/InterviewerResponse'
+            $ref: "#/components/schemas/InterviewerResponse"
         page:
           type: integer
         size:
@@ -1167,16 +1406,21 @@ components:
     ScheduleInterviewRequest:
       type: object
       required:
+        - organisationId
         - candidateId
-        - interviewerId
+        - interviewerIds
         - scheduledAt
         - interviewType
         - round
       properties:
+        organisationId:
+          type: string
         candidateId:
           type: string
-        interviewerId:
-          type: string
+        interviewerIds:
+          type: array
+          items:
+            type: string
         scheduledAt:
           type: string
           format: date-time
@@ -1227,9 +1471,9 @@ components:
         id:
           type: string
         candidate:
-          $ref: '#/components/schemas/CandidateResponse'
+          $ref: "#/components/schemas/CandidateResponse"
         interviewer:
-          $ref: '#/components/schemas/InterviewerResponse'
+          $ref: "#/components/schemas/InterviewerResponse"
         scheduledAt:
           type: string
           format: date-time
@@ -1258,7 +1502,7 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/InterviewResponse'
+            $ref: "#/components/schemas/InterviewResponse"
         page:
           type: integer
         size:
@@ -1347,7 +1591,7 @@ components:
         id:
           type: string
         interview:
-          $ref: '#/components/schemas/InterviewResponse'
+          $ref: "#/components/schemas/InterviewResponse"
         rating:
           type: integer
         technicalSkills:
@@ -1382,7 +1626,7 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/FeedbackResponse'
+            $ref: "#/components/schemas/FeedbackResponse"
         page:
           type: integer
         size:
@@ -1415,3 +1659,130 @@ components:
         path:
           type: string
 
+    InviteCandidateRequest:
+      type: object
+      required:
+        - interviewId
+        - candidateId
+      properties:
+        interviewId:
+          type: string
+        candidateId:
+          type: string
+        message:
+          type: string
+
+    RespondToInvitationRequest:
+      type: object
+      required:
+        - token
+        - response
+      properties:
+        token:
+          type: string
+        response:
+          type: string
+          enum: [ACCEPT, DECLINE]
+        reason:
+          type: string
+
+    CreateOrganisationRequest:
+      type: object
+      required:
+        - name
+        - contactEmail
+        - contactPhone
+      properties:
+        name:
+          type: string
+        registrationNumber:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        contactEmail:
+          type: string
+          format: email
+        contactPhone:
+          type: string
+        website:
+          type: string
+        description:
+          type: string
+
+    UpdateOrganisationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        website:
+          type: string
+        description:
+          type: string
+
+    OrganisationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        registrationNumber:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        website:
+          type: string
+        description:
+          type: string
+        verificationStatus:
+          type: string
+          enum: [PENDING, VERIFIED, REJECTED]
+        adminUserId:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OrganisationPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganisationResponse"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
