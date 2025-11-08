@@ -79,18 +79,21 @@ public class InterviewServiceImpl implements InterviewService {
     @Override
     @Transactional
     public InterviewResponse scheduleInterview(ScheduleInterviewRequest request) {
-        log.info("Scheduling interview for candidate: {} with interviewer: {}",
-                request.getCandidateId(), request.getInterviewerId());
+        log.info("Scheduling interview for candidate: {} with interviewers: {}",
+                request.getCandidateId(), request.getInterviewerIds());
 
         Candidate candidate = candidateRepository.findById(request.getCandidateId())
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.CANDIDATE_NOT_FOUND));
 
-        Interviewer interviewer = interviewerRepository.findById(request.getInterviewerId())
-                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.INTERVIEWER_NOT_FOUND));
+        List<Interviewer> interviewers = request.getInterviewerIds().stream()
+                .map(interviewerId -> interviewerRepository.findById(interviewerId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Interviewer not found: " + interviewerId)))
+                .collect(Collectors.toList());
 
         Interview interview = Interview.builder()
+                .organisationId(request.getOrganisationId())
                 .candidate(candidate)
-                .interviewer(interviewer)
+                .interviewers(interviewers)
                 .scheduledAt(request.getScheduledAt())
                 .duration(request.getDuration() != null ? request.getDuration() : AppConstants.DEFAULT_INTERVIEW_DURATION)
                 .interviewType(request.getInterviewType())
@@ -104,9 +107,11 @@ public class InterviewServiceImpl implements InterviewService {
 
         Interview savedInterview = interviewRepository.save(interview);
 
-        // Update interviewer's total interviews count
-        interviewer.setTotalInterviews(interviewer.getTotalInterviews() + 1);
-        interviewerRepository.save(interviewer);
+        // Update interviewer's total interviews count for each interviewer
+        interviewers.forEach(interviewer -> {
+            interviewer.setTotalInterviews(interviewer.getTotalInterviews() + 1);
+            interviewerRepository.save(interviewer);
+        });
 
         return entityMapper.toInterviewResponse(savedInterview);
     }

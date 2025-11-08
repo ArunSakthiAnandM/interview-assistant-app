@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,11 +23,13 @@ public class Interview {
     @Id
     private String id;
 
+    private String organisationId;
+
     @DBRef
     private Candidate candidate;
 
     @DBRef
-    private Interviewer interviewer;
+    private List<Interviewer> interviewers;
 
     private LocalDateTime scheduledAt;
 

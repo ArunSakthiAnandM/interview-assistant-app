@@ -4,6 +4,9 @@ import com.interview.organiser.model.dto.response.*;
 import com.interview.organiser.model.entity.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class EntityMapper {
 
@@ -63,10 +66,19 @@ public class EntityMapper {
     public InterviewResponse toInterviewResponse(Interview interview) {
         if (interview == null) return null;
 
+        // Map interviewers list
+        List<InterviewerResponse> interviewerResponses = null;
+        if (interview.getInterviewers() != null) {
+            interviewerResponses = interview.getInterviewers().stream()
+                    .map(this::toInterviewerResponse)
+                    .collect(Collectors.toList());
+        }
+
         return InterviewResponse.builder()
                 .id(interview.getId())
                 .candidate(toCandidateResponse(interview.getCandidate()))
-                .interviewer(toInterviewerResponse(interview.getInterviewer()))
+                .interviewer(interviewerResponses != null && !interviewerResponses.isEmpty() 
+                        ? interviewerResponses.get(0) : null) // Backward compatibility
                 .scheduledAt(interview.getScheduledAt())
                 .duration(interview.getDuration())
                 .interviewType(interview.getInterviewType())
