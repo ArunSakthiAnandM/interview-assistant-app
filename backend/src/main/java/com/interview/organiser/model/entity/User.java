@@ -34,6 +34,8 @@ public class User {
 
     private UserRole role;
 
+    private String organisationId;
+
     @Builder.Default
     private Boolean isActive = true;
 
