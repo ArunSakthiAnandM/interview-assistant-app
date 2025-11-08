@@ -2,6 +2,8 @@ package com.interview.organiser.service;
 
 import com.interview.organiser.constants.enums.CandidateStatus;
 import com.interview.organiser.model.dto.request.CreateCandidateRequest;
+import com.interview.organiser.model.dto.request.InviteCandidateRequest;
+import com.interview.organiser.model.dto.request.RespondToInvitationRequest;
 import com.interview.organiser.model.dto.request.UpdateCandidateRequest;
 import com.interview.organiser.model.dto.response.CandidateResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
@@ -19,5 +21,9 @@ public interface CandidateService {
     CandidateResponse updateCandidate(String candidateId, UpdateCandidateRequest request);
 
     MessageResponse deleteCandidate(String candidateId);
+
+    MessageResponse inviteCandidate(InviteCandidateRequest request);
+
+    MessageResponse respondToInvitation(RespondToInvitationRequest request);
 }
 

@@ -8,12 +8,16 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CandidateRepository extends MongoRepository<Candidate, String> {
 
     boolean existsByEmail(String email);
 
     Page<Candidate> findByStatus(CandidateStatus status, Pageable pageable);
+
+    Optional<Candidate> findByInvitationToken(String invitationToken);
 
     @Query("{ $or: [ { 'firstName': { $regex: ?0, $options: 'i' } }, { 'lastName': { $regex: ?0, $options: 'i' } }, { 'email': { $regex: ?0, $options: 'i' } }, { 'position': { $regex: ?0, $options: 'i' } } ] }")
     Page<Candidate> searchCandidates(String search, Pageable pageable);

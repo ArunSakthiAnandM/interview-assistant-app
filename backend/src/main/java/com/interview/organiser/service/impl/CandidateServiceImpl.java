@@ -5,12 +5,15 @@ import com.interview.organiser.constants.enums.CandidateStatus;
 import com.interview.organiser.exception.ResourceAlreadyExistsException;
 import com.interview.organiser.exception.ResourceNotFoundException;
 import com.interview.organiser.model.dto.request.CreateCandidateRequest;
+import com.interview.organiser.model.dto.request.InviteCandidateRequest;
+import com.interview.organiser.model.dto.request.RespondToInvitationRequest;
 import com.interview.organiser.model.dto.request.UpdateCandidateRequest;
 import com.interview.organiser.model.dto.response.CandidateResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
 import com.interview.organiser.model.entity.Candidate;
 import com.interview.organiser.repository.CandidateRepository;
+import com.interview.organiser.repository.InterviewRepository;
 import com.interview.organiser.service.CandidateService;
 import com.interview.organiser.util.EntityMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 public class CandidateServiceImpl implements CandidateService {
 
     private final CandidateRepository candidateRepository;
+    private final InterviewRepository interviewRepository;
     private final EntityMapper entityMapper;
 
     @Override
@@ -165,6 +170,69 @@ public class CandidateServiceImpl implements CandidateService {
                 .message("Candidate deleted successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse inviteCandidate(InviteCandidateRequest request) {
+        log.info("Inviting candidate {} to interview {}", request.getCandidateId(), request.getInterviewId());
+
+        Candidate candidate = candidateRepository.findById(request.getCandidateId())
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.CANDIDATE_NOT_FOUND));
+
+        // Verify interview exists
+        if (!interviewRepository.existsById(request.getInterviewId())) {
+            throw new ResourceNotFoundException(AppConstants.INTERVIEW_NOT_FOUND);
+        }
+
+        // Generate invitation token
+        String token = UUID.randomUUID().toString();
+        candidate.setInvitationToken(token);
+        candidate.setInvitationSentAt(LocalDateTime.now());
+        candidate.setStatus(CandidateStatus.INTERVIEW_SCHEDULED);
+        
+        candidateRepository.save(candidate);
+
+        // TODO: Send email notification with invitation link
+
+        return MessageResponse.builder()
+                .message("Invitation sent successfully. Token: " + token)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse respondToInvitation(RespondToInvitationRequest request) {
+        log.info("Processing invitation response with token: {}", request.getToken());
+
+        Candidate candidate = candidateRepository.findByInvitationToken(request.getToken())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid invitation token"));
+
+        if ("ACCEPT".equalsIgnoreCase(request.getResponse())) {
+            candidate.setInvitationAcceptedAt(LocalDateTime.now());
+            candidate.setStatus(CandidateStatus.INTERVIEW_SCHEDULED);
+            candidate.setInvitationToken(null); // Clear token after use
+
+            candidateRepository.save(candidate);
+
+            return MessageResponse.builder()
+                    .message("Interview invitation accepted successfully")
+                    .timestamp(LocalDateTime.now())
+                    .build();
+        } else if ("DECLINE".equalsIgnoreCase(request.getResponse())) {
+            candidate.setStatus(CandidateStatus.REJECTED);
+            candidate.setInvitationToken(null); // Clear token after use
+
+            candidateRepository.save(candidate);
+
+            return MessageResponse.builder()
+                    .message("Interview invitation declined")
+                    .timestamp(LocalDateTime.now())
+                    .build();
+        } else {
+            throw new IllegalArgumentException("Invalid response. Must be ACCEPT or DECLINE");
+        }
     }
 }
 

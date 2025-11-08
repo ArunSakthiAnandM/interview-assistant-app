@@ -2,6 +2,8 @@ package com.interview.organiser.controller;
 
 import com.interview.organiser.constants.enums.CandidateStatus;
 import com.interview.organiser.model.dto.request.CreateCandidateRequest;
+import com.interview.organiser.model.dto.request.InviteCandidateRequest;
+import com.interview.organiser.model.dto.request.RespondToInvitationRequest;
 import com.interview.organiser.model.dto.request.UpdateCandidateRequest;
 import com.interview.organiser.model.dto.response.CandidateResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
@@ -52,6 +54,16 @@ public class CandidateController {
     @DeleteMapping("/{candidateId}")
     public ResponseEntity<MessageResponse> deleteCandidate(@PathVariable String candidateId) {
         return ResponseEntity.ok(candidateService.deleteCandidate(candidateId));
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<MessageResponse> inviteCandidate(@Valid @RequestBody InviteCandidateRequest request) {
+        return ResponseEntity.ok(candidateService.inviteCandidate(request));
+    }
+
+    @PostMapping("/invitation/respond")
+    public ResponseEntity<MessageResponse> respondToInvitation(@Valid @RequestBody RespondToInvitationRequest request) {
+        return ResponseEntity.ok(candidateService.respondToInvitation(request));
     }
 }
 

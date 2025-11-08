@@ -22,6 +22,8 @@ public class Candidate {
     @Id
     private String id;
 
+    private String organisationId;
+
     private String firstName;
 
     private String lastName;
@@ -45,6 +47,12 @@ public class Candidate {
 
     @Builder.Default
     private CandidateStatus status = CandidateStatus.APPLIED;
+
+    private String invitationToken;
+    
+    private LocalDateTime invitationSentAt;
+    
+    private LocalDateTime invitationAcceptedAt;
 
     private LocalDateTime createdAt;
 
