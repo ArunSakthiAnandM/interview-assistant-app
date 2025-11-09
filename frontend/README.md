@@ -208,7 +208,7 @@ Login Page → Credentials → Role Detection → Role-based Dashboard
 - Inject JWT in all API requests (via `AuthInterceptor`)
 - Navigate based on role:
   - `ADMIN` → `/dashboard/admin`
-  - `ORG_ADMIN` → `/dashboard/organisation`
+  - `RECRUITER` → `/dashboard/organisation`
   - `INTERVIEWER` → `/dashboard/interviewer`
   - `CANDIDATE` → `/dashboard/candidate`
 

@@ -42,17 +42,17 @@ export const adminGuard: CanActivateFn = roleGuard([UserRole.ADMIN]);
 
 /**
  * Organisation Admin Guard
- * Only allows users with ADMIN or ORG_ADMIN role
+ * Only allows users with ADMIN or RECRUITER role
  */
-export const orgAdminGuard: CanActivateFn = roleGuard([UserRole.ADMIN, UserRole.ORG_ADMIN]);
+export const orgAdminGuard: CanActivateFn = roleGuard([UserRole.ADMIN, UserRole.RECRUITER]);
 
 /**
  * Interviewer Guard
- * Only allows users with ADMIN, ORG_ADMIN, or INTERVIEWER role
+ * Only allows users with ADMIN, RECRUITER, or INTERVIEWER role
  */
 export const interviewerGuard: CanActivateFn = roleGuard([
   UserRole.ADMIN,
-  UserRole.ORG_ADMIN,
+  UserRole.RECRUITER,
   UserRole.INTERVIEWER,
 ]);
 

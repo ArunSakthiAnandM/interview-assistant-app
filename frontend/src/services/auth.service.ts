@@ -214,7 +214,7 @@ export class AuthService {
       case UserRole.ADMIN:
         this.router.navigate([APP_ROUTES.DASHBOARD.ADMIN]);
         break;
-      case UserRole.ORG_ADMIN:
+      case UserRole.RECRUITER:
         this.router.navigate([APP_ROUTES.DASHBOARD.ORGANISATION]);
         break;
       case UserRole.INTERVIEWER:

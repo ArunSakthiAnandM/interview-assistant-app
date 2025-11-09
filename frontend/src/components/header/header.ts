@@ -46,7 +46,7 @@ export class Header {
       case 'ADMIN':
         this.router.navigate([APP_ROUTES.DASHBOARD.ADMIN]);
         break;
-      case 'ORG_ADMIN':
+      case 'RECRUITER':
         this.router.navigate([APP_ROUTES.DASHBOARD.ORGANISATION]);
         break;
       case 'INTERVIEWER':

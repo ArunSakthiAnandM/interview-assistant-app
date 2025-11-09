@@ -25,7 +25,7 @@ export class AuthStore {
   // Computed signals for role-based access
   readonly userRole = computed(() => this._currentUser()?.role);
   readonly isAdmin = computed(() => this._currentUser()?.role === UserRole.ADMIN);
-  readonly isOrgAdmin = computed(() => this._currentUser()?.role === UserRole.ORG_ADMIN);
+  readonly isOrgAdmin = computed(() => this._currentUser()?.role === UserRole.RECRUITER);
   readonly isInterviewer = computed(() => this._currentUser()?.role === UserRole.INTERVIEWER);
   readonly isCandidate = computed(() => this._currentUser()?.role === UserRole.CANDIDATE);
   readonly userName = computed(() => {
@@ -39,17 +39,17 @@ export class AuthStore {
   // Computed for permissions
   readonly canManageOrganisation = computed(() => {
     const role = this._currentUser()?.role;
-    return role === UserRole.ADMIN || role === UserRole.ORG_ADMIN;
+    return role === UserRole.ADMIN || role === UserRole.RECRUITER;
   });
 
   readonly canManageInterviews = computed(() => {
     const role = this._currentUser()?.role;
-    return role === UserRole.ADMIN || role === UserRole.ORG_ADMIN || role === UserRole.INTERVIEWER;
+    return role === UserRole.ADMIN || role === UserRole.RECRUITER || role === UserRole.INTERVIEWER;
   });
 
   readonly canViewCandidates = computed(() => {
     const role = this._currentUser()?.role;
-    return role === UserRole.ADMIN || role === UserRole.ORG_ADMIN || role === UserRole.INTERVIEWER;
+    return role === UserRole.ADMIN || role === UserRole.RECRUITER || role === UserRole.INTERVIEWER;
   });
 
   /**
@@ -119,14 +119,14 @@ export class AuthStore {
 
     switch (permission) {
       case 'manage:organisations':
-        return role === UserRole.ADMIN || role === UserRole.ORG_ADMIN;
+        return role === UserRole.ADMIN || role === UserRole.RECRUITER;
       case 'manage:interviews':
         return (
-          role === UserRole.ADMIN || role === UserRole.ORG_ADMIN || role === UserRole.INTERVIEWER
+          role === UserRole.ADMIN || role === UserRole.RECRUITER || role === UserRole.INTERVIEWER
         );
       case 'view:candidates':
         return (
-          role === UserRole.ADMIN || role === UserRole.ORG_ADMIN || role === UserRole.INTERVIEWER
+          role === UserRole.ADMIN || role === UserRole.RECRUITER || role === UserRole.INTERVIEWER
         );
       case 'manage:users':
         return role === UserRole.ADMIN;

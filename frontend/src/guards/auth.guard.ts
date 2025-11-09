@@ -44,7 +44,7 @@ export const guestGuard: CanActivateFn = (route, state) => {
     switch (role) {
       case 'ADMIN':
         return router.createUrlTree([APP_ROUTES.DASHBOARD.ADMIN]);
-      case 'ORG_ADMIN':
+      case 'RECRUITER':
         return router.createUrlTree([APP_ROUTES.DASHBOARD.ORGANISATION]);
       case 'INTERVIEWER':
         return router.createUrlTree([APP_ROUTES.DASHBOARD.INTERVIEWER]);

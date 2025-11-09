@@ -3,7 +3,7 @@
  */
 export enum UserRole {
   ADMIN = 'ADMIN',
-  ORG_ADMIN = 'ORG_ADMIN',
+  RECRUITER = 'RECRUITER',
   INTERVIEWER = 'INTERVIEWER',
   CANDIDATE = 'CANDIDATE',
 }

@@ -58,7 +58,7 @@ Authenticate user with credentials.
     "user": {
       "id": "user-uuid",
       "email": "user@example.com",
-      "role": "ORG_ADMIN",
+      "role": "RECRUITER",
       "firstName": "John",
       "lastName": "Doe",
       "organisationId": "org-uuid",
@@ -1379,7 +1379,7 @@ Send SMS notification (internal use).
 ```typescript
 enum UserRole {
   ADMIN = 'ADMIN',
-  ORG_ADMIN = 'ORG_ADMIN',
+  RECRUITER = 'RECRUITER',
   INTERVIEWER = 'INTERVIEWER',
   CANDIDATE = 'CANDIDATE',
 }
