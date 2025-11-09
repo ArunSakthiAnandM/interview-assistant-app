@@ -108,13 +108,9 @@ export class InterviewCreate implements OnInit {
     };
 
     this.interviewService.createInterview(request).subscribe({
-      next: (response) => {
+      next: (interview) => {
         this.notificationStore.success('Interview created successfully', 'Success');
-        if (response.data) {
-          this.router.navigate(['/interviews', response.data.id]);
-        } else {
-          this.router.navigate(['/interviews']);
-        }
+        this.router.navigate(['/interviews', interview.id]);
       },
       error: (error) => {
         this.isSubmitting.set(false);

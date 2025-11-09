@@ -1,15 +1,4 @@
 /**
- * Generic API response wrapper
- */
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  message: string;
-  errors?: ValidationError[];
-  timestamp: Date;
-}
-
-/**
  * Paginated API response
  */
 export interface PaginatedResponse<T> {

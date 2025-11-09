@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, timer } from 'rxjs';
 import { catchError, tap, switchMap, takeUntil } from 'rxjs/operators';
 import {
-  ApiResponse,
   OTPSendRequest,
   OTPVerificationRequest,
   OTPVerificationResponse,
@@ -41,17 +40,15 @@ export class OtpService {
    * Send OTP to email or mobile
    * TODO: Integrate with Spring Boot backend OTP service
    */
-  sendOTP(request: OTPSendRequest): Observable<ApiResponse<any>> {
+  sendOTP(request: OTPSendRequest): Observable<any> {
     this.isLoadingSignal.set(true);
 
     // TODO: Replace with actual backend call
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.OTP.SEND}`;
 
-    return this.http.post<ApiResponse<any>>(endpoint, request).pipe(
-      tap((response) => {
-        if (response.success) {
-          this.startResendCooldown();
-        }
+    return this.http.post<any>(endpoint, request).pipe(
+      tap(() => {
+        this.startResendCooldown();
       }),
       catchError((error) => this.handleError(error)),
       tap(() => this.isLoadingSignal.set(false))
@@ -78,13 +75,13 @@ export class OtpService {
    * Verify OTP
    * TODO: Integrate with Spring Boot backend OTP verification
    */
-  verifyOTP(request: OTPVerificationRequest): Observable<ApiResponse<OTPVerificationResponse>> {
+  verifyOTP(request: OTPVerificationRequest): Observable<OTPVerificationResponse> {
     this.isLoadingSignal.set(true);
 
     // TODO: Replace with actual backend call
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.OTP.VERIFY}`;
 
-    return this.http.post<ApiResponse<OTPVerificationResponse>>(endpoint, request).pipe(
+    return this.http.post<OTPVerificationResponse>(endpoint, request).pipe(
       catchError((error) => this.handleError(error)),
       tap(() => this.isLoadingSignal.set(false))
     );
@@ -115,7 +112,7 @@ export class OtpService {
    * Resend OTP
    * TODO: Integrate with Spring Boot backend OTP resend
    */
-  resendOTP(request: OTPSendRequest): Observable<ApiResponse<any>> {
+  resendOTP(request: OTPSendRequest): Observable<any> {
     if (!this.canResendSignal()) {
       return throwError(() => ({
         message: `Please wait ${this.remainingTimeSignal()} seconds before resending.`,

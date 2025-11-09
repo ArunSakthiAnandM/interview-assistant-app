@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import {
-  ApiResponse,
   PaginatedResponse,
   Interview,
   InterviewCreateRequest,
@@ -32,17 +31,15 @@ export class InterviewService {
    * Create new interview
    * TODO: Integrate with Spring Boot backend
    */
-  createInterview(request: InterviewCreateRequest): Observable<ApiResponse<Interview>> {
+  createInterview(request: InterviewCreateRequest): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.CREATE}`;
 
     console.log('TODO: Create interview', request);
 
-    return this.http.post<ApiResponse<Interview>>(endpoint, request).pipe(
-      tap((response) => {
-        if (response.success && response.data) {
-          this.interviewStore.addInterview(response.data);
-          this.notificationStore.success('Interview created successfully');
-        }
+    return this.http.post<Interview>(endpoint, request).pipe(
+      tap((interview) => {
+        this.interviewStore.addInterview(interview);
+        this.notificationStore.success('Interview created successfully');
       }),
       catchError(this.handleError)
     );
@@ -52,16 +49,14 @@ export class InterviewService {
    * Get interview by ID
    * TODO: Integrate with Spring Boot backend
    */
-  getInterview(id: string): Observable<ApiResponse<Interview>> {
+  getInterview(id: string): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
 
     console.log('TODO: Get interview', id);
 
-    return this.http.get<ApiResponse<Interview>>(endpoint).pipe(
-      tap((response) => {
-        if (response.success && response.data) {
-          this.interviewStore.selectInterview(response.data);
-        }
+    return this.http.get<Interview>(endpoint).pipe(
+      tap((interview) => {
+        this.interviewStore.selectInterview(interview);
       }),
       catchError(this.handleError)
     );
@@ -96,16 +91,14 @@ export class InterviewService {
    * Get interviews by candidate
    * TODO: Integrate with Spring Boot backend
    */
-  getInterviewsByCandidate(candidateId: string): Observable<ApiResponse<Interview[]>> {
+  getInterviewsByCandidate(candidateId: string): Observable<Interview[]> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_CANDIDATE(candidateId)}`;
 
     console.log('TODO: Get interviews by candidate', candidateId);
 
-    return this.http.get<ApiResponse<Interview[]>>(endpoint).pipe(
-      tap((response) => {
-        if (response.success && response.data) {
-          this.interviewStore.setInterviews(response.data);
-        }
+    return this.http.get<Interview[]>(endpoint).pipe(
+      tap((interviews) => {
+        this.interviewStore.setInterviews(interviews);
       }),
       catchError(this.handleError)
     );
@@ -115,17 +108,15 @@ export class InterviewService {
    * Update interview status
    * TODO: Integrate with Spring Boot backend
    */
-  updateInterviewStatus(id: string, status: InterviewStatus): Observable<ApiResponse<Interview>> {
+  updateInterviewStatus(id: string, status: InterviewStatus): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.UPDATE_STATUS(id)}`;
 
     console.log('TODO: Update interview status', id, status);
 
-    return this.http.put<ApiResponse<Interview>>(endpoint, { status }).pipe(
-      tap((response) => {
-        if (response.success && response.data) {
-          this.interviewStore.updateInterview(id, response.data);
-          this.notificationStore.success('Interview status updated');
-        }
+    return this.http.put<Interview>(endpoint, { status }).pipe(
+      tap((interview) => {
+        this.interviewStore.updateInterview(id, interview);
+        this.notificationStore.success('Interview status updated');
       }),
       catchError(this.handleError)
     );
@@ -138,19 +129,17 @@ export class InterviewService {
   submitFeedback(
     interviewId: string,
     feedback: Omit<InterviewFeedback, 'submittedAt'>
-  ): Observable<ApiResponse<Interview>> {
+  ): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.SUBMIT_FEEDBACK(
       interviewId
     )}`;
 
     console.log('TODO: Submit interview feedback', interviewId, feedback);
 
-    return this.http.post<ApiResponse<Interview>>(endpoint, feedback).pipe(
-      tap((response) => {
-        if (response.success && response.data) {
-          this.interviewStore.updateInterview(interviewId, response.data);
-          this.notificationStore.success('Feedback submitted successfully');
-        }
+    return this.http.post<Interview>(endpoint, feedback).pipe(
+      tap((interview) => {
+        this.interviewStore.updateInterview(interviewId, interview);
+        this.notificationStore.success('Feedback submitted successfully');
       }),
       catchError(this.handleError)
     );
@@ -160,18 +149,16 @@ export class InterviewService {
    * Generate candidate invite link
    * TODO: Integrate with Spring Boot backend
    */
-  generateInviteLink(interviewId: string): Observable<ApiResponse<CandidateInviteLink>> {
+  generateInviteLink(interviewId: string): Observable<CandidateInviteLink> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.GENERATE_INVITE(
       interviewId
     )}`;
 
     console.log('TODO: Generate invite link', interviewId);
 
-    return this.http.post<ApiResponse<CandidateInviteLink>>(endpoint, {}).pipe(
-      tap((response) => {
-        if (response.success) {
-          this.notificationStore.success('Invite link generated');
-        }
+    return this.http.post<CandidateInviteLink>(endpoint, {}).pipe(
+      tap(() => {
+        this.notificationStore.success('Invite link generated');
       }),
       catchError(this.handleError)
     );
@@ -185,24 +172,22 @@ export class InterviewService {
     scheduledDate: Date,
     duration: number,
     location: string
-  ): Observable<ApiResponse<Interview>> {
+  ): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
 
     console.log('TODO: Schedule interview', id, scheduledDate);
 
     return this.http
-      .put<ApiResponse<Interview>>(endpoint, {
+      .put<Interview>(endpoint, {
         scheduledDate,
         duration,
         location,
         status: InterviewStatus.SCHEDULED,
       })
       .pipe(
-        tap((response) => {
-          if (response.success && response.data) {
-            this.interviewStore.updateInterview(id, response.data);
-            this.notificationStore.success('Interview scheduled successfully');
-          }
+        tap((interview) => {
+          this.interviewStore.updateInterview(id, interview);
+          this.notificationStore.success('Interview scheduled successfully');
         }),
         catchError(this.handleError)
       );
@@ -211,22 +196,20 @@ export class InterviewService {
   /**
    * Cancel interview
    */
-  cancelInterview(id: string, reason: string): Observable<ApiResponse<Interview>> {
+  cancelInterview(id: string, reason: string): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
 
     console.log('TODO: Cancel interview', id, reason);
 
     return this.http
-      .put<ApiResponse<Interview>>(endpoint, {
+      .put<Interview>(endpoint, {
         status: InterviewStatus.CANCELLED,
         notes: reason,
       })
       .pipe(
-        tap((response) => {
-          if (response.success && response.data) {
-            this.interviewStore.updateInterview(id, response.data);
-            this.notificationStore.info('Interview cancelled');
-          }
+        tap((interview) => {
+          this.interviewStore.updateInterview(id, interview);
+          this.notificationStore.info('Interview cancelled');
         }),
         catchError(this.handleError)
       );
@@ -240,31 +223,29 @@ export class InterviewService {
     candidateId: string,
     outcome: InterviewOutcome,
     comments?: string
-  ): Observable<ApiResponse<Interview>> {
+  ): Observable<Interview> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(interviewId)}`;
 
     console.log('TODO: Mark candidate outcome', interviewId, outcome);
 
     return this.http
-      .put<ApiResponse<Interview>>(endpoint, {
+      .put<Interview>(endpoint, {
         candidateId,
         outcome,
         comments,
       })
       .pipe(
-        tap((response) => {
-          if (response.success && response.data) {
-            this.interviewStore.updateInterview(interviewId, response.data);
+        tap((interview) => {
+          this.interviewStore.updateInterview(interviewId, interview);
 
-            const outcomeMessage =
-              outcome === InterviewOutcome.SELECTED
-                ? 'Candidate selected'
-                : outcome === InterviewOutcome.SELECTED_NEXT_ROUND
-                ? 'Candidate selected for next round'
-                : 'Candidate rejected';
+          const outcomeMessage =
+            outcome === InterviewOutcome.SELECTED
+              ? 'Candidate selected'
+              : outcome === InterviewOutcome.SELECTED_NEXT_ROUND
+              ? 'Candidate selected for next round'
+              : 'Candidate rejected';
 
-            this.notificationStore.success(outcomeMessage);
-          }
+          this.notificationStore.success(outcomeMessage);
         }),
         catchError(this.handleError)
       );
@@ -273,17 +254,15 @@ export class InterviewService {
   /**
    * Delete interview
    */
-  deleteInterview(id: string): Observable<ApiResponse<void>> {
+  deleteInterview(id: string): Observable<void> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
 
     console.log('TODO: Delete interview', id);
 
-    return this.http.delete<ApiResponse<void>>(endpoint).pipe(
-      tap((response) => {
-        if (response.success) {
-          this.interviewStore.removeInterview(id);
-          this.notificationStore.success('Interview deleted');
-        }
+    return this.http.delete<void>(endpoint).pipe(
+      tap(() => {
+        this.interviewStore.removeInterview(id);
+        this.notificationStore.success('Interview deleted');
       }),
       catchError(this.handleError)
     );

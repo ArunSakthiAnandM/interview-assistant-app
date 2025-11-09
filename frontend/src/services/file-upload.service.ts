@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ApiResponse, FileUploadResponse } from '../models';
+import { FileUploadResponse } from '../models';
 import { API_CONFIG, API_ENDPOINTS, FILE_CONFIG, ERROR_MESSAGES } from '../constants';
 
 /**
@@ -28,7 +28,7 @@ export class FileUploadService {
    * TODO: Integrate with Spring Boot backend file upload endpoint
    * TODO: Consider using AWS S3 or similar cloud storage for production
    */
-  uploadFile(file: File, documentType?: string): Observable<ApiResponse<FileUploadResponse>> {
+  uploadFile(file: File, documentType?: string): Observable<FileUploadResponse> {
     // Validate file
     const validationError = this.validateFile(file);
     if (validationError) {
@@ -49,7 +49,7 @@ export class FileUploadService {
 
     // TODO: Implement progress tracking
     return this.http
-      .post<ApiResponse<FileUploadResponse>>(endpoint, formData, {
+      .post<FileUploadResponse>(endpoint, formData, {
         reportProgress: true,
         // observe: 'events', // Uncomment to track upload progress
       })
@@ -94,10 +94,7 @@ export class FileUploadService {
    * Upload multiple files
    * TODO: Implement batch upload with backend
    */
-  uploadMultipleFiles(
-    files: File[],
-    documentType?: string
-  ): Observable<ApiResponse<FileUploadResponse>[]> {
+  uploadMultipleFiles(files: File[], documentType?: string): Observable<FileUploadResponse[]> {
     this.isUploadingSignal.set(true);
 
     // Upload files sequentially to track progress better
@@ -114,13 +111,11 @@ export class FileUploadService {
    * Delete file from server
    * TODO: Integrate with Spring Boot backend file deletion endpoint
    */
-  deleteFile(fileId: string): Observable<ApiResponse<void>> {
+  deleteFile(fileId: string): Observable<void> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.FILE.DELETE(fileId)}`;
 
     // TODO: Replace with actual backend call
-    return this.http
-      .delete<ApiResponse<void>>(endpoint)
-      .pipe(catchError((error) => this.handleError(error)));
+    return this.http.delete<void>(endpoint).pipe(catchError((error) => this.handleError(error)));
   }
 
   /**

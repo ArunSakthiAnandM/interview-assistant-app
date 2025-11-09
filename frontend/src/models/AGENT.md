@@ -105,31 +105,36 @@ export type UpdateInterviewDto = Partial<CreateInterviewDto>;
 
 ### API Response Model Pattern
 
+**NOTE: ApiResponse wrapper has been removed. Services now return data types directly.**
+
 ```typescript
 // api-response.model.ts
-export interface ApiResponse<T = any> {
+// ApiResponse wrapper removed - backend returns data directly without wrapper
+
+export interface PaginatedResponse<T> {
   success: boolean;
-  data: T;
-  message?: string;
+  data: T[];
+  pagination: PaginationMeta;
+  message: string;
   timestamp: Date;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
+export interface PaginationMeta {
+  currentPage: number;
   pageSize: number;
   totalPages: number;
+  totalItems: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }
 
 export interface ApiError {
   success: false;
-  error: {
-    code: string;
-    message: string;
-    details?: Record<string, any>;
-  };
+  message: string;
+  error: string;
+  statusCode: number;
   timestamp: Date;
+  path?: string;
 }
 
 // Type guards

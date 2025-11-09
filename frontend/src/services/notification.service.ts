@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ApiResponse } from '../models';
 import { API_CONFIG } from '../constants';
 import { NotificationStore } from '../store/notification.store';
 
@@ -73,11 +72,11 @@ export class NotificationService {
    * TODO: Integrate with Spring Boot backend notification service
    * Backend should integrate with SendGrid, AWS SES, or similar
    */
-  sendEmail(request: EmailNotificationRequest): Observable<ApiResponse<void>> {
+  sendEmail(request: EmailNotificationRequest): Observable<void> {
     console.log('TODO: Send email notification', request);
 
     // TODO: Replace with actual backend call
-    return this.http.post<ApiResponse<void>>(this.EMAIL_ENDPOINT, request).pipe(
+    return this.http.post<void>(this.EMAIL_ENDPOINT, request).pipe(
       tap(() => {
         this.notificationStore.success('Email sent successfully');
       }),
@@ -94,11 +93,11 @@ export class NotificationService {
    * TODO: Integrate with Spring Boot backend SMS service
    * Backend should integrate with Twilio or similar
    */
-  sendSMS(request: SMSNotificationRequest): Observable<ApiResponse<void>> {
+  sendSMS(request: SMSNotificationRequest): Observable<void> {
     console.log('TODO: Send SMS notification', request);
 
     // TODO: Replace with actual backend call
-    return this.http.post<ApiResponse<void>>(this.SMS_ENDPOINT, request).pipe(
+    return this.http.post<void>(this.SMS_ENDPOINT, request).pipe(
       tap(() => {
         this.notificationStore.success('SMS sent successfully');
       }),
@@ -122,7 +121,7 @@ export class NotificationService {
       location: string;
       interviewLink: string;
     }
-  ): Observable<ApiResponse<void>> {
+  ): Observable<void> {
     return this.sendEmail({
       to: candidateEmail,
       type: EmailNotificationType.INTERVIEW_INVITATION,
@@ -193,7 +192,7 @@ export class NotificationService {
       outcome: string;
       message: string;
     }
-  ): Observable<ApiResponse<void>> {
+  ): Observable<void> {
     return this.sendEmail({
       to: candidateEmail,
       type: EmailNotificationType.INTERVIEW_FEEDBACK,
@@ -212,7 +211,7 @@ export class NotificationService {
       contactPerson: string;
       contactEmail: string;
     }
-  ): Observable<ApiResponse<void>> {
+  ): Observable<void> {
     return this.sendEmail({
       to: candidateEmail,
       type: EmailNotificationType.CANDIDATE_SELECTED,
@@ -229,7 +228,7 @@ export class NotificationService {
       interviewTitle: string;
       message: string;
     }
-  ): Observable<ApiResponse<void>> {
+  ): Observable<void> {
     return this.sendEmail({
       to: candidateEmail,
       type: EmailNotificationType.CANDIDATE_REJECTED,
@@ -240,10 +239,7 @@ export class NotificationService {
   /**
    * Send organisation verification notification
    */
-  sendOrganisationVerified(
-    adminEmail: string,
-    organisationName: string
-  ): Observable<ApiResponse<void>> {
+  sendOrganisationVerified(adminEmail: string, organisationName: string): Observable<void> {
     return this.sendEmail({
       to: adminEmail,
       type: EmailNotificationType.ORGANISATION_VERIFIED,
@@ -258,7 +254,7 @@ export class NotificationService {
     adminEmail: string,
     organisationName: string,
     reason: string
-  ): Observable<ApiResponse<void>> {
+  ): Observable<void> {
     return this.sendEmail({
       to: adminEmail,
       type: EmailNotificationType.ORGANISATION_REJECTED,
@@ -269,11 +265,7 @@ export class NotificationService {
   /**
    * Send welcome email to new user
    */
-  sendWelcomeEmail(
-    email: string,
-    userName: string,
-    userType: string
-  ): Observable<ApiResponse<void>> {
+  sendWelcomeEmail(email: string, userName: string, userType: string): Observable<void> {
     return this.sendEmail({
       to: email,
       type: EmailNotificationType.WELCOME,
@@ -284,11 +276,7 @@ export class NotificationService {
   /**
    * Send password reset email
    */
-  sendPasswordResetEmail(
-    email: string,
-    resetToken: string,
-    resetLink: string
-  ): Observable<ApiResponse<void>> {
+  sendPasswordResetEmail(email: string, resetToken: string, resetLink: string): Observable<void> {
     return this.sendEmail({
       to: email,
       type: EmailNotificationType.PASSWORD_RESET,

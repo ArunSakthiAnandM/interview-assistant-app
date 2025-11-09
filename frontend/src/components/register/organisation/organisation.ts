@@ -151,22 +151,20 @@ export class Organisation {
     this.isLoading.set(true);
 
     this.fileUploadService.uploadFile(file, documentType).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          const kycDoc: KYCDocument = {
-            documentType: documentType,
-            documentName: response.data.fileName,
-            fileUrl: response.data.fileUrl,
-            fileSize: response.data.fileSize,
-            uploadedAt: response.data.uploadedAt,
-          };
+      next: (fileUploadResponse) => {
+        const kycDoc: KYCDocument = {
+          documentType: documentType,
+          documentName: fileUploadResponse.fileName,
+          fileUrl: fileUploadResponse.fileUrl,
+          fileSize: fileUploadResponse.fileSize,
+          uploadedAt: fileUploadResponse.uploadedAt,
+        };
 
-          const docs = [...this.uploadedDocuments()];
-          docs.push(kycDoc);
-          this.uploadedDocuments.set(docs);
+        const docs = [...this.uploadedDocuments()];
+        docs.push(kycDoc);
+        this.uploadedDocuments.set(docs);
 
-          this.snackBar.open(SUCCESS_MESSAGES.FILE_UPLOADED, 'Close', { duration: 3000 });
-        }
+        this.snackBar.open(SUCCESS_MESSAGES.FILE_UPLOADED, 'Close', { duration: 3000 });
       },
       error: (error) => {
         console.error('File upload error:', error);
@@ -209,11 +207,7 @@ export class Organisation {
    * TODO: This will call Spring Boot backend organisation registration API
    */
   onSubmit(): void {
-    if (
-      this.orgDetailsForm.invalid ||
-      this.addressForm.invalid ||
-      this.adminForm.invalid
-    ) {
+    if (this.orgDetailsForm.invalid || this.addressForm.invalid || this.adminForm.invalid) {
       this.snackBar.open(ERROR_MESSAGES.VALIDATION_ERROR, 'Close', { duration: 3000 });
       return;
     }
@@ -233,14 +227,12 @@ export class Organisation {
     console.log('KYC Documents:', this.uploadedDocuments());
 
     this.organisationService.registerOrganisation(request).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.snackBar.open(SUCCESS_MESSAGES.REGISTRATION_SUCCESS, 'Close', { duration: 5000 });
-          // Navigate to login or success page
-          setTimeout(() => {
-            this.router.navigate([APP_ROUTES.LOGIN]);
-          }, 2000);
-        }
+      next: (organisation) => {
+        this.snackBar.open(SUCCESS_MESSAGES.REGISTRATION_SUCCESS, 'Close', { duration: 5000 });
+        // Navigate to login or success page
+        setTimeout(() => {
+          this.router.navigate([APP_ROUTES.LOGIN]);
+        }, 2000);
       },
       error: (error) => {
         console.error('Registration error:', error);

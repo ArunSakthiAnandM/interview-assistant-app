@@ -172,10 +172,8 @@ export class Candidate {
     };
 
     this.otpService.sendOTP(request).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.notificationStore.success('OTP sent to your email');
-        }
+      next: () => {
+        this.notificationStore.success('OTP sent to your email');
       },
       error: (error) => {
         this.notificationStore.error(error.message || ERROR_MESSAGES.SERVER_ERROR);
@@ -194,10 +192,8 @@ export class Candidate {
     };
 
     this.otpService.sendOTP(request).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.notificationStore.success('OTP sent to your mobile');
-        }
+      next: () => {
+        this.notificationStore.success('OTP sent to your mobile');
       },
       error: (error) => {
         this.notificationStore.error(error.message || ERROR_MESSAGES.SERVER_ERROR);
@@ -231,12 +227,12 @@ export class Candidate {
     };
 
     this.otpService.verifyOTP(request).subscribe({
-      next: (response) => {
-        if (response.success && response.data?.verified) {
+      next: (verificationResponse) => {
+        if (verificationResponse.verified) {
           this.emailVerified.set(true);
           this.notificationStore.success('Email verified successfully');
         } else {
-          this.notificationStore.error(response.data?.message || ERROR_MESSAGES.OTP_INVALID);
+          this.notificationStore.error(verificationResponse.message || ERROR_MESSAGES.OTP_INVALID);
         }
       },
       error: (error) => {
@@ -271,12 +267,12 @@ export class Candidate {
     };
 
     this.otpService.verifyOTP(request).subscribe({
-      next: (response) => {
-        if (response.success && response.data?.verified) {
+      next: (verificationResponse) => {
+        if (verificationResponse.verified) {
           this.mobileVerified.set(true);
           this.notificationStore.success('Mobile verified successfully');
         } else {
-          this.notificationStore.error(response.data?.message || ERROR_MESSAGES.OTP_INVALID);
+          this.notificationStore.error(verificationResponse.message || ERROR_MESSAGES.OTP_INVALID);
         }
       },
       error: (error) => {
@@ -320,15 +316,13 @@ export class Candidate {
     };
 
     this.candidateService.registerCandidate(registrationRequest).subscribe({
-      next: (response) => {
+      next: (candidate) => {
         this.isLoading.set(false);
-        if (response.success) {
-          this.notificationStore.success(SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
-          // Navigate to login page
-          this.router.navigate([APP_ROUTES.LOGIN], {
-            queryParams: { registered: 'true' },
-          });
-        }
+        this.notificationStore.success(SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
+        // Navigate to login page
+        this.router.navigate([APP_ROUTES.LOGIN], {
+          queryParams: { registered: 'true' },
+        });
       },
       error: (error) => {
         this.isLoading.set(false);

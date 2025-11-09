@@ -42,10 +42,8 @@ export class InterviewDetail implements OnInit {
 
   private loadInterview(id: string): void {
     this.interviewService.getInterview(id).subscribe({
-      next: (response) => {
-        if (response.data) {
-          this.interview.set(response.data);
-        }
+      next: (interview) => {
+        this.interview.set(interview);
         this.isLoading.set(false);
       },
       error: () => {

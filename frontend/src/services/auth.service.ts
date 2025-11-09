@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ApiResponse, AuthResponse, LoginCredentials, User, UserRole } from '../models';
+import { AuthResponse, LoginCredentials, User, UserRole } from '../models';
 import { API_CONFIG, API_ENDPOINTS, STORAGE_KEYS, ERROR_MESSAGES, APP_ROUTES } from '../constants';
 import { AuthStore } from '../store/auth.store';
 import { NotificationStore } from '../store/notification.store';
@@ -55,18 +55,16 @@ export class AuthService {
    * Login user with credentials
    * TODO: Integrate with Spring Boot backend authentication endpoint
    */
-  login(credentials: LoginCredentials): Observable<ApiResponse<AuthResponse>> {
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
     this.authStore.setLoading(true);
 
     // TODO: Replace with actual backend call
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.AUTH.LOGIN}`;
 
-    return this.http.post<ApiResponse<AuthResponse>>(endpoint, credentials).pipe(
+    return this.http.post<AuthResponse>(endpoint, credentials).pipe(
       tap((response) => {
-        if (response.success && response.data) {
-          this.handleAuthSuccess(response.data);
-          this.notificationStore.success('Login successful!');
-        }
+        this.handleAuthSuccess(response);
+        this.notificationStore.success('Login successful!');
       }),
       catchError((error) => this.handleAuthError(error)),
       tap(() => this.authStore.setLoading(false))
@@ -112,7 +110,7 @@ export class AuthService {
    * Refresh access token
    * TODO: Implement token refresh logic with backend
    */
-  refreshToken(): Observable<ApiResponse<AuthResponse>> {
+  refreshToken(): Observable<AuthResponse> {
     const refreshToken = this.getRefreshToken();
 
     if (!refreshToken) {
@@ -122,13 +120,11 @@ export class AuthService {
     // TODO: Implement refresh token endpoint call
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`;
 
-    return this.http.post<ApiResponse<AuthResponse>>(endpoint, { refreshToken }).pipe(
+    return this.http.post<AuthResponse>(endpoint, { refreshToken }).pipe(
       tap((response) => {
-        if (response.success && response.data) {
-          this.storeAccessToken(response.data.accessToken);
-          if (response.data.refreshToken) {
-            this.storeRefreshToken(response.data.refreshToken);
-          }
+        this.storeAccessToken(response.accessToken);
+        if (response.refreshToken) {
+          this.storeRefreshToken(response.refreshToken);
         }
       }),
       catchError((error) => {

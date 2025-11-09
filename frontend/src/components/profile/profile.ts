@@ -12,7 +12,6 @@ import { HttpClient } from '@angular/common/http';
 import { AuthStore } from '../../store/auth.store';
 import { NotificationStore } from '../../store/notification.store';
 import { API_CONFIG, API_ENDPOINTS } from '../../constants';
-import { ApiResponse } from '../../models';
 
 @Component({
   selector: 'app-profile',
@@ -100,15 +99,13 @@ export class Profile implements OnInit {
       endpoint = `${API_CONFIG.BASE_URL}/users/${this.authStore.currentUser()?.id}/profile`;
     }
 
-    this.http.put<ApiResponse<any>>(endpoint, profileData).subscribe({
-      next: (response) => {
+    this.http.put<any>(endpoint, profileData).subscribe({
+      next: (userData) => {
         this.notificationStore.success('Profile updated successfully');
         this.isSaving.set(false);
 
         // Update the auth store with new user data
-        if (response.data) {
-          this.authStore.setUser({ ...this.authStore.currentUser()!, ...response.data });
-        }
+        this.authStore.setUser({ ...this.authStore.currentUser()!, ...userData });
       },
       error: (error) => {
         console.error('Profile update error:', error);

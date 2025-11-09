@@ -202,15 +202,13 @@ export class Interviewer {
     };
 
     this.interviewerService.registerInterviewer(registrationRequest).subscribe({
-      next: (response) => {
+      next: (interviewer) => {
         this.isLoading.set(false);
-        if (response.success) {
-          this.notificationStore.success(SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
-          // Navigate to login page
-          this.router.navigate([APP_ROUTES.LOGIN], {
-            queryParams: { registered: 'true', role: 'interviewer' },
-          });
-        }
+        this.notificationStore.success(SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
+        // Navigate to login page
+        this.router.navigate([APP_ROUTES.LOGIN], {
+          queryParams: { registered: 'true', role: 'interviewer' },
+        });
       },
       error: (error) => {
         this.isLoading.set(false);
