@@ -15,17 +15,19 @@ public interface InterviewRepository extends MongoRepository<Interview, String> 
 
     Page<Interview> findByStatus(InterviewStatus status, Pageable pageable);
 
+    @Query("{ 'candidate.$id': ?0 }")
     Page<Interview> findByCandidateId(String candidateId, Pageable pageable);
 
+    @Query("{ 'interviewers.$id': ?0 }")
     Page<Interview> findByInterviewerId(String interviewerId, Pageable pageable);
 
     @Query("{ 'scheduledAt': { $gte: ?0, $lte: ?1 } }")
     Page<Interview> findByScheduledAtBetween(LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable);
 
-    @Query("{ 'candidateId': ?0, 'status': ?1 }")
+    @Query("{ 'candidate.$id': ?0, 'status': ?1 }")
     Page<Interview> findByCandidateIdAndStatus(String candidateId, InterviewStatus status, Pageable pageable);
 
-    @Query("{ 'interviewerId': ?0, 'status': ?1 }")
+    @Query("{ 'interviewers.$id': ?0, 'status': ?1 }")
     Page<Interview> findByInterviewerIdAndStatus(String interviewerId, InterviewStatus status, Pageable pageable);
 }
 

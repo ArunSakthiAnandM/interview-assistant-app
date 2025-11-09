@@ -12,11 +12,16 @@ import java.util.Optional;
 @Repository
 public interface FeedbackRepository extends MongoRepository<Feedback, String> {
 
+    @Query("{ 'interview.$id': ?0 }")
     Optional<Feedback> findByInterviewId(String interviewId);
 
-    Page<Feedback> findByInterview_Candidate_Id(String candidateId, Pageable pageable);
+    // Note: For these queries, we'll need to handle them in the service layer
+    // by first finding interviews and then finding feedback for those interviews
+    @Query("{ 'interview.$id': { $in: ?0 } }")
+    Page<Feedback> findByCandidateInterviewIds(java.util.List<String> interviewIds, Pageable pageable);
 
-    Page<Feedback> findByInterview_Interviewer_Id(String interviewerId, Pageable pageable);
+    @Query("{ 'interview.$id': { $in: ?0 } }")
+    Page<Feedback> findByInterviewerInterviewIds(java.util.List<String> interviewIds, Pageable pageable);
 
     @Query("{ 'interview.$id': ?0 }")
     Page<Feedback> findByInterviewIdPage(String interviewId, Pageable pageable);

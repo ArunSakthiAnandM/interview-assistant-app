@@ -44,9 +44,29 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (interviewId != null) {
             feedbackPage = feedbackRepository.findByInterviewIdPage(interviewId, pageable);
         } else if (candidateId != null) {
-            feedbackPage = feedbackRepository.findByInterview_Candidate_Id(candidateId, pageable);
+            // First find all interviews for the candidate
+            List<Interview> interviews = interviewRepository.findByCandidateId(candidateId, Pageable.unpaged()).getContent();
+            List<String> interviewIds = interviews.stream()
+                    .map(Interview::getId)
+                    .collect(Collectors.toList());
+
+            if (interviewIds.isEmpty()) {
+                feedbackPage = Page.empty(pageable);
+            } else {
+                feedbackPage = feedbackRepository.findByCandidateInterviewIds(interviewIds, pageable);
+            }
         } else if (interviewerId != null) {
-            feedbackPage = feedbackRepository.findByInterview_Interviewer_Id(interviewerId, pageable);
+            // First find all interviews for the interviewer
+            List<Interview> interviews = interviewRepository.findByInterviewerId(interviewerId, Pageable.unpaged()).getContent();
+            List<String> interviewIds = interviews.stream()
+                    .map(Interview::getId)
+                    .collect(Collectors.toList());
+
+            if (interviewIds.isEmpty()) {
+                feedbackPage = Page.empty(pageable);
+            } else {
+                feedbackPage = feedbackRepository.findByInterviewerInterviewIds(interviewIds, pageable);
+            }
         } else {
             feedbackPage = feedbackRepository.findAll(pageable);
         }
