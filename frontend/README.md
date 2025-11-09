@@ -34,7 +34,7 @@ The Interview Assistant App is a full-featured platform designed to streamline t
 - **Multi-Role Support**: Admin, Organization, Interviewer, and Candidate dashboards
 - **Interview Management**: Create, schedule, conduct, and provide feedback on interviews
 - **Organization Management**: Register organizations with KYC verification
-- **Authentication**: Dual authentication system (Auth0 for candidates, JWT for organizations)
+- **Authentication**: JWT authentication system
 - **Notifications**: Email and SMS notifications for all interview lifecycle events
 - **State Management**: Signal-based reactive state management
 - **Role-Based Access Control**: Fine-grained permissions and route guards
@@ -49,7 +49,6 @@ The Interview Assistant App is a full-featured platform designed to streamline t
 
 - ✅ JWT-based authentication with refresh token support
 - ✅ Role-based access control (RBAC) with permission system
-- ✅ Auth0 integration placeholders for candidates
 - ✅ Route guards (auth, role, permission, guest)
 - ✅ Automatic token injection via HTTP interceptors
 
@@ -504,8 +503,7 @@ Connect → Subscribe to Channels → Receive Updates → Update Store → UI Re
 
 - **Spring Boot 3.x** - REST API
 - **MongoDB** - Database
-- **Auth0** - Authentication for candidates
-- **JWT** - Authentication for organizations/interviewers
+- **JWT** - Authentication
 - **SendGrid/AWS SES** - Email notifications
 - **Twilio/AWS SNS** - SMS notifications
 - **AWS S3/Azure Blob** - File storage
@@ -554,11 +552,6 @@ Create `src/environments/environment.development.ts`:
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080/api/v1',
-  auth0: {
-    domain: 'your-auth0-domain.auth0.com',
-    clientId: 'your-auth0-client-id',
-    audience: 'your-api-identifier',
-  },
 };
 ```
 
@@ -864,6 +857,7 @@ export class MyService {
 #### Login Component Implementation
 
 **Features**:
+
 - Material Design login form with card layout
 - Email/password authentication with JWT
 - Form validation (email format, password minimum 8 characters)
@@ -875,10 +869,11 @@ export class MyService {
 - Responsive design with gradient background
 
 **API Integration**:
+
 ```typescript
 POST /api/v1/auth/login
 Request: { email: string, password: string }
-Response: { 
+Response: {
   accessToken: string,
   refreshToken: string,
   expiresIn: number,
@@ -887,6 +882,7 @@ Response: {
 ```
 
 **Technologies Used**:
+
 - `ReactiveFormsModule` for form handling
 - `MatCardModule`, `MatFormFieldModule`, `MatInputModule` for UI
 - `MatButtonModule`, `MatIconModule` for interactions
@@ -896,6 +892,7 @@ Response: {
 #### Header Component Implementation
 
 **Features**:
+
 - Dynamic navigation based on authentication state
 - Profile avatar with user initials (generated from name)
 - Dropdown menu with user info and actions
@@ -908,6 +905,7 @@ Response: {
 **Navigation Structure**:
 
 **Guest Users**:
+
 - Home
 - Register Organisation
 - Register Interviewer
@@ -915,6 +913,7 @@ Response: {
 - Login (button)
 
 **Authenticated Users**:
+
 - Home
 - Dashboard (role-specific route)
 - Interviews (for interviewers only)
@@ -925,6 +924,7 @@ Response: {
   - Logout button
 
 **Technologies Used**:
+
 - `MatMenuModule` for dropdown
 - `MatIconModule` for icons
 - `MatButtonModule` for actions
@@ -935,6 +935,7 @@ Response: {
 #### Profile Component Implementation
 
 **Features**:
+
 - User information display (name, email, role)
 - Profile avatar with initial
 - Editable profile fields (first name, last name, mobile)
@@ -947,10 +948,11 @@ Response: {
 - Role-based field display
 
 **API Integration**:
+
 ```typescript
 // For Candidates
 PUT /api/v1/candidates/profile/update
-Request: { 
+Request: {
   firstName: string,
   lastName: string,
   mobile: string,
@@ -961,7 +963,7 @@ Request: {
 
 // For Other Roles
 PUT /api/v1/users/{userId}/profile
-Request: { 
+Request: {
   firstName: string,
   lastName: string,
   mobile: string
@@ -971,16 +973,19 @@ Request: {
 ### Color Scheme
 
 **Primary Gradient**:
+
 ```scss
 linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 ```
 
 **Header Gradient**:
+
 ```scss
 linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%)
 ```
 
 **Login Background**:
+
 ```scss
 linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 ```
@@ -1001,11 +1006,13 @@ linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 ### Responsive Design
 
 **Breakpoints**:
+
 - **Desktop**: > 1024px (full navigation)
 - **Tablet**: 768px - 1024px (condensed navigation)
 - **Mobile**: < 768px (minimal navigation, profile icon only)
 
 **Mobile Optimizations**:
+
 - Reduced padding and margins
 - Smaller font sizes
 - Hidden non-essential nav links
@@ -1015,19 +1022,22 @@ linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 ### Token Management
 
 **Storage**:
+
 - Access Token: `localStorage.getItem('access_token')`
 - Refresh Token: `localStorage.getItem('refresh_token')`
 - User Data: `localStorage.getItem('user_data')`
 
 **Injection**:
+
 - `authInterceptor` automatically adds token to all API requests
 - Skips public endpoints (login, register, OTP)
 
 **Refresh Flow**:
+
 ```typescript
 POST /api/v1/auth/refresh
 Request: { refreshToken: string }
-Response: { 
+Response: {
   accessToken: string,
   refreshToken: string,
   expiresIn: number
@@ -1035,6 +1045,7 @@ Response: {
 ```
 
 **Logout Flow**:
+
 1. User clicks logout from header menu
 2. POST /api/v1/auth/logout (optional backend call)
 3. Clear tokens from localStorage
@@ -1166,6 +1177,7 @@ npm run lint:fix
 ### Security Best Practices
 
 ✅ **Implemented**:
+
 - JWT token authentication with refresh mechanism
 - HTTP-only token storage in localStorage
 - Automatic token injection via interceptor
@@ -1178,6 +1190,7 @@ npm run lint:fix
 - Email format validation
 
 🚧 **Pending Backend Implementation**:
+
 - Two-Factor Authentication (2FA)
 - Password strength meter
 - Account lockout after failed login attempts
@@ -1247,11 +1260,6 @@ Create environment files for different stages:
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080/api/v1',
-  auth0: {
-    domain: 'dev-domain.auth0.com',
-    clientId: 'dev-client-id',
-    audience: 'dev-api-identifier',
-  },
 };
 ```
 
@@ -1261,18 +1269,12 @@ export const environment = {
 export const environment = {
   production: true,
   apiUrl: 'https://api.yourapp.com/v1',
-  auth0: {
-    domain: 'prod-domain.auth0.com',
-    clientId: 'prod-client-id',
-    audience: 'prod-api-identifier',
-  },
 };
 ```
 
 ### Deployment Checklist
 
 - [ ] Update API base URL in constants
-- [ ] Configure Auth0 credentials
 - [ ] Enable production mode
 - [ ] Set up HTTPS
 - [ ] Configure CORS on backend

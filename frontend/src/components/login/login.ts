@@ -65,13 +65,19 @@ export class Login {
     const { email, password } = this.loginForm.value;
 
     this.authService.login({ email, password }).subscribe({
-      next: (response) => {
-        this.notificationStore.success('Login successful');
-        // Navigation is handled by authService
+      next: () => {
+        // Success: notification, store update, and navigation to /home are handled by authService
+        // The authService.login() pipe chain:
+        // 1. Stores tokens and user data
+        // 2. Updates AuthStore
+        // 3. Shows success notification
+        // 4. Navigates to home page
       },
-      error: (error) => {
-        // Error notification is handled by authService
-        console.error('Login error:', error);
+      error: () => {
+        // Error: appropriate error messages are shown by authService based on status codes
+        // - 400/401: "Invalid email or password. Please try again."
+        // - 500/502/503/504: "Server is currently unavailable. Please try again later."
+        // - 0: "Network error. Please check your connection and try again."
       },
     });
   }

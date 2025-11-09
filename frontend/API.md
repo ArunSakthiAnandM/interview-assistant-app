@@ -1584,7 +1584,6 @@ Access-Control-Allow-Headers: Authorization, Content-Type
 
    - **SendGrid or AWS SES** for email notifications
    - **Twilio or AWS SNS** for SMS notifications
-   - **Auth0** for candidate authentication (optional)
 
 3. **Database Schema**:
 

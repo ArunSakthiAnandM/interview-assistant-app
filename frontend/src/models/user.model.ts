@@ -34,7 +34,7 @@ export interface User {
 }
 
 /**
- * Authentication response from Auth0 or backend
+ * Authentication response from backend
  */
 export interface AuthResponse {
   accessToken: string;

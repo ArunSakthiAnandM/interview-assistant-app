@@ -116,15 +116,3 @@ export const APP_ROUTES = {
   PROFILE: '/profile',
   NOT_FOUND: '/404',
 } as const;
-
-/**
- * Auth0 configuration
- * TODO: Update these values with your Auth0 credentials
- */
-export const AUTH0_CONFIG = {
-  DOMAIN: 'your-auth0-domain.auth0.com',
-  CLIENT_ID: 'your-auth0-client-id',
-  AUDIENCE: 'your-auth0-api-identifier',
-  REDIRECT_URI: `${window.location.origin}/callback`,
-  SCOPE: 'openid profile email',
-} as const;

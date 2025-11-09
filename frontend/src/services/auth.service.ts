@@ -74,24 +74,6 @@ export class AuthService {
   }
 
   /**
-   * Login with Auth0 (for candidates)
-   * TODO: Integrate Auth0 SDK
-   */
-  loginWithAuth0(): void {
-    // TODO: Implement Auth0 authentication flow
-    console.log('TODO: Implement Auth0 login');
-
-    // Example Auth0 flow:
-    // 1. Redirect to Auth0 login page
-    // 2. Handle callback with authorization code
-    // 3. Exchange code for tokens
-    // 4. Store tokens and user data
-    // 5. Navigate to dashboard
-
-    throw new Error('Auth0 integration not yet implemented');
-  }
-
-  /**
    * Logout user
    * TODO: Call backend logout endpoint to invalidate tokens
    */
@@ -191,8 +173,8 @@ export class AuthService {
     this.authStore.setUser(authResponse.user);
     this.authStore.setTokens(authResponse.accessToken, authResponse.refreshToken);
 
-    // Navigate based on user role
-    this.navigateByRole(authResponse.user.role);
+    // Navigate to home page after successful login
+    this.router.navigate([APP_ROUTES.HOME]);
   }
 
   /**
@@ -202,12 +184,26 @@ export class AuthService {
     console.error('Authentication error:', error);
     this.authStore.setLoading(false);
 
-    let errorMessage: string = ERROR_MESSAGES.SERVER_ERROR;
+    let errorMessage: string;
 
-    if (error.status === 401) {
-      errorMessage = ERROR_MESSAGES.INVALID_CREDENTIALS;
+    // Handle different error status codes
+    if (error.status === 400 || error.status === 401) {
+      // Invalid credentials
+      errorMessage = 'Invalid email or password. Please try again.';
+    } else if (
+      error.status === 500 ||
+      error.status === 502 ||
+      error.status === 503 ||
+      error.status === 504
+    ) {
+      // Server errors
+      errorMessage = 'Server is currently unavailable. Please try again later.';
     } else if (error.status === 0) {
-      errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
+      // Network error
+      errorMessage = 'Network error. Please check your connection and try again.';
+    } else {
+      // Generic error
+      errorMessage = error.error?.message || 'An error occurred. Please try again.';
     }
 
     this.notificationStore.error(errorMessage);

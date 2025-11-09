@@ -18,13 +18,11 @@ export class CandidateService {
   /**
    * Register new candidate
    * TODO: Integrate with Spring Boot backend candidate registration endpoint
-   * Note: This should work with Auth0 for authentication
    */
   registerCandidate(request: CandidateRegistrationRequest): Observable<ApiResponse<Candidate>> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.REGISTER}`;
 
     // TODO: Replace with actual backend call
-    // This endpoint should create a candidate record and potentially sync with Auth0
     console.log('TODO: Register candidate', request);
 
     return this.http
