@@ -5,7 +5,6 @@ import com.interview.organiser.model.entity.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class EntityMapper {
@@ -71,14 +70,14 @@ public class EntityMapper {
         if (interview.getInterviewers() != null) {
             interviewerResponses = interview.getInterviewers().stream()
                     .map(this::toInterviewerResponse)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         return InterviewResponse.builder()
                 .id(interview.getId())
                 .candidate(toCandidateResponse(interview.getCandidate()))
                 .interviewer(interviewerResponses != null && !interviewerResponses.isEmpty() 
-                        ? interviewerResponses.get(0) : null) // Backward compatibility
+                        ? interviewerResponses.getFirst() : null)
                 .scheduledAt(interview.getScheduledAt())
                 .duration(interview.getDuration())
                 .interviewType(interview.getInterviewType())

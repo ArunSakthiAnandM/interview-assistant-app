@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,7 +54,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         List<CandidateResponse> candidateResponses = candidatePage.getContent().stream()
                 .map(entityMapper::toCandidateResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         return PageResponse.<CandidateResponse>builder()
                 .content(candidateResponses)
