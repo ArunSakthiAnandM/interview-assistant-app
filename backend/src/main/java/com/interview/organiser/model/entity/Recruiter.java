@@ -1,10 +1,13 @@
-package com.interview.organiser.model.dto.response;
+package com.interview.organiser.model.entity;
 
 import com.interview.organiser.constants.enums.VerificationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
@@ -12,16 +15,20 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrganisationResponse {
+@Document(collection = "recruiters")
+public class Recruiter {
 
+    @Id
     private String id;
-    
+
+    @Indexed(unique = true)
     private String name;
 
     private String registrationNumber;
 
-    private AddressDTO address;
+    private Address address;
 
+    @Indexed(unique = true)
     private String contactEmail;
 
     private String contactPhone;
@@ -30,11 +37,13 @@ public class OrganisationResponse {
 
     private String description;
 
-    private VerificationStatus verificationStatus;
+    @Builder.Default
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
 
     private String adminUserId;
 
-    private Boolean isActive;
+    @Builder.Default
+    private Boolean isActive = true;
 
     private LocalDateTime createdAt;
 
@@ -44,7 +53,7 @@ public class OrganisationResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AddressDTO {
+    public static class Address {
         private String street;
         private String city;
         private String state;
@@ -52,3 +61,4 @@ public class OrganisationResponse {
         private String postalCode;
     }
 }
+

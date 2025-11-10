@@ -22,7 +22,7 @@ public class Candidate {
     @Id
     private String id;
 
-    private String organisationId;
+    private String recruiterId;
 
     private String firstName;
 

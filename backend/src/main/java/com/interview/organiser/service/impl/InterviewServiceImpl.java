@@ -91,7 +91,7 @@ public class InterviewServiceImpl implements InterviewService {
                 .collect(Collectors.toList());
 
         Interview interview = Interview.builder()
-                .organisationId(request.getOrganisationId())
+                .recruiterId(request.getRecruiterId())
                 .candidate(candidate)
                 .interviewers(interviewers)
                 .scheduledAt(request.getScheduledAt())

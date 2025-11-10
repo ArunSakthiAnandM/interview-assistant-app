@@ -18,8 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ScheduleInterviewRequest {
 
-    @NotBlank(message = "Organisation ID is required")
-    private String organisationId;
+    @NotBlank(message = "Recruiter ID is required")
+    private String recruiterId;
 
     @NotBlank(message = "Candidate ID is required")
     private String candidateId;

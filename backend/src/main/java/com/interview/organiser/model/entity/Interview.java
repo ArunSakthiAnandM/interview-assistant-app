@@ -23,7 +23,7 @@ public class Interview {
     @Id
     private String id;
 
-    private String organisationId;
+    private String recruiterId;
 
     @DBRef
     private Candidate candidate;

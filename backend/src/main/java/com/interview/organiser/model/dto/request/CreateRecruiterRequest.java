@@ -1,6 +1,6 @@
 package com.interview.organiser.model.dto.request;
 
-import com.interview.organiser.model.entity.Organisation;
+import com.interview.organiser.model.entity.Recruiter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOrganisationRequest {
+public class CreateRecruiterRequest {
 
-    @NotBlank(message = "Organisation name is required")
+    @NotBlank(message = "Recruiter name is required")
     private String name;
 
     private String registrationNumber;
@@ -45,8 +45,8 @@ public class CreateOrganisationRequest {
         private String country;
         private String postalCode;
 
-        public Organisation.Address toEntity() {
-            return Organisation.Address.builder()
+        public Recruiter.Address toEntity() {
+            return Recruiter.Address.builder()
                     .street(street)
                     .city(city)
                     .state(state)
