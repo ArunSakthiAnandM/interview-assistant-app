@@ -9,7 +9,9 @@
       @if (!authStore.isAuthenticated()) {
       <!-- Guest Navigation -->
       <a routerLink="/home" routerLinkActive="active-link">Home</a>
-      <a routerLink="/register/organisation" routerLinkActive="active-link">Register Organisation</a>
+      <a routerLink="/register/organisation" routerLinkActive="active-link"
+        >Register Organisation</a
+      >
       <a routerLink="/register/interviewer" routerLinkActive="active-link">Register Interviewer</a>
       <a routerLink="/register/candidate" routerLinkActive="active-link">Register Candidate</a>
       <button mat-raised-button color="primary" routerLink="/login">Login</button>
@@ -17,16 +19,14 @@
       <!-- Authenticated Navigation -->
       <a routerLink="/home" routerLinkActive="active-link">Home</a>
 
-      @if (authStore.canManageOrganisation()) {
+      @if (authStore.isAdmin()) {
+      <a routerLink="/dashboard/admin" routerLinkActive="active-link">Dashboard</a>
+      } @if (authStore.isRecruiter()) {
       <a routerLink="/dashboard/organisation" routerLinkActive="active-link">Dashboard</a>
-      }
-
-      @if (authStore.isInterviewer()) {
-      <a routerLink="/interviews" routerLinkActive="active-link">Interviews</a>
-      }
-
-      @if (authStore.isCandidate()) {
-      <a routerLink="/dashboard/candidate" routerLinkActive="active-link">My Interviews</a>
+      } @if (authStore.isInterviewer()) {
+      <a routerLink="/dashboard/interviewer" routerLinkActive="active-link">Interviews</a>
+      } @if (authStore.isCandidate()) {
+      <a routerLink="/dashboard/candidate" routerLinkActive="active-link">Dashboard</a>
       }
 
       <!-- User Menu -->
@@ -42,7 +42,7 @@
           </div>
         </button>
 
-        <mat-menu #userMenu="matMenu" class="user-dropdown">
+        <mat-menu #userMenu="matMenu" class="user-dropdown" xPosition="before">
           <div class="user-info">
             <div class="user-avatar-large">
               {{ authStore.userName().charAt(0).toUpperCase() }}
