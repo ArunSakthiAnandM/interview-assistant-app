@@ -42,22 +42,60 @@ export const adminGuard: CanActivateFn = roleGuard([UserRole.ADMIN]);
 
 /**
  * Organisation Admin Guard
- * Only allows users with ADMIN or RECRUITER role
+ * Only allows users with RECRUITER role (for dashboard access)
  */
-export const orgAdminGuard: CanActivateFn = roleGuard([UserRole.ADMIN, UserRole.RECRUITER]);
+export const orgAdminGuard: CanActivateFn = roleGuard([UserRole.RECRUITER]);
 
 /**
  * Interviewer Guard
- * Only allows users with ADMIN, RECRUITER, or INTERVIEWER role
+ * Only allows users with INTERVIEWER role (for dashboard access)
  */
-export const interviewerGuard: CanActivateFn = roleGuard([
-  UserRole.ADMIN,
-  UserRole.RECRUITER,
-  UserRole.INTERVIEWER,
-]);
+export const interviewerGuard: CanActivateFn = roleGuard([UserRole.INTERVIEWER]);
 
 /**
  * Candidate Guard
  * Only allows users with CANDIDATE role
  */
 export const candidateGuard: CanActivateFn = roleGuard([UserRole.CANDIDATE]);
+
+/**
+ * Feature Guards - Allow multiple roles for feature access
+ */
+
+/**
+ * Can Manage Organisations Guard
+ * Allows only RECRUITER role
+ */
+export const canManageOrganisationsGuard: CanActivateFn = roleGuard([UserRole.RECRUITER]);
+
+/**
+ * Can Manage Interviews Guard
+ * Allows RECRUITER and INTERVIEWER roles
+ */
+export const canManageInterviewsGuard: CanActivateFn = roleGuard([
+  UserRole.RECRUITER,
+  UserRole.INTERVIEWER,
+]);
+
+/**
+ * Can View Interviews Guard
+ * Allows ADMIN (for analytics), RECRUITER, INTERVIEWER, and CANDIDATE roles
+ */
+export const canViewInterviewsGuard: CanActivateFn = roleGuard([
+  UserRole.ADMIN,
+  UserRole.RECRUITER,
+  UserRole.INTERVIEWER,
+  UserRole.CANDIDATE,
+]);
+
+/**
+ * Can Verify Organisations Guard
+ * Allows only ADMIN role
+ */
+export const canVerifyOrganisationsGuard: CanActivateFn = roleGuard([UserRole.ADMIN]);
+
+/**
+ * Can View Analytics Guard
+ * Allows only ADMIN role
+ */
+export const canViewAnalyticsGuard: CanActivateFn = roleGuard([UserRole.ADMIN]);

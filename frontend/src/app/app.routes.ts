@@ -6,6 +6,8 @@ import {
   orgAdminGuard,
   interviewerGuard,
   candidateGuard,
+  canManageInterviewsGuard,
+  canViewInterviewsGuard,
 } from '../guards';
 
 export const routes: Routes = [
@@ -73,7 +75,7 @@ export const routes: Routes = [
   // Interview routes
   {
     path: 'interviews',
-    canActivate: [authGuard, interviewerGuard],
+    canActivate: [authGuard, canViewInterviewsGuard],
     loadComponent: () =>
       import('../components/interview/interview-list').then((m) => m.InterviewList),
   },
@@ -85,13 +87,13 @@ export const routes: Routes = [
   },
   {
     path: 'interviews/:id',
-    canActivate: [authGuard],
+    canActivate: [authGuard, canViewInterviewsGuard],
     loadComponent: () =>
       import('../components/interview/interview-detail').then((m) => m.InterviewDetail),
   },
   {
     path: 'interviews/:id/feedback',
-    canActivate: [authGuard, interviewerGuard],
+    canActivate: [authGuard, canManageInterviewsGuard],
     loadComponent: () =>
       import('../components/interview/interview-feedback').then((m) => m.InterviewFeedback),
   },

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { AuthResponse, LoginCredentials, User, UserRole } from '../models';
-import { API_CONFIG, API_ENDPOINTS, STORAGE_KEYS, ERROR_MESSAGES, APP_ROUTES } from '../constants';
+import { API_CONFIG, API_ENDPOINTS, STORAGE_KEYS, APP_ROUTES } from '../constants';
 import { AuthStore } from '../store/auth.store';
 import { NotificationStore } from '../store/notification.store';
 
@@ -28,7 +28,7 @@ export class AuthService {
   readonly isLoading = this.authStore.isLoading;
   readonly userRole = this.authStore.userRole;
   readonly isAdmin = this.authStore.isAdmin;
-  readonly isOrgAdmin = this.authStore.isOrgAdmin;
+  readonly isRecruiter = this.authStore.isRecruiter;
   readonly isInterviewer = this.authStore.isInterviewer;
   readonly isCandidate = this.authStore.isCandidate;
 
@@ -169,8 +169,8 @@ export class AuthService {
     this.authStore.setUser(authResponse.user);
     this.authStore.setTokens(authResponse.accessToken, authResponse.refreshToken);
 
-    // Navigate to home page after successful login
-    this.router.navigate([APP_ROUTES.HOME]);
+    // Navigate to role-specific dashboard after successful login
+    this.navigateByRole(authResponse.user.role);
   }
 
   /**
