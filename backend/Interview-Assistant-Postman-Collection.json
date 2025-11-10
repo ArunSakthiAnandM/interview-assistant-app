@@ -1,0 +1,1211 @@
+{
+	"info": {
+		"_postman_id": "interview-organiser-api-v1",
+		"name": "Interview Organiser API",
+		"description": "Complete API collection for Interview Organiser system with all endpoints for managing interviews, candidates, interviewers, recruiters, and feedback.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "1. Health",
+			"item": [
+				{
+					"name": "Check Health",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Check if the API is up and running"
+					},
+					"response": []
+				}
+			],
+			"description": "Health check endpoint"
+		},
+		{
+			"name": "2. Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.accessToken);",
+									"    pm.environment.set(\"refresh_token\", jsonData.refreshToken);",
+									"    pm.environment.set(\"user_id\", jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"Admin\",\n    \"lastName\": \"User\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Register a new user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.accessToken);",
+									"    pm.environment.set(\"refresh_token\", jsonData.refreshToken);",
+									"    pm.environment.set(\"user_id\", jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Login to get access token"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.accessToken);",
+									"    pm.environment.set(\"refresh_token\", jsonData.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "refresh"]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "logout"]
+						},
+						"description": "Logout user and invalidate refresh token"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for user registration, login, token refresh, and logout"
+		},
+		{
+			"name": "3. Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users?role=RECRUITER&page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["users"],
+							"query": [
+								{
+									"key": "role",
+									"value": "RECRUITER",
+									"description": "Filter by role (ADMIN, RECRUITER, INTERVIEWER, CANDIDATE)"
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								}
+							]
+						},
+						"description": "Get paginated list of users with optional role filter"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						},
+						"description": "Get specific user by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Updated\",\n    \"lastName\": \"Name\",\n    \"phone\": \"+1234567890\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						},
+						"description": "Update user details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						},
+						"description": "Delete user by ID"
+					},
+					"response": []
+				}
+			],
+			"description": "User management endpoints"
+		},
+		{
+			"name": "4. Recruiters",
+			"item": [
+				{
+					"name": "Get All Recruiters",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recruiters?status=VERIFIED&isActive=true&page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters"],
+							"query": [
+								{
+									"key": "status",
+									"value": "VERIFIED",
+									"description": "Filter by verification status (PENDING, VERIFIED, REJECTED)"
+								},
+								{
+									"key": "isActive",
+									"value": "true",
+									"description": "Filter by active status"
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								}
+							]
+						},
+						"description": "Get paginated list of recruiters with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Recruiter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"recruiter_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Tech Solutions Inc.\",\n    \"registrationNumber\": \"REG123456\",\n    \"address\": {\n        \"street\": \"123 Main St\",\n        \"city\": \"San Francisco\",\n        \"state\": \"CA\",\n        \"country\": \"USA\",\n        \"postalCode\": \"94105\"\n    },\n    \"contactEmail\": \"contact@techsolutions.com\",\n    \"contactPhone\": \"+1234567890\",\n    \"website\": \"https://techsolutions.com\",\n    \"description\": \"Leading tech recruiting firm\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiters",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters"]
+						},
+						"description": "Create a new recruiter/organization"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recruiter by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recruiters/{{recruiter_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters", "{{recruiter_id}}"]
+						},
+						"description": "Get specific recruiter by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Recruiter",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Tech Solutions Inc.\",\n    \"contactEmail\": \"newcontact@techsolutions.com\",\n    \"contactPhone\": \"+1234567890\",\n    \"website\": \"https://techsolutions.com\",\n    \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiters/{{recruiter_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters", "{{recruiter_id}}"]
+						},
+						"description": "Update recruiter details"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Recruiter",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiters/{{recruiter_id}}/verify",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters", "{{recruiter_id}}", "verify"]
+						},
+						"description": "Verify recruiter organization (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Recruiter",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiters/{{recruiter_id}}/reject?reason=Incomplete documentation",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters", "{{recruiter_id}}", "reject"],
+							"query": [
+								{
+									"key": "reason",
+									"value": "Incomplete documentation",
+									"description": "Reason for rejection"
+								}
+							]
+						},
+						"description": "Reject recruiter organization (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Recruiter",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiters/{{recruiter_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["recruiters", "{{recruiter_id}}"]
+						},
+						"description": "Delete recruiter by ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Recruiter/Organization management endpoints"
+		},
+		{
+			"name": "5. Candidates",
+			"item": [
+				{
+					"name": "Get All Candidates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/candidates?status=APPLIED&search=developer&page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["candidates"],
+							"query": [
+								{
+									"key": "status",
+									"value": "APPLIED",
+									"description": "Filter by status (APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED)"
+								},
+								{
+									"key": "search",
+									"value": "developer",
+									"description": "Search by name, email, or skills"
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								}
+							]
+						},
+						"description": "Get paginated list of candidates with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Candidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"candidate_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Smith\",\n    \"email\": \"jane.smith@example.com\",\n    \"phone\": \"+1234567890\",\n    \"position\": \"Senior Software Engineer\",\n    \"experience\": 5.5,\n    \"skills\": [\"Java\", \"Spring Boot\", \"MongoDB\", \"React\"],\n    \"resumeUrl\": \"https://example.com/resumes/jane_smith.pdf\",\n    \"linkedinUrl\": \"https://linkedin.com/in/janesmith\",\n    \"githubUrl\": \"https://github.com/janesmith\",\n    \"recruiterId\": \"{{recruiter_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/candidates",
+							"host": ["{{base_url}}"],
+							"path": ["candidates"]
+						},
+						"description": "Create a new candidate profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Candidate by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/candidates/{{candidate_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["candidates", "{{candidate_id}}"]
+						},
+						"description": "Get specific candidate by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Candidate",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+1234567890\",\n    \"position\": \"Lead Software Engineer\",\n    \"experience\": 6.0,\n    \"skills\": [\"Java\", \"Spring Boot\", \"MongoDB\", \"React\", \"Kubernetes\"],\n    \"status\": \"SCREENING\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/candidates/{{candidate_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["candidates", "{{candidate_id}}"]
+						},
+						"description": "Update candidate details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Candidate",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/candidates/{{candidate_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["candidates", "{{candidate_id}}"]
+						},
+						"description": "Delete candidate by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Invite Candidate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidateId\": \"{{candidate_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/candidates/invite",
+							"host": ["{{base_url}}"],
+							"path": ["candidates", "invite"]
+						},
+						"description": "Send invitation to candidate"
+					},
+					"response": []
+				},
+				{
+					"name": "Respond to Invitation",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"invitation_token_here\",\n    \"accept\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/candidates/invitation/respond",
+							"host": ["{{base_url}}"],
+							"path": ["candidates", "invitation", "respond"]
+						},
+						"description": "Candidate responds to invitation"
+					},
+					"response": []
+				}
+			],
+			"description": "Candidate management and tracking endpoints"
+		},
+		{
+			"name": "6. Interviewers",
+			"item": [
+				{
+					"name": "Get All Interviewers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/interviewers?expertise=Java&available=true&page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["interviewers"],
+							"query": [
+								{
+									"key": "expertise",
+									"value": "Java",
+									"description": "Filter by expertise/skill"
+								},
+								{
+									"key": "available",
+									"value": "true",
+									"description": "Filter by availability"
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								}
+							]
+						},
+						"description": "Get paginated list of interviewers with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Interviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"interviewer_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"{{user_id}}\",\n    \"expertise\": [\"Java\", \"Spring Boot\", \"Microservices\"],\n    \"experienceYears\": 10,\n    \"department\": \"Engineering\",\n    \"available\": true,\n    \"maxInterviewsPerDay\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/interviewers",
+							"host": ["{{base_url}}"],
+							"path": ["interviewers"]
+						},
+						"description": "Create a new interviewer profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Interviewer by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/interviewers/{{interviewer_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["interviewers", "{{interviewer_id}}"]
+						},
+						"description": "Get specific interviewer by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Interviewer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expertise\": [\"Java\", \"Spring Boot\", \"Microservices\", \"Cloud\"],\n    \"available\": false,\n    \"maxInterviewsPerDay\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/interviewers/{{interviewer_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["interviewers", "{{interviewer_id}}"]
+						},
+						"description": "Update interviewer details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Interviewer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/interviewers/{{interviewer_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["interviewers", "{{interviewer_id}}"]
+						},
+						"description": "Delete interviewer by ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Interviewer profile management endpoints"
+		},
+		{
+			"name": "7. Interviews",
+			"item": [
+				{
+					"name": "Get All Interviews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/interviews?status=SCHEDULED&candidateId={{candidate_id}}&page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["interviews"],
+							"query": [
+								{
+									"key": "status",
+									"value": "SCHEDULED",
+									"description": "Filter by status (SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED)"
+								},
+								{
+									"key": "candidateId",
+									"value": "{{candidate_id}}",
+									"description": "Filter by candidate ID"
+								},
+								{
+									"key": "interviewerId",
+									"value": "{{interviewer_id}}",
+									"description": "Filter by interviewer ID",
+									"disabled": true
+								},
+								{
+									"key": "fromDate",
+									"value": "2025-11-01T00:00:00",
+									"description": "Filter from date (ISO 8601)",
+									"disabled": true
+								},
+								{
+									"key": "toDate",
+									"value": "2025-12-31T23:59:59",
+									"description": "Filter to date (ISO 8601)",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								}
+							]
+						},
+						"description": "Get paginated list of interviews with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule Interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"interview_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"recruiterId\": \"{{recruiter_id}}\",\n    \"candidateId\": \"{{candidate_id}}\",\n    \"interviewerIds\": [\"{{interviewer_id}}\"],\n    \"scheduledAt\": \"2025-11-15T14:00:00\",\n    \"duration\": 60,\n    \"interviewType\": \"TECHNICAL\",\n    \"round\": 1,\n    \"meetingLink\": \"https://meet.google.com/abc-defg-hij\",\n    \"notes\": \"Technical round focusing on Java, Spring Boot, and system design\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/interviews",
+							"host": ["{{base_url}}"],
+							"path": ["interviews"]
+						},
+						"description": "Schedule a new interview"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Interview by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/interviews/{{interview_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["interviews", "{{interview_id}}"]
+						},
+						"description": "Get specific interview by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Interview",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scheduledAt\": \"2025-11-15T15:00:00\",\n    \"duration\": 90,\n    \"meetingLink\": \"https://meet.google.com/new-link\",\n    \"notes\": \"Updated notes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/interviews/{{interview_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["interviews", "{{interview_id}}"]
+						},
+						"description": "Update interview details"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Interview Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"COMPLETED\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/interviews/{{interview_id}}/status",
+							"host": ["{{base_url}}"],
+							"path": ["interviews", "{{interview_id}}", "status"]
+						},
+						"description": "Update interview status"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Interview",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/interviews/{{interview_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["interviews", "{{interview_id}}"]
+						},
+						"description": "Cancel/delete interview"
+					},
+					"response": []
+				}
+			],
+			"description": "Interview scheduling and management endpoints"
+		},
+		{
+			"name": "8. Feedback",
+			"item": [
+				{
+					"name": "Get All Feedback",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/feedback?interviewId={{interview_id}}&page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["feedback"],
+							"query": [
+								{
+									"key": "interviewId",
+									"value": "{{interview_id}}",
+									"description": "Filter by interview ID"
+								},
+								{
+									"key": "candidateId",
+									"value": "{{candidate_id}}",
+									"description": "Filter by candidate ID",
+									"disabled": true
+								},
+								{
+									"key": "interviewerId",
+									"value": "{{interviewer_id}}",
+									"description": "Filter by interviewer ID",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								}
+							]
+						},
+						"description": "Get paginated list of feedback with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Feedback",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"feedback_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"interviewId\": \"{{interview_id}}\",\n    \"interviewerId\": \"{{interviewer_id}}\",\n    \"technicalSkills\": 4,\n    \"communicationSkills\": 5,\n    \"problemSolving\": 4,\n    \"culturalFit\": 5,\n    \"overallRating\": 4,\n    \"strengths\": \"Strong problem-solving skills, excellent communication\",\n    \"weaknesses\": \"Limited experience with microservices\",\n    \"comments\": \"Candidate shows great potential and fits well with our team culture\",\n    \"recommendation\": \"HIRE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/feedback",
+							"host": ["{{base_url}}"],
+							"path": ["feedback"]
+						},
+						"description": "Submit feedback for an interview"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Feedback by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/feedback/{{feedback_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["feedback", "{{feedback_id}}"]
+						},
+						"description": "Get specific feedback by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Feedback",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"technicalSkills\": 5,\n    \"overallRating\": 5,\n    \"comments\": \"Updated comments after further consideration\",\n    \"recommendation\": \"STRONG_HIRE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/feedback/{{feedback_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["feedback", "{{feedback_id}}"]
+						},
+						"description": "Update feedback details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Feedback",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/feedback/{{feedback_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["feedback", "{{feedback_id}}"]
+						},
+						"description": "Delete feedback by ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Interview feedback management endpoints"
+		}
+	]
+}
+
