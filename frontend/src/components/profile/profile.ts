@@ -90,13 +90,18 @@ export class Profile implements OnInit {
 
     // Determine endpoint based on user role
     const role = this.authStore.userRole();
+    const userId = this.authStore.currentUser()?.id;
     let endpoint = '';
 
     if (role === 'CANDIDATE') {
-      endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.UPDATE_PROFILE}`;
+      endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.UPDATE(userId!)}`;
+    } else if (role === 'RECRUITER') {
+      endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.UPDATE(userId!)}`;
+    } else if (role === 'INTERVIEWER') {
+      endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.UPDATE(userId!)}`;
     } else {
-      // For other roles, use a generic user profile update endpoint
-      endpoint = `${API_CONFIG.BASE_URL}/users/${this.authStore.currentUser()?.id}/profile`;
+      // For ADMIN and other roles, use generic user update endpoint
+      endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.USER.UPDATE(userId!)}`;
     }
 
     this.http.put<any>(endpoint, profileData).subscribe({

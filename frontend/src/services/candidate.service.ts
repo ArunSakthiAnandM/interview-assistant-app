@@ -20,7 +20,7 @@ export class CandidateService {
    * TODO: Integrate with Spring Boot backend candidate registration endpoint
    */
   registerCandidate(request: CandidateRegistrationRequest): Observable<Candidate> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.REGISTER}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.CREATE}`;
 
     // TODO: Replace with actual backend call
     console.log('TODO: Register candidate', request);
@@ -32,8 +32,8 @@ export class CandidateService {
    * Get candidate profile
    * TODO: Integrate with Spring Boot backend
    */
-  getCandidateProfile(): Observable<Candidate> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.PROFILE}`;
+  getCandidateProfile(candidateId: string): Observable<Candidate> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.BY_ID(candidateId)}`;
 
     console.log('TODO: Get candidate profile');
 
@@ -44,8 +44,11 @@ export class CandidateService {
    * Update candidate profile
    * TODO: Integrate with Spring Boot backend
    */
-  updateCandidateProfile(candidate: Partial<Candidate>): Observable<Candidate> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.UPDATE_PROFILE}`;
+  updateCandidateProfile(
+    candidateId: string,
+    candidate: Partial<Candidate>
+  ): Observable<Candidate> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.UPDATE(candidateId)}`;
 
     console.log('TODO: Update candidate profile', candidate);
 
