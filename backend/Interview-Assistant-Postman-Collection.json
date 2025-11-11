@@ -681,7 +681,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"token\": \"invitation_token_here\",\n    \"accept\": true\n}"
+							"raw": "{\n    \"token\": \"invitation_token_here\",\n    \"response\": \"ACCEPT\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/candidates/invitation/respond",
@@ -769,7 +769,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"userId\": \"{{user_id}}\",\n    \"expertise\": [\"Java\", \"Spring Boot\", \"Microservices\"],\n    \"experienceYears\": 10,\n    \"department\": \"Engineering\",\n    \"available\": true,\n    \"maxInterviewsPerDay\": 3\n}"
+							"raw": "{\n    \"userId\": \"{{user_id}}\",\n    \"department\": \"Engineering\",\n    \"expertise\": [\"Java\", \"Spring Boot\", \"Microservices\"],\n    \"yearsOfExperience\": 10,\n    \"availability\": true\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/interviewers",
@@ -815,7 +815,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"expertise\": [\"Java\", \"Spring Boot\", \"Microservices\", \"Cloud\"],\n    \"available\": false,\n    \"maxInterviewsPerDay\": 2\n}"
+							"raw": "{\n    \"department\": \"Engineering\",\n    \"expertise\": [\"Java\", \"Spring Boot\", \"Microservices\", \"Cloud\"],\n    \"yearsOfExperience\": 12,\n    \"availability\": false\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/interviewers/{{interviewer_id}}",
@@ -1127,7 +1127,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"interviewId\": \"{{interview_id}}\",\n    \"interviewerId\": \"{{interviewer_id}}\",\n    \"technicalSkills\": 4,\n    \"communicationSkills\": 5,\n    \"problemSolving\": 4,\n    \"culturalFit\": 5,\n    \"overallRating\": 4,\n    \"strengths\": \"Strong problem-solving skills, excellent communication\",\n    \"weaknesses\": \"Limited experience with microservices\",\n    \"comments\": \"Candidate shows great potential and fits well with our team culture\",\n    \"recommendation\": \"HIRE\"\n}"
+							"raw": "{\n    \"interviewId\": \"{{interview_id}}\",\n    \"rating\": 8,\n    \"technicalSkills\": 8,\n    \"communicationSkills\": 9,\n    \"problemSolving\": 8,\n    \"culturalFit\": 9,\n    \"strengths\": \"Strong problem-solving skills, excellent communication\",\n    \"weaknesses\": \"Limited experience with microservices\",\n    \"comments\": \"Candidate shows great potential and fits well with our team culture\",\n    \"recommendation\": \"HIRE\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/feedback",
@@ -1173,7 +1173,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"technicalSkills\": 5,\n    \"overallRating\": 5,\n    \"comments\": \"Updated comments after further consideration\",\n    \"recommendation\": \"STRONG_HIRE\"\n}"
+							"raw": "{\n    \"rating\": 9,\n    \"technicalSkills\": 9,\n    \"comments\": \"Updated comments after further consideration\",\n    \"recommendation\": \"STRONG_HIRE\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/feedback/{{feedback_id}}",

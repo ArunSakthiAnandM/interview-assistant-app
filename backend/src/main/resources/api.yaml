@@ -18,9 +18,9 @@ info:
     email: support@intervieworganiser.com
 
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8080/api/v1
     description: Local Development Server
-  - url: https://api.intervieworganiser.com
+  - url: https://api.intervieworganiser.com/api/v1
     description: Production Server
 
 tags:
@@ -59,6 +59,19 @@ components:
         timestamp:
           type: string
           format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
 
     HealthResponse:
       type: object
@@ -100,7 +113,7 @@ components:
         password:
           type: string
           format: password
-          minLength: 6
+          minLength: 8
         firstName:
           type: string
         lastName:
@@ -110,8 +123,6 @@ components:
         role:
           type: string
           enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
-        recruiterId:
-          type: string
 
     LoginRequest:
       type: object
@@ -143,6 +154,7 @@ components:
           default: Bearer
         expiresIn:
           type: integer
+          format: int64
         user:
           $ref: '#/components/schemas/UserResponse'
 
@@ -367,12 +379,17 @@ components:
 
     RespondToInvitationRequest:
       type: object
-      required: [token, accept]
+      required: [token, response]
       properties:
         token:
           type: string
-        accept:
-          type: boolean
+        response:
+          type: string
+          enum: [ACCEPT, DECLINE]
+          description: Response to the invitation
+        reason:
+          type: string
+          description: Optional reason for declining the invitation
 
     # Interviewer
     InterviewerResponse:
@@ -380,19 +397,19 @@ components:
       properties:
         id:
           type: string
-        userId:
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        department:
           type: string
         expertise:
           type: array
           items:
             type: string
-        experienceYears:
+        yearsOfExperience:
           type: integer
-        department:
-          type: string
-        available:
+        availability:
           type: boolean
-        maxInterviewsPerDay:
+        totalInterviews:
           type: integer
         createdAt:
           type: string
@@ -403,38 +420,34 @@ components:
 
     CreateInterviewerRequest:
       type: object
-      required: [userId, expertise]
+      required: [userId, department, expertise]
       properties:
         userId:
+          type: string
+        department:
           type: string
         expertise:
           type: array
           items:
             type: string
-        experienceYears:
+        yearsOfExperience:
           type: integer
-        department:
-          type: string
-        available:
+        availability:
           type: boolean
-        maxInterviewsPerDay:
-          type: integer
 
     UpdateInterviewerRequest:
       type: object
       properties:
+        department:
+          type: string
         expertise:
           type: array
           items:
             type: string
-        experienceYears:
+        yearsOfExperience:
           type: integer
-        department:
-          type: string
-        available:
+        availability:
           type: boolean
-        maxInterviewsPerDay:
-          type: integer
 
     # Interview
     InterviewResponse:
@@ -525,41 +538,40 @@ components:
       properties:
         id:
           type: string
-        interviewId:
-          type: string
-        interviewerId:
-          type: string
-        candidateId:
-          type: string
+        interview:
+          $ref: '#/components/schemas/InterviewResponse'
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
         technicalSkills:
           type: integer
           minimum: 1
-          maximum: 5
+          maximum: 10
         communicationSkills:
           type: integer
           minimum: 1
-          maximum: 5
+          maximum: 10
         problemSolving:
           type: integer
           minimum: 1
-          maximum: 5
+          maximum: 10
         culturalFit:
           type: integer
           minimum: 1
-          maximum: 5
-        overallRating:
-          type: integer
-          minimum: 1
-          maximum: 5
+          maximum: 10
+        comments:
+          type: string
         strengths:
           type: string
         weaknesses:
           type: string
-        comments:
-          type: string
         recommendation:
           type: string
           enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
+        submittedAt:
+          type: string
+          format: date-time
         createdAt:
           type: string
           format: date-time
@@ -569,37 +581,36 @@ components:
 
     SubmitFeedbackRequest:
       type: object
-      required: [interviewId, interviewerId, recommendation]
+      required: [interviewId, rating, recommendation]
       properties:
         interviewId:
           type: string
-        interviewerId:
-          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Overall rating (required)
         technicalSkills:
           type: integer
           minimum: 1
-          maximum: 5
+          maximum: 10
         communicationSkills:
           type: integer
           minimum: 1
-          maximum: 5
+          maximum: 10
         problemSolving:
           type: integer
           minimum: 1
-          maximum: 5
+          maximum: 10
         culturalFit:
           type: integer
           minimum: 1
-          maximum: 5
-        overallRating:
-          type: integer
-          minimum: 1
-          maximum: 5
+          maximum: 10
+        comments:
+          type: string
         strengths:
           type: string
         weaknesses:
-          type: string
-        comments:
           type: string
         recommendation:
           type: string
@@ -608,24 +619,35 @@ components:
     UpdateFeedbackRequest:
       type: object
       properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
         technicalSkills:
           type: integer
+          minimum: 1
+          maximum: 10
         communicationSkills:
           type: integer
+          minimum: 1
+          maximum: 10
         problemSolving:
           type: integer
+          minimum: 1
+          maximum: 10
         culturalFit:
           type: integer
-        overallRating:
-          type: integer
+          minimum: 1
+          maximum: 10
+        comments:
+          type: string
         strengths:
           type: string
         weaknesses:
           type: string
-        comments:
-          type: string
         recommendation:
           type: string
+          enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
 
 paths:
   # Health

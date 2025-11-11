@@ -6,8 +6,8 @@ The Interview Organiser API provides a comprehensive solution for managing the c
 
 ## Base URL
 
-- **Local Development**: `http://localhost:8080`
-- **Production**: `https://api.intervieworganiser.com`
+- **Local Development**: `http://localhost:8080/api/v1`
+- **Production**: `https://api.intervieworganiser.com/api/v1`
 
 ## Authentication
 
@@ -65,8 +65,7 @@ POST /auth/register
   "firstName": "John",
   "lastName": "Doe",
   "phone": "+1234567890",
-  "role": "RECRUITER",
-  "recruiterId": "recruiter_id_here"
+  "role": "RECRUITER"
 }
 ```
 
@@ -560,7 +559,7 @@ POST /candidates/invitation/respond
 ```json
 {
   "token": "invitation_token_here",
-  "accept": true
+  "response": "ACCEPT"
 }
 ```
 
@@ -844,18 +843,21 @@ Authorization: Bearer <token>
   "content": [
     {
       "id": "feedback_id",
-      "interviewId": "interview_id",
-      "interviewerId": "interviewer_id",
-      "candidateId": "candidate_id",
-      "technicalSkills": 4,
-      "communicationSkills": 5,
-      "problemSolving": 4,
-      "culturalFit": 5,
-      "overallRating": 4,
+      "interview": {
+        "id": "interview_id",
+        "scheduledAt": "2025-11-15T14:00:00",
+        "status": "COMPLETED"
+      },
+      "rating": 8,
+      "technicalSkills": 8,
+      "communicationSkills": 9,
+      "problemSolving": 8,
+      "culturalFit": 9,
       "strengths": "Strong problem-solving skills, excellent communication",
       "weaknesses": "Limited experience with microservices",
       "comments": "Candidate shows great potential",
       "recommendation": "HIRE",
+      "submittedAt": "2025-11-15T16:00:00",
       "createdAt": "2025-11-15T16:00:00",
       "updatedAt": "2025-11-15T16:00:00"
     }
@@ -878,12 +880,11 @@ Authorization: Bearer <token>
 ```json
 {
   "interviewId": "interview_id",
-  "interviewerId": "interviewer_id",
-  "technicalSkills": 4,
-  "communicationSkills": 5,
-  "problemSolving": 4,
-  "culturalFit": 5,
-  "overallRating": 4,
+  "rating": 8,
+  "technicalSkills": 8,
+  "communicationSkills": 9,
+  "problemSolving": 8,
+  "culturalFit": 9,
   "strengths": "Strong problem-solving skills, excellent communication",
   "weaknesses": "Limited experience with microservices",
   "comments": "Candidate shows great potential and fits well with our team culture",
