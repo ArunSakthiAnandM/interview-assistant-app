@@ -29,8 +29,8 @@ export interface User {
   // Optional fields that may be present in extended models
   firstName?: string;
   lastName?: string;
-  organisationId?: string;
-  organisationName?: string;
+  recruiterId?: string;
+  recruiterName?: string;
 }
 
 /**

@@ -107,13 +107,13 @@ export class AuthStore {
     const role = this._currentUser()?.role;
 
     switch (permission) {
-      case 'manage:organisations':
+      case 'manage:recruiters':
         return role === UserRole.RECRUITER;
       case 'manage:interviews':
         return role === UserRole.RECRUITER || role === UserRole.INTERVIEWER;
       case 'view:candidates':
         return role === UserRole.RECRUITER || role === UserRole.INTERVIEWER;
-      case 'verify:organisations':
+      case 'verify:recruiters':
         return role === UserRole.ADMIN;
       case 'view:analytics':
         return role === UserRole.ADMIN;

@@ -9,7 +9,7 @@ Contains business logic, API communication, data transformation, and shared func
 - `auth.service.ts` - Authentication and authorization
 - `candidate.service.ts` - Candidate-related operations
 - `interview.service.ts` - Interview management
-- `organisation.service.ts` - Organisation operations
+- `recruiter.service.ts` - Recruiter operations
 - `file-upload.service.ts` - File upload handling
 - `notification.service.ts` - Notifications and alerts
 - `otp.service.ts` - OTP verification

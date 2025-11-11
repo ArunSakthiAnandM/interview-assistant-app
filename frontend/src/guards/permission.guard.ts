@@ -36,9 +36,9 @@ export function permissionGuard(requiredPermission: string): CanActivateFn {
 /**
  * Predefined permission guards
  */
-export const manageOrganisationsGuard: CanActivateFn = permissionGuard('manage:organisations');
+export const manageRecruitersGuard: CanActivateFn = permissionGuard('manage:recruiters');
 export const manageInterviewsGuard: CanActivateFn = permissionGuard('manage:interviews');
 export const viewCandidatesGuard: CanActivateFn = permissionGuard('view:candidates');
 export const manageUsersGuard: CanActivateFn = permissionGuard('manage:users');
-export const verifyOrganisationsGuard: CanActivateFn = permissionGuard('verify:organisations');
+export const verifyRecruitersGuard: CanActivateFn = permissionGuard('verify:recruiters');
 export const viewAnalyticsGuard: CanActivateFn = permissionGuard('view:analytics');

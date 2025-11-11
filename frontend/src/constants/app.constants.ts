@@ -97,13 +97,13 @@ export const APP_ROUTES = {
   HOME: '/home',
   LOGIN: '/login',
   REGISTER: {
-    ORGANISATION: '/register/organisation',
+    RECRUITER: '/register/recruiter',
     CANDIDATE: '/register/candidate',
     INTERVIEWER: '/register/interviewer',
   },
   DASHBOARD: {
     ADMIN: '/dashboard/admin',
-    ORGANISATION: '/dashboard/organisation',
+    RECRUITER: '/dashboard/recruiter',
     INTERVIEWER: '/dashboard/interviewer',
     CANDIDATE: '/dashboard/candidate',
   },

@@ -101,7 +101,7 @@ export class Interviewer {
           [Validators.required, Validators.email, Validators.pattern(VALIDATION_PATTERNS.EMAIL)],
         ],
         mobile: ['', [Validators.pattern(VALIDATION_PATTERNS.MOBILE_INTERNATIONAL)]],
-        organisationId: ['', [Validators.required]],
+        recruiterId: ['', [Validators.required]],
         department: ['', [Validators.required]],
         designation: [
           '',
@@ -193,7 +193,7 @@ export class Interviewer {
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       email: formValue.email,
-      organisationId: formValue.organisationId,
+      recruiterId: formValue.recruiterId,
       department: formValue.department,
       designation: formValue.designation,
       mobile: formValue.mobile || undefined,

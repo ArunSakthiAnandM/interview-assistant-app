@@ -1,27 +1,26 @@
 <div class="registration-container">
   <mat-card class="registration-card">
     <mat-card-header>
-      <mat-card-title>
-        <h1>Organisation Registration</h1>
-      </mat-card-title>
-      <mat-card-subtitle>
-        Register your organization to start managing interviews
-      </mat-card-subtitle>
+      <div class="form-header">
+        <h1>Recruiter Registration</h1>
+        <p>Register your organization to start managing interviews</p>
+      </div>
     </mat-card-header>
 
     <mat-card-content>
       <mat-stepper linear #stepper>
-        <!-- Step 1: Organisation Details -->
-        <mat-step [stepControl]="orgDetailsForm" label="Organisation Details">
-          <form [formGroup]="orgDetailsForm" class="form-section">
+        <!-- Step 1: Recruiter Details -->
+        <mat-step [stepControl]="recruiterDetailsForm" label="Recruiter Details">
+          <form [formGroup]="recruiterDetailsForm" class="form-section">
             <h2>Basic Information</h2>
 
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Organisation Name</mat-label>
+              <mat-label>Company Name</mat-label>
               <input matInput formControlName="name" required />
               <mat-icon matPrefix>business</mat-icon>
-              @if (orgDetailsForm.get('name')?.invalid && orgDetailsForm.get('name')?.touched) {
-              <mat-error>{{ getErrorMessage(orgDetailsForm, 'name') }}</mat-error>
+              @if (recruiterDetailsForm.get('name')?.invalid &&
+              recruiterDetailsForm.get('name')?.touched) {
+              <mat-error>{{ getErrorMessage(recruiterDetailsForm, 'name') }}</mat-error>
               }
             </mat-form-field>
 
@@ -35,9 +34,9 @@
               <mat-label>Contact Email</mat-label>
               <input matInput type="email" formControlName="contactEmail" required />
               <mat-icon matPrefix>email</mat-icon>
-              @if (orgDetailsForm.get('contactEmail')?.invalid &&
-              orgDetailsForm.get('contactEmail')?.touched) {
-              <mat-error>{{ getErrorMessage(orgDetailsForm, 'contactEmail') }}</mat-error>
+              @if (recruiterDetailsForm.get('contactEmail')?.invalid &&
+              recruiterDetailsForm.get('contactEmail')?.touched) {
+              <mat-error>{{ getErrorMessage(recruiterDetailsForm, 'contactEmail') }}</mat-error>
               }
             </mat-form-field>
 
@@ -45,9 +44,9 @@
               <mat-label>Contact Phone</mat-label>
               <input matInput type="tel" formControlName="contactPhone" required />
               <mat-icon matPrefix>phone</mat-icon>
-              @if (orgDetailsForm.get('contactPhone')?.invalid &&
-              orgDetailsForm.get('contactPhone')?.touched) {
-              <mat-error>{{ getErrorMessage(orgDetailsForm, 'contactPhone') }}</mat-error>
+              @if (recruiterDetailsForm.get('contactPhone')?.invalid &&
+              recruiterDetailsForm.get('contactPhone')?.touched) {
+              <mat-error>{{ getErrorMessage(recruiterDetailsForm, 'contactPhone') }}</mat-error>
               }
             </mat-form-field>
 
@@ -55,9 +54,9 @@
               <mat-label>Website (Optional)</mat-label>
               <input matInput type="url" formControlName="website" />
               <mat-icon matPrefix>language</mat-icon>
-              @if (orgDetailsForm.get('website')?.invalid && orgDetailsForm.get('website')?.touched)
-              {
-              <mat-error>{{ getErrorMessage(orgDetailsForm, 'website') }}</mat-error>
+              @if (recruiterDetailsForm.get('website')?.invalid &&
+              recruiterDetailsForm.get('website')?.touched) {
+              <mat-error>{{ getErrorMessage(recruiterDetailsForm, 'website') }}</mat-error>
               }
             </mat-form-field>
 
@@ -67,7 +66,7 @@
                 matInput
                 formControlName="description"
                 rows="4"
-                placeholder="Tell us about your organisation"
+                placeholder="Tell us about your company"
               ></textarea>
               <mat-icon matPrefix>description</mat-icon>
             </mat-form-field>
@@ -78,7 +77,7 @@
                 mat-raised-button
                 color="primary"
                 matStepperNext
-                [disabled]="orgDetailsForm.invalid"
+                [disabled]="recruiterDetailsForm.invalid"
               >
                 Next
               </button>
@@ -89,7 +88,7 @@
         <!-- Step 2: Address -->
         <mat-step [stepControl]="addressForm" label="Address">
           <form [formGroup]="addressForm" class="form-section">
-            <h2>Organisation Address</h2>
+            <h2>Organization Address</h2>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Street Address</mat-label>
@@ -155,7 +154,7 @@
         <mat-step [stepControl]="adminForm" label="Admin Account">
           <form [formGroup]="adminForm" class="form-section">
             <h2>Admin User Account</h2>
-            <p class="info-text">Create an admin account to manage your organisation</p>
+            <p class="info-text">Create an admin account to manage your company</p>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Admin Name</mat-label>

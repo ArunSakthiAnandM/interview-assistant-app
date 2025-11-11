@@ -3,7 +3,7 @@ import {
   authGuard,
   guestGuard,
   adminGuard,
-  orgAdminGuard,
+  recruiterGuard,
   interviewerGuard,
   candidateGuard,
   canManageInterviewsGuard,
@@ -22,10 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('../components/login/login').then((m) => m.Login),
   },
   {
-    path: 'register/organisation',
+    path: 'register/recruiter',
     canActivate: [guestGuard],
     loadComponent: () =>
-      import('../components/register/organisation/organisation').then((m) => m.Organisation),
+      import('../components/register/recruiter/recruiter').then((m) => m.Recruiter),
   },
   {
     path: 'register/interviewer',
@@ -48,11 +48,11 @@ export const routes: Routes = [
       import('../components/dashboard/admin/admin-dashboard').then((m) => m.AdminDashboard),
   },
   {
-    path: 'dashboard/organisation',
-    canActivate: [authGuard, orgAdminGuard],
+    path: 'dashboard/recruiter',
+    canActivate: [authGuard, recruiterGuard],
     loadComponent: () =>
-      import('../components/dashboard/organisation/organisation-dashboard').then(
-        (m) => m.OrganisationDashboard
+      import('../components/dashboard/recruiter/recruiter-dashboard').then(
+        (m) => m.RecruiterDashboard
       ),
   },
   {
@@ -81,7 +81,7 @@ export const routes: Routes = [
   },
   {
     path: 'interviews/create',
-    canActivate: [authGuard, orgAdminGuard],
+    canActivate: [authGuard, recruiterGuard],
     loadComponent: () =>
       import('../components/interview/interview-create').then((m) => m.InterviewCreate),
   },

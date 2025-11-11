@@ -41,13 +41,12 @@ export class InterviewerService {
   }
 
   /**
-   * Get interviewers by organisation
-   * TODO: Integrate with Spring Boot backend
+   * Get interviewers by recruiter
    */
-  getInterviewersByOrganisation(orgId: string): Observable<Interviewer[]> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BY_ORG(orgId)}`;
+  getInterviewersByRecruiter(recruiterId: string): Observable<Interviewer[]> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BY_RECRUITER(recruiterId)}`;
 
-    console.log('TODO: Get interviewers by organisation', orgId);
+    console.log('Get interviewers by recruiter', recruiterId);
 
     return this.http.get<Interviewer[]>(endpoint).pipe(catchError(this.handleError));
   }

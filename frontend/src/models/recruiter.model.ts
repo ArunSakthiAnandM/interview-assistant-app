@@ -1,9 +1,9 @@
 import { VerificationStatus } from './user.model';
 
 /**
- * Organisation registration data
+ * Recruiter registration data
  */
-export interface Organisation {
+export interface Recruiter {
   id?: string;
   name: string;
   registrationNumber?: string;
@@ -54,9 +54,9 @@ export enum KYCDocumentType {
 }
 
 /**
- * Organisation registration request
+ * Recruiter registration request
  */
-export interface OrganisationRegistrationRequest {
+export interface RecruiterRegistrationRequest {
   name: string;
   registrationNumber?: string;
   address: Address;

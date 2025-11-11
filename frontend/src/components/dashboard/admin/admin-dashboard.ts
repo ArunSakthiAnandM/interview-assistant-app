@@ -10,8 +10,8 @@ import { AuthStore } from '../../../store/auth.store';
 import { NotificationStore } from '../../../store/notification.store';
 
 interface DashboardStats {
-  totalOrganisations: number;
-  pendingOrganisations: number;
+  totalRecruiters: number;
+  pendingRecruiters: number;
   totalUsers: number;
   activeUsers: number;
   totalInterviews: number;
@@ -19,7 +19,7 @@ interface DashboardStats {
   successRate: number;
 }
 
-interface PendingOrganisation {
+interface PendingRecruiter {
   id: string;
   name: string;
   email: string;
@@ -60,8 +60,8 @@ export class AdminDashboard implements OnInit {
   private router = inject(Router);
 
   stats: DashboardStats = {
-    totalOrganisations: 0,
-    pendingOrganisations: 0,
+    totalRecruiters: 0,
+    pendingRecruiters: 0,
     totalUsers: 0,
     activeUsers: 0,
     totalInterviews: 0,
@@ -76,8 +76,8 @@ export class AdminDashboard implements OnInit {
     uptime: '0d 0h',
   };
 
-  isLoadingOrgs = signal<boolean>(false);
-  pendingOrganisations = signal<PendingOrganisation[]>([]);
+  isLoadingRecruiters = signal<boolean>(false);
+  pendingRecruiters = signal<PendingRecruiter[]>([]);
   recentActivity = signal<Activity[]>([]);
 
   ngOnInit(): void {
@@ -88,8 +88,8 @@ export class AdminDashboard implements OnInit {
     // TODO: Implement API call to fetch dashboard statistics
     // GET /api/v1/admin/dashboard/stats
     this.stats = {
-      totalOrganisations: 45,
-      pendingOrganisations: 8,
+      totalRecruiters: 45,
+      pendingRecruiters: 8,
       totalUsers: 234,
       activeUsers: 189,
       totalInterviews: 567,
@@ -106,17 +106,17 @@ export class AdminDashboard implements OnInit {
       uptime: '15d 7h',
     };
 
-    this.loadPendingOrganisations();
+    this.loadPendingRecruiters();
     this.loadRecentActivity();
   }
 
-  loadPendingOrganisations(): void {
-    this.isLoadingOrgs.set(true);
+  loadPendingRecruiters(): void {
+    this.isLoadingRecruiters.set(true);
 
-    // TODO: Implement API call to fetch pending organisations
-    // GET /api/v1/admin/organisations/pending
+    // TODO: Implement API call to fetch pending recruiters
+    // GET /api/v1/admin/recruiters/pending
     setTimeout(() => {
-      this.pendingOrganisations.set([
+      this.pendingRecruiters.set([
         {
           id: '1',
           name: 'Tech Innovations Inc.',
@@ -130,7 +130,7 @@ export class AdminDashboard implements OnInit {
           registrationDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
         },
       ]);
-      this.isLoadingOrgs.set(false);
+      this.isLoadingRecruiters.set(false);
     }, 1000);
   }
 
@@ -141,7 +141,7 @@ export class AdminDashboard implements OnInit {
       {
         id: '1',
         icon: 'business',
-        title: 'New Organisation Registration',
+        title: 'New Recruiter Registration',
         description: 'DataCorp Technologies registered',
         timestamp: new Date(Date.now() - 30 * 60 * 1000),
       },
@@ -162,24 +162,24 @@ export class AdminDashboard implements OnInit {
     ]);
   }
 
-  viewOrganisation(orgId: string): void {
-    // TODO: Navigate to organisation detail view
-    // this.router.navigate(['/admin/organisations', orgId]);
-    this.notificationStore.info(`Viewing organisation ${orgId}`, 'Organisation Details');
+  viewRecruiter(recruiterId: string): void {
+    // TODO: Navigate to recruiter detail view
+    // this.router.navigate(['/admin/recruiters', recruiterId]);
+    this.notificationStore.info(`Viewing recruiter ${recruiterId}`, 'Recruiter Details');
   }
 
-  approveOrganisation(orgId: string): void {
-    // TODO: Implement API call to approve organisation
-    // POST /api/v1/admin/organisations/{orgId}/approve
-    this.notificationStore.success('Organisation approved successfully', 'Approval');
-    this.loadPendingOrganisations();
+  approveRecruiter(recruiterId: string): void {
+    // TODO: Implement API call to approve recruiter
+    // POST /api/v1/admin/recruiters/{recruiterId}/approve
+    this.notificationStore.success('Recruiter approved successfully', 'Approval');
+    this.loadPendingRecruiters();
   }
 
-  rejectOrganisation(orgId: string): void {
-    // TODO: Implement API call to reject organisation
-    // POST /api/v1/admin/organisations/{orgId}/reject
+  rejectRecruiter(recruiterId: string): void {
+    // TODO: Implement API call to reject recruiter
+    // POST /api/v1/admin/recruiters/{recruiterId}/reject
     // Should include rejection reason dialog
-    this.notificationStore.warning('Organisation rejected', 'Rejection');
-    this.loadPendingOrganisations();
+    this.notificationStore.warning('Recruiter rejected', 'Rejection');
+    this.loadPendingRecruiters();
   }
 }

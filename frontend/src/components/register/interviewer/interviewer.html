@@ -62,25 +62,21 @@
         </mat-form-field>
       </div>
 
-      <!-- Organization Information Section -->
+      <!-- Recruiter Information Section -->
       <div class="form-section">
         <h2 class="section-title">
           <mat-icon>business</mat-icon>
-          Organization Information
+          Recruiter Information
         </h2>
 
         <mat-form-field appearance="outline" class="form-field full-width">
-          <mat-label>Organization ID</mat-label>
-          <input
-            matInput
-            formControlName="organisationId"
-            placeholder="Enter your organization ID"
-          />
+          <mat-label>Recruiter ID</mat-label>
+          <input matInput formControlName="recruiterId" placeholder="Enter your recruiter ID" />
           <mat-icon matPrefix>business</mat-icon>
-          @if (getErrorMessage('organisationId')) {
-          <mat-error>{{ getErrorMessage('organisationId') }}</mat-error>
+          @if (getErrorMessage('recruiterId')) {
+          <mat-error>{{ getErrorMessage('recruiterId') }}</mat-error>
           }
-          <mat-hint>Get this from your organization admin</mat-hint>
+          <mat-hint>Get this from your recruiter admin</mat-hint>
         </mat-form-field>
 
         <div class="form-row">

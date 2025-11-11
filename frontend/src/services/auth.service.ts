@@ -215,7 +215,7 @@ export class AuthService {
         this.router.navigate([APP_ROUTES.DASHBOARD.ADMIN]);
         break;
       case UserRole.RECRUITER:
-        this.router.navigate([APP_ROUTES.DASHBOARD.ORGANISATION]);
+        this.router.navigate([APP_ROUTES.DASHBOARD.RECRUITER]);
         break;
       case UserRole.INTERVIEWER:
         this.router.navigate([APP_ROUTES.DASHBOARD.INTERVIEWER]);

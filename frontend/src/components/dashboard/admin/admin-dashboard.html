@@ -8,16 +8,15 @@
     <mat-card class="stat-card">
       <mat-card-header>
         <mat-icon>business</mat-icon>
-        <mat-card-title>Organisations</mat-card-title>
+        <mat-card-title>Recruiters</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="stat-value">{{ stats.totalOrganisations }}</div>
+        <div class="stat-value">{{ stats.totalRecruiters }}</div>
         <div class="stat-label">
-          <span class="pending">{{ stats.pendingOrganisations }} pending approval</span>
+          <span class="pending">{{ stats.pendingRecruiters }} pending approval</span>
         </div>
       </mat-card-content>
     </mat-card>
-
     <mat-card class="stat-card">
       <mat-card-header>
         <mat-icon>people</mat-icon>
@@ -61,24 +60,24 @@
   <div class="content-grid">
     <mat-card class="pending-approvals">
       <mat-card-header>
-        <mat-card-title>Pending Organisation Approvals</mat-card-title>
-        <button mat-icon-button (click)="loadPendingOrganisations()">
+        <mat-card-title>Pending Recruiter Approvals</mat-card-title>
+        <button mat-icon-button (click)="loadPendingRecruiters()">
           <mat-icon>refresh</mat-icon>
         </button>
       </mat-card-header>
       <mat-card-content>
-        @if (isLoadingOrgs()) {
+        @if (isLoadingRecruiters()) {
         <div class="loading-container">
           <mat-spinner diameter="40"></mat-spinner>
         </div>
-        } @else if (pendingOrganisations().length === 0) {
+        } @else if (pendingRecruiters().length === 0) {
         <div class="empty-state">
           <mat-icon>check_circle</mat-icon>
           <p>No pending approvals</p>
         </div>
         } @else {
         <div class="org-list">
-          @for (org of pendingOrganisations(); track org.id) {
+          @for (org of pendingRecruiters(); track org.id) {
           <div class="org-item">
             <div class="org-info">
               <h3>{{ org.name }}</h3>
@@ -88,15 +87,15 @@
               >
             </div>
             <div class="org-actions">
-              <button mat-raised-button color="primary" (click)="viewOrganisation(org.id)">
+              <button mat-raised-button color="primary" (click)="viewRecruiter(org.id)">
                 <mat-icon>visibility</mat-icon>
                 View
               </button>
-              <button mat-raised-button color="accent" (click)="approveOrganisation(org.id)">
+              <button mat-raised-button color="accent" (click)="approveRecruiter(org.id)">
                 <mat-icon>check</mat-icon>
                 Approve
               </button>
-              <button mat-raised-button color="warn" (click)="rejectOrganisation(org.id)">
+              <button mat-raised-button color="warn" (click)="rejectRecruiter(org.id)">
                 <mat-icon>close</mat-icon>
                 Reject
               </button>

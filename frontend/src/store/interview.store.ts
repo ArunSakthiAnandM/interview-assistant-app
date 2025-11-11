@@ -5,10 +5,12 @@ import { Interview, InterviewStatus, Candidate } from '../models';
  * Interview filter options
  */
 export interface InterviewFilters {
-  status?: InterviewStatus[];
-  organisationId?: string;
+  status?: InterviewStatus | InterviewStatus[];
   interviewerId?: string;
   candidateId?: string;
+  recruiterId?: string;
+  startDate?: Date;
+  endDate?: Date;
   dateFrom?: Date;
   dateTo?: Date;
   searchTerm?: string;
@@ -47,8 +49,7 @@ export class InterviewStore {
         }
       }
 
-      // Organisation filter
-      if (filters.organisationId && interview.organisationId !== filters.organisationId) {
+      if (filters.recruiterId && interview.recruiterId !== filters.recruiterId) {
         return false;
       }
 

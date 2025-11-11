@@ -9,7 +9,7 @@ Contains TypeScript interfaces, types, and data models that define the shape of 
 - `user.model.ts` - User-related interfaces
 - `candidate.model.ts` - Candidate-specific models
 - `interviewer.model.ts` - Interviewer-specific models
-- `organisation.model.ts` - Organisation-specific models
+- `recruiter.model.ts` - Recruiter-specific models
 - `interview.model.ts` - Interview-related models
 - `api-response.model.ts` - API response wrapper types
 - `index.ts` - Barrel export
@@ -52,7 +52,7 @@ export interface UserPreferences {
   language: string;
 }
 
-export type UserRole = 'ADMIN' | 'ORGANISATION' | 'INTERVIEWER' | 'CANDIDATE';
+export type UserRole = 'ADMIN' | 'RECRUITER' | 'INTERVIEWER' | 'CANDIDATE';
 
 // Type for creating new users
 export type CreateUserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
@@ -71,7 +71,7 @@ export interface Interview {
   description: string;
   candidateId: string;
   interviewerId: string;
-  organisationId: string;
+  recruiterId: string;
   scheduledAt: Date;
   duration: number; // in minutes
   status: InterviewStatus;
@@ -262,7 +262,7 @@ export function isAdmin(user: User): user is Admin {
 export * from './user.model';
 export * from './candidate.model';
 export * from './interviewer.model';
-export * from './organisation.model';
+export * from './recruiter.model';
 export * from './interview.model';
 export * from './api-response.model';
 ```

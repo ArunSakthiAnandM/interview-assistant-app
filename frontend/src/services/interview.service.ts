@@ -63,19 +63,18 @@ export class InterviewService {
   }
 
   /**
-   * Get interviews by organisation
-   * TODO: Integrate with Spring Boot backend
+   * Get interviews by recruiter
    */
-  getInterviewsByOrganisation(
-    orgId: string,
+  getInterviewsByRecruiter(
+    recruiterId: string,
     page: number = 0,
     size: number = 10
   ): Observable<PaginatedResponse<Interview>> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ORG(orgId)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_RECRUITER(recruiterId)}`;
 
     const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
-    console.log('TODO: Get interviews by organisation', orgId);
+    console.log('Get interviews by recruiter', recruiterId);
 
     return this.http.get<PaginatedResponse<Interview>>(endpoint, { params }).pipe(
       tap((response) => {

@@ -1,8 +1,8 @@
-<div class="organisation-dashboard">
+<div class="recruiter-dashboard">
   <div class="dashboard-header">
     <div class="header-content">
-      <h1>Organisation Dashboard</h1>
-      <p class="subtitle">{{ authStore.currentUser()?.organisationName || 'Welcome' }}</p>
+      <h1>Recruiter Dashboard</h1>
+      <p class="subtitle">{{ authStore.currentUser()?.recruiterName || 'Welcome' }}</p>
     </div>
     <button mat-raised-button color="primary" (click)="createInterview()">
       <mat-icon>add</mat-icon>

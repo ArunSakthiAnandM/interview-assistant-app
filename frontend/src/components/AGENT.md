@@ -8,7 +8,9 @@ Contains all UI components for the Interview Assistant application, organized by
 
 Components are organized by feature areas:
 
-- `dashboard/` - Dashboard views (admin, candidate, interviewer, organisation)
+## Components Overview
+
+- `dashboard/` - Dashboard views (admin, candidate, interviewer, recruiter)
 - `footer/` - Application footer
 - `header/` - Application header/navigation
 - `home/` - Home/landing page

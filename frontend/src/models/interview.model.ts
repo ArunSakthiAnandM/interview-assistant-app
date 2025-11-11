@@ -5,7 +5,7 @@ export interface Interview {
   id: string;
   title: string;
   description?: string;
-  organisationId: string;
+  recruiterId: string;
   candidateId?: string;
   interviewerIds: string[];
   scheduledDate?: Date;

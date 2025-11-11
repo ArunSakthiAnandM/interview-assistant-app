@@ -26,14 +26,14 @@ export const API_ENDPOINTS = {
     REGISTER: '/auth/register',
   },
 
-  // Organisation
-  ORGANISATION: {
-    BASE: '/organisations',
-    REGISTER: '/organisations/register',
-    BY_ID: (id: string) => `/organisations/${id}`,
-    VERIFY: (id: string) => `/organisations/${id}/verify`,
-    REJECT: (id: string) => `/organisations/${id}/reject`,
-    KYC_UPLOAD: (id: string) => `/organisations/${id}/kyc`,
+  // Recruiter
+  RECRUITER: {
+    BASE: '/recruiters',
+    REGISTER: '/recruiters/register',
+    BY_ID: (id: string) => `/recruiters/${id}`,
+    VERIFY: (id: string) => `/recruiters/${id}/verify`,
+    REJECT: (id: string) => `/recruiters/${id}/reject`,
+    KYC_UPLOAD: (id: string) => `/recruiters/${id}/kyc`,
   },
 
   // Candidate
@@ -50,7 +50,7 @@ export const API_ENDPOINTS = {
     BASE: '/interviewers',
     REGISTER: '/interviewers/register',
     BY_ID: (id: string) => `/interviewers/${id}`,
-    BY_ORG: (orgId: string) => `/interviewers/organisation/${orgId}`,
+    BY_RECRUITER: (recruiterId: string) => `/interviewers/recruiter/${recruiterId}`,
     INVITE: '/interviewers/invite',
   },
 
@@ -59,7 +59,7 @@ export const API_ENDPOINTS = {
     BASE: '/interviews',
     CREATE: '/interviews/create',
     BY_ID: (id: string) => `/interviews/${id}`,
-    BY_ORG: (orgId: string) => `/interviews/organisation/${orgId}`,
+    BY_RECRUITER: (recruiterId: string) => `/interviews/recruiter/${recruiterId}`,
     BY_CANDIDATE: (candidateId: string) => `/interviews/candidate/${candidateId}`,
     UPDATE_STATUS: (id: string) => `/interviews/${id}/status`,
     SUBMIT_FEEDBACK: (id: string) => `/interviews/${id}/feedback`,

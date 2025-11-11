@@ -9,9 +9,7 @@
       @if (!authStore.isAuthenticated()) {
       <!-- Guest Navigation -->
       <a routerLink="/home" routerLinkActive="active-link">Home</a>
-      <a routerLink="/register/organisation" routerLinkActive="active-link"
-        >Register Organisation</a
-      >
+      <a routerLink="/register/recruiter" routerLinkActive="active-link">Register as Recruiter</a>
       <a routerLink="/register/interviewer" routerLinkActive="active-link">Register Interviewer</a>
       <a routerLink="/register/candidate" routerLinkActive="active-link">Register Candidate</a>
       <button mat-raised-button color="primary" routerLink="/login">Login</button>
@@ -22,7 +20,7 @@
       @if (authStore.isAdmin()) {
       <a routerLink="/dashboard/admin" routerLinkActive="active-link">Dashboard</a>
       } @if (authStore.isRecruiter()) {
-      <a routerLink="/dashboard/organisation" routerLinkActive="active-link">Dashboard</a>
+      <a routerLink="/dashboard/recruiter" routerLinkActive="active-link">Dashboard</a>
       } @if (authStore.isInterviewer()) {
       <a routerLink="/dashboard/interviewer" routerLinkActive="active-link">Interviews</a>
       } @if (authStore.isCandidate()) {

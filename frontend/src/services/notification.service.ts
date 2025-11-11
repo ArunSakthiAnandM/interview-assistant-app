@@ -16,8 +16,8 @@ export enum EmailNotificationType {
   INTERVIEW_FEEDBACK = 'INTERVIEW_FEEDBACK',
   CANDIDATE_SELECTED = 'CANDIDATE_SELECTED',
   CANDIDATE_REJECTED = 'CANDIDATE_REJECTED',
-  ORGANISATION_VERIFIED = 'ORGANISATION_VERIFIED',
-  ORGANISATION_REJECTED = 'ORGANISATION_REJECTED',
+  RECRUITER_VERIFIED = 'RECRUITER_VERIFIED',
+  RECRUITER_REJECTED = 'RECRUITER_REJECTED',
   WELCOME = 'WELCOME',
   PASSWORD_RESET = 'PASSWORD_RESET',
 }
@@ -237,28 +237,28 @@ export class NotificationService {
   }
 
   /**
-   * Send organisation verification notification
+   * Send recruiter verification notification
    */
-  sendOrganisationVerified(adminEmail: string, organisationName: string): Observable<void> {
+  sendRecruiterVerified(adminEmail: string, recruiterName: string): Observable<void> {
     return this.sendEmail({
       to: adminEmail,
-      type: EmailNotificationType.ORGANISATION_VERIFIED,
-      data: { organisationName },
+      type: EmailNotificationType.RECRUITER_VERIFIED,
+      data: { recruiterName },
     });
   }
 
   /**
-   * Send organisation rejection notification
+   * Send recruiter rejection notification
    */
-  sendOrganisationRejected(
+  sendRecruiterRejected(
     adminEmail: string,
-    organisationName: string,
+    recruiterName: string,
     reason: string
   ): Observable<void> {
     return this.sendEmail({
       to: adminEmail,
-      type: EmailNotificationType.ORGANISATION_REJECTED,
-      data: { organisationName, reason },
+      type: EmailNotificationType.RECRUITER_REJECTED,
+      data: { recruiterName, reason },
     });
   }
 

@@ -180,7 +180,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/protected/protected.ts'),
     canActivate: [
       authGuard,
-      roleGuard([UserRole.ADMIN, UserRole.ORGANISATION]),
+      roleGuard([UserRole.ADMIN, UserRole.RECRUITER]),
       permissionGuard('VIEW_REPORTS'),
     ],
   },

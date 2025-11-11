@@ -6,7 +6,7 @@ import { User } from './user.model';
 export interface Interviewer extends User {
   firstName: string;
   lastName: string;
-  organisationId: string;
+  recruiterId: string;
   department?: string;
   designation: string;
   mobile?: string;
@@ -22,7 +22,7 @@ export interface InterviewerRegistrationRequest {
   firstName: string;
   lastName: string;
   email: string;
-  organisationId: string;
+  recruiterId: string;
   department?: string;
   designation: string;
   mobile?: string;

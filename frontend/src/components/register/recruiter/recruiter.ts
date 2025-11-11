@@ -12,10 +12,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
 import { FileUploadComponent } from '../../shared/file-upload/file-upload';
-import { OrganisationService } from '../../../services/organisation.service';
+import { RecruiterService } from '../../../services/recruiter.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import {
-  OrganisationRegistrationRequest,
+  RecruiterRegistrationRequest,
   KYCDocument,
   KYCDocumentType,
   FileUploadResponse,
@@ -29,11 +29,12 @@ import {
 } from '../../../constants';
 
 /**
- * Organisation Registration Component
- * Multi-step form for registering a new organisation with KYC documents
+ * Recruiter Registration Component
+ *
+ * Multi-step form for registering a new recruiter with KYC documents
  */
 @Component({
-  selector: 'app-organisation',
+  selector: 'app-recruiter',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -47,14 +48,14 @@ import {
     MatIconModule,
     FileUploadComponent,
   ],
-  templateUrl: './organisation.html',
-  styleUrl: './organisation.scss',
+  templateUrl: './recruiter.html',
+  styleUrl: './recruiter.scss',
 })
-export class Organisation {
+export class Recruiter {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   readonly snackBar = inject(MatSnackBar);
-  private organisationService = inject(OrganisationService);
+  private recruiterService = inject(RecruiterService);
   readonly fileUploadService = inject(FileUploadService);
 
   // Signals
@@ -63,7 +64,7 @@ export class Organisation {
   currentUploadingDoc = signal<KYCDocumentType | null>(null);
 
   // Form groups
-  orgDetailsForm!: FormGroup;
+  recruiterDetailsForm!: FormGroup;
   addressForm!: FormGroup;
   adminForm!: FormGroup;
   kycForm!: FormGroup;
@@ -80,8 +81,8 @@ export class Organisation {
    * Initialize all form groups
    */
   private initializeForms(): void {
-    // Organisation Details Form
-    this.orgDetailsForm = this.fb.group({
+    // Recruiter Details Form
+    this.recruiterDetailsForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
       registrationNumber: ['', [Validators.maxLength(50)]],
       contactEmail: [
@@ -203,31 +204,30 @@ export class Organisation {
   }
 
   /**
-   * Submit organisation registration
-   * TODO: This will call Spring Boot backend organisation registration API
+   * Submit recruiter registration
    */
   onSubmit(): void {
-    if (this.orgDetailsForm.invalid || this.addressForm.invalid || this.adminForm.invalid) {
+    if (this.recruiterDetailsForm.invalid || this.addressForm.invalid || this.adminForm.invalid) {
       this.snackBar.open(ERROR_MESSAGES.VALIDATION_ERROR, 'Close', { duration: 3000 });
       return;
     }
 
     this.isLoading.set(true);
 
-    const request: OrganisationRegistrationRequest = {
-      ...this.orgDetailsForm.value,
+    const request: RecruiterRegistrationRequest = {
+      ...this.recruiterDetailsForm.value,
       address: this.addressForm.value,
       adminName: this.adminForm.value.adminName,
       adminEmail: this.adminForm.value.adminEmail,
       adminPassword: this.adminForm.value.adminPassword,
     };
 
-    // TODO: Backend will associate KYC documents with organisation
+    // Backend will associate KYC documents with recruiter
     console.log('Registration request:', request);
     console.log('KYC Documents:', this.uploadedDocuments());
 
-    this.organisationService.registerOrganisation(request).subscribe({
-      next: (organisation) => {
+    this.recruiterService.registerRecruiter(request).subscribe({
+      next: (recruiter) => {
         this.snackBar.open(SUCCESS_MESSAGES.REGISTRATION_SUCCESS, 'Close', { duration: 5000 });
         // Navigate to login or success page
         setTimeout(() => {

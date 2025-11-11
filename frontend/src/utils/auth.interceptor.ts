@@ -16,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     '/auth/login',
     '/auth/register',
     '/otp/send',
-    '/organisations/register',
+    '/recruiters/register',
     '/candidates/register',
   ];
   const isPublicUrl = publicUrls.some((url) => req.url.includes(url));

@@ -47,7 +47,7 @@ interface Analytics {
 }
 
 @Component({
-  selector: 'app-organisation-dashboard',
+  selector: 'app-recruiter-dashboard',
   imports: [
     DatePipe,
     MatCardModule,
@@ -58,10 +58,10 @@ interface Analytics {
     MatMenuModule,
     MatProgressSpinnerModule,
   ],
-  templateUrl: './organisation-dashboard.html',
-  styleUrl: './organisation-dashboard.scss',
+  templateUrl: './recruiter-dashboard.html',
+  styleUrl: './recruiter-dashboard.scss',
 })
-export class OrganisationDashboard implements OnInit {
+export class RecruiterDashboard implements OnInit {
   authStore = inject(AuthStore);
   private interviewStore = inject(InterviewStore);
   private notificationStore = inject(NotificationStore);
@@ -93,8 +93,8 @@ export class OrganisationDashboard implements OnInit {
   }
 
   private loadDashboardData(): void {
-    // TODO: Implement API call to fetch organisation dashboard statistics
-    // GET /api/v1/organisations/{orgId}/dashboard/stats
+    // TODO: Implement API call to fetch recruiter dashboard statistics
+    // GET /api/v1/recruiters/{recruiterId}/dashboard/stats
     this.stats = {
       totalInterviewers: 12,
       activeInterviewers: 10,
@@ -120,7 +120,7 @@ export class OrganisationDashboard implements OnInit {
     this.isLoadingInterviews.set(true);
 
     // TODO: Implement API call to fetch upcoming interviews
-    // GET /api/v1/organisations/{orgId}/interviews/upcoming
+    // GET /api/v1/recruiters/{recruiterId}/interviews/upcoming
     setTimeout(() => {
       this.upcomingInterviews.set([
         {
@@ -156,8 +156,8 @@ export class OrganisationDashboard implements OnInit {
   }
 
   private loadInterviewers(): void {
-    // TODO: Implement API call to fetch organisation interviewers
-    // GET /api/v1/organisations/{orgId}/interviewers
+    // TODO: Implement API call to fetch recruiter interviewers
+    // GET /api/v1/recruiters/{recruiterId}/interviewers
     this.interviewers.set([
       { id: '1', name: 'Sarah Johnson', email: 'sarah.j@example.com', isActive: true },
       { id: '2', name: 'Mike Wilson', email: 'mike.w@example.com', isActive: true },
@@ -176,13 +176,13 @@ export class OrganisationDashboard implements OnInit {
 
   inviteInterviewer(): void {
     // TODO: Open dialog to invite new interviewer
-    // POST /api/v1/organisations/{orgId}/interviewers/invite
+    // POST /api/v1/recruiters/{recruiterId}/interviewers/invite
     this.notificationStore.info('Invite interviewer feature coming soon', 'Feature');
   }
 
   manageInterviewers(): void {
     // TODO: Navigate to interviewer management page
-    // this.router.navigate(['/organisation/interviewers']);
+    // this.router.navigate(['/recruiter/interviewers']);
     this.notificationStore.info('Manage interviewers feature coming soon', 'Feature');
   }
 
