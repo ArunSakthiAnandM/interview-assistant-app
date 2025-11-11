@@ -20,7 +20,7 @@ export class InterviewerService {
    * TODO: Integrate with Spring Boot backend interviewer registration endpoint
    */
   registerInterviewer(request: InterviewerRegistrationRequest): Observable<Interviewer> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.REGISTER}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.CREATE}`;
 
     // TODO: Replace with actual backend call
     console.log('TODO: Register interviewer', request);
@@ -44,11 +44,14 @@ export class InterviewerService {
    * Get interviewers by recruiter
    */
   getInterviewersByRecruiter(recruiterId: string): Observable<Interviewer[]> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BY_RECRUITER(recruiterId)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BASE}`;
 
     console.log('Get interviewers by recruiter', recruiterId);
 
-    return this.http.get<Interviewer[]>(endpoint).pipe(catchError(this.handleError));
+    // Using query parameters as per API.md
+    return this.http
+      .get<Interviewer[]>(endpoint, { params: { recruiterId } })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -56,7 +59,7 @@ export class InterviewerService {
    * TODO: Integrate with Spring Boot backend
    */
   sendInterviewerInvite(email: string, firstName: string, lastName: string): Observable<any> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.INVITE}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.CREATE}`;
 
     console.log('TODO: Send interviewer invite', email);
 

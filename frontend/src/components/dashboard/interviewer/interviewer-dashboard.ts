@@ -145,8 +145,8 @@ export class InterviewerDashboard implements OnInit {
   }
 
   private loadRecentFeedback(): void {
-    // TODO: Implement API call to fetch recent feedback
-    // GET /api/v1/interviewers/{interviewerId}/feedback/recent
+    // TODO: Implement API call
+    // GET /api/v1/feedback?interviewerId={interviewerId}&page=0&size=3
     this.recentFeedback.set([
       {
         id: '1',
@@ -176,10 +176,10 @@ export class InterviewerDashboard implements OnInit {
   }
 
   startInterview(interviewId: string): void {
-    // TODO: Implement start interview logic
-    // PATCH /api/v1/interviews/{interviewId}/start
-    this.notificationStore.success('Interview started', 'Success');
-    this.refreshAssignedInterviews();
+    console.log('Starting interview:', interviewId);
+    // TODO: Implement API call
+    // PATCH /api/v1/interviews/{interviewId}/status with status=IN_PROGRESS
+    this.router.navigate(['/interviews', interviewId]);
   }
 
   submitFeedback(interviewId: string): void {

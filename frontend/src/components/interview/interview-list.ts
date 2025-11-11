@@ -66,10 +66,10 @@ export class InterviewList implements OnInit {
 
     // TODO: Implement API call to fetch interviews based on user role
     // GET /api/v1/interviews (for org admin/admin)
-    // GET /api/v1/interviewers/{interviewerId}/interviews (for interviewer)
-    // GET /api/v1/candidates/{candidateId}/interviews (for candidate)
-
-    // Mock data for demonstration
+    // Mock data - Replace with actual API call based on role
+    // GET /api/v1/interviews?recruiterId={recruiterId} (for recruiter)
+    // GET /api/v1/interviews?interviewerId={interviewerId} (for interviewer)
+    // GET /api/v1/interviews?candidateId={candidateId} (for candidate)    // Mock data for demonstration
     setTimeout(() => {
       const mockInterviews = [
         {

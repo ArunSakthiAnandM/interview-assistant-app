@@ -169,17 +169,18 @@ export class AdminDashboard implements OnInit {
   }
 
   approveRecruiter(recruiterId: string): void {
+    console.log('Approving recruiter:', recruiterId);
     // TODO: Implement API call to approve recruiter
-    // POST /api/v1/admin/recruiters/{recruiterId}/approve
-    this.notificationStore.success('Recruiter approved successfully', 'Approval');
+    // PUT /api/v1/recruiters/{recruiterId}/verify
+    this.notificationStore.success(`Recruiter approved successfully`);
     this.loadPendingRecruiters();
   }
 
   rejectRecruiter(recruiterId: string): void {
+    console.log('Rejecting recruiter:', recruiterId);
     // TODO: Implement API call to reject recruiter
-    // POST /api/v1/admin/recruiters/{recruiterId}/reject
-    // Should include rejection reason dialog
-    this.notificationStore.warning('Recruiter rejected', 'Rejection');
+    // PUT /api/v1/recruiters/{recruiterId}/reject?reason={reason}
+    this.notificationStore.warning(`Recruiter rejected`);
     this.loadPendingRecruiters();
   }
 }

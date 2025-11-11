@@ -176,7 +176,7 @@ export class RecruiterDashboard implements OnInit {
 
   inviteInterviewer(): void {
     // TODO: Open dialog to invite new interviewer
-    // POST /api/v1/recruiters/{recruiterId}/interviewers/invite
+    // POST /api/v1/interviewers
     this.notificationStore.info('Invite interviewer feature coming soon', 'Feature');
   }
 

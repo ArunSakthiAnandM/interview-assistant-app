@@ -22,48 +22,65 @@ export const API_ENDPOINTS = {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
     REFRESH_TOKEN: '/auth/refresh',
-    VERIFY_TOKEN: '/auth/verify',
     REGISTER: '/auth/register',
+  },
+
+  // Users
+  USER: {
+    BASE: '/users',
+    BY_ID: (id: string) => `/users/${id}`,
+    UPDATE: (id: string) => `/users/${id}`,
+    DELETE: (id: string) => `/users/${id}`,
   },
 
   // Recruiter
   RECRUITER: {
     BASE: '/recruiters',
-    REGISTER: '/recruiters/register',
     BY_ID: (id: string) => `/recruiters/${id}`,
+    CREATE: '/recruiters',
+    UPDATE: (id: string) => `/recruiters/${id}`,
     VERIFY: (id: string) => `/recruiters/${id}/verify`,
     REJECT: (id: string) => `/recruiters/${id}/reject`,
-    KYC_UPLOAD: (id: string) => `/recruiters/${id}/kyc`,
+    DELETE: (id: string) => `/recruiters/${id}`,
   },
 
   // Candidate
   CANDIDATE: {
     BASE: '/candidates',
-    REGISTER: '/candidates/register',
     BY_ID: (id: string) => `/candidates/${id}`,
-    PROFILE: '/candidates/profile',
-    UPDATE_PROFILE: '/candidates/profile/update',
+    CREATE: '/candidates',
+    UPDATE: (id: string) => `/candidates/${id}`,
+    DELETE: (id: string) => `/candidates/${id}`,
+    INVITE: '/candidates/invite',
+    INVITATION_RESPOND: '/candidates/invitation/respond',
   },
 
   // Interviewer
   INTERVIEWER: {
     BASE: '/interviewers',
-    REGISTER: '/interviewers/register',
     BY_ID: (id: string) => `/interviewers/${id}`,
-    BY_RECRUITER: (recruiterId: string) => `/interviewers/recruiter/${recruiterId}`,
-    INVITE: '/interviewers/invite',
+    CREATE: '/interviewers',
+    UPDATE: (id: string) => `/interviewers/${id}`,
+    DELETE: (id: string) => `/interviewers/${id}`,
   },
 
   // Interview
   INTERVIEW: {
     BASE: '/interviews',
-    CREATE: '/interviews/create',
     BY_ID: (id: string) => `/interviews/${id}`,
-    BY_RECRUITER: (recruiterId: string) => `/interviews/recruiter/${recruiterId}`,
-    BY_CANDIDATE: (candidateId: string) => `/interviews/candidate/${candidateId}`,
+    CREATE: '/interviews',
+    UPDATE: (id: string) => `/interviews/${id}`,
     UPDATE_STATUS: (id: string) => `/interviews/${id}/status`,
-    SUBMIT_FEEDBACK: (id: string) => `/interviews/${id}/feedback`,
-    GENERATE_INVITE: (id: string) => `/interviews/${id}/invite`,
+    CANCEL: (id: string) => `/interviews/${id}`,
+  },
+
+  // Feedback
+  FEEDBACK: {
+    BASE: '/feedback',
+    BY_ID: (id: string) => `/feedback/${id}`,
+    CREATE: '/feedback',
+    UPDATE: (id: string) => `/feedback/${id}`,
+    DELETE: (id: string) => `/feedback/${id}`,
   },
 
   // OTP

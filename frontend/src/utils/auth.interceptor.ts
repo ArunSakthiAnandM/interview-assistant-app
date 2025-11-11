@@ -12,13 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getAccessToken();
 
   // Skip adding token for public endpoints (login, register, etc.)
-  const publicUrls = [
-    '/auth/login',
-    '/auth/register',
-    '/otp/send',
-    '/recruiters/register',
-    '/candidates/register',
-  ];
+  const publicUrls = ['/auth/login', '/auth/register', '/otp/send', '/recruiters', '/candidates'];
   const isPublicUrl = publicUrls.some((url) => req.url.includes(url));
 
   if (token && !isPublicUrl) {

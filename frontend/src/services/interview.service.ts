@@ -70,9 +70,12 @@ export class InterviewService {
     page: number = 0,
     size: number = 10
   ): Observable<PaginatedResponse<Interview>> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_RECRUITER(recruiterId)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BASE}`;
 
-    const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    const params = new HttpParams()
+      .set('recruiterId', recruiterId)
+      .set('page', page.toString())
+      .set('size', size.toString());
 
     console.log('Get interviews by recruiter', recruiterId);
 
@@ -91,11 +94,13 @@ export class InterviewService {
    * TODO: Integrate with Spring Boot backend
    */
   getInterviewsByCandidate(candidateId: string): Observable<Interview[]> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_CANDIDATE(candidateId)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BASE}`;
+
+    const params = new HttpParams().set('candidateId', candidateId);
 
     console.log('TODO: Get interviews by candidate', candidateId);
 
-    return this.http.get<Interview[]>(endpoint).pipe(
+    return this.http.get<Interview[]>(endpoint, { params }).pipe(
       tap((interviews) => {
         this.interviewStore.setInterviews(interviews);
       }),
@@ -112,7 +117,7 @@ export class InterviewService {
 
     console.log('TODO: Update interview status', id, status);
 
-    return this.http.put<Interview>(endpoint, { status }).pipe(
+    return this.http.patch<Interview>(endpoint, { status }).pipe(
       tap((interview) => {
         this.interviewStore.updateInterview(id, interview);
         this.notificationStore.success('Interview status updated');
@@ -129,13 +134,11 @@ export class InterviewService {
     interviewId: string,
     feedback: Omit<InterviewFeedback, 'submittedAt'>
   ): Observable<Interview> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.SUBMIT_FEEDBACK(
-      interviewId
-    )}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.FEEDBACK.CREATE}`;
 
     console.log('TODO: Submit interview feedback', interviewId, feedback);
 
-    return this.http.post<Interview>(endpoint, feedback).pipe(
+    return this.http.post<Interview>(endpoint, { ...feedback, interviewId }).pipe(
       tap((interview) => {
         this.interviewStore.updateInterview(interviewId, interview);
         this.notificationStore.success('Feedback submitted successfully');
@@ -149,13 +152,11 @@ export class InterviewService {
    * TODO: Integrate with Spring Boot backend
    */
   generateInviteLink(interviewId: string): Observable<CandidateInviteLink> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.GENERATE_INVITE(
-      interviewId
-    )}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.CANDIDATE.INVITE}`;
 
     console.log('TODO: Generate invite link', interviewId);
 
-    return this.http.post<CandidateInviteLink>(endpoint, {}).pipe(
+    return this.http.post<CandidateInviteLink>(endpoint, { interviewId }).pipe(
       tap(() => {
         this.notificationStore.success('Invite link generated');
       }),
@@ -172,7 +173,7 @@ export class InterviewService {
     duration: number,
     location: string
   ): Observable<Interview> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.UPDATE(id)}`;
 
     console.log('TODO: Schedule interview', id, scheduledDate);
 
@@ -196,22 +197,17 @@ export class InterviewService {
    * Cancel interview
    */
   cancelInterview(id: string, reason: string): Observable<Interview> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.CANCEL(id)}`;
 
     console.log('TODO: Cancel interview', id, reason);
 
-    return this.http
-      .put<Interview>(endpoint, {
-        status: InterviewStatus.CANCELLED,
-        notes: reason,
-      })
-      .pipe(
-        tap((interview) => {
-          this.interviewStore.updateInterview(id, interview);
-          this.notificationStore.info('Interview cancelled');
-        }),
-        catchError(this.handleError)
-      );
+    return this.http.delete<Interview>(endpoint).pipe(
+      tap((interview) => {
+        this.interviewStore.updateInterview(id, interview);
+        this.notificationStore.info('Interview cancelled');
+      }),
+      catchError(this.handleError)
+    );
   }
 
   /**
@@ -223,7 +219,7 @@ export class InterviewService {
     outcome: InterviewOutcome,
     comments?: string
   ): Observable<Interview> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(interviewId)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.UPDATE(interviewId)}`;
 
     console.log('TODO: Mark candidate outcome', interviewId, outcome);
 
@@ -254,7 +250,7 @@ export class InterviewService {
    * Delete interview
    */
   deleteInterview(id: string): Observable<void> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.BY_ID(id)}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEW.CANCEL(id)}`;
 
     console.log('TODO: Delete interview', id);
 

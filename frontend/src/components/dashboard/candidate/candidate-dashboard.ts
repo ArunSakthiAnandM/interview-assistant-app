@@ -174,7 +174,7 @@ export class CandidateDashboard implements OnInit {
 
   private loadInterviewHistory(): void {
     // TODO: Implement API call to fetch interview history
-    // GET /api/v1/candidates/{candidateId}/interviews/history
+    // GET /api/v1/interviews?candidateId={candidateId}&status=COMPLETED
     this.interviewHistory.set([
       {
         id: '1',

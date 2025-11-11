@@ -85,7 +85,7 @@ export class InterviewCreate implements OnInit {
 
   private loadInterviewers(): void {
     // TODO: Implement API call to fetch available interviewers
-    // GET /api/v1/recruiters/{recruiterId}/interviewers
+    // GET /api/v1/interviewers?recruiterId={recruiterId}
     this.availableInterviewers.set([
       { id: 'int1', name: 'Sarah Johnson' },
       { id: 'int2', name: 'Mike Wilson' },

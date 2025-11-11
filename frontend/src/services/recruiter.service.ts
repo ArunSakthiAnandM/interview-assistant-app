@@ -20,7 +20,7 @@ export class RecruiterService {
    * Integrate with Spring Boot backend recruiter registration endpoint
    */
   registerRecruiter(request: RecruiterRegistrationRequest): Observable<Recruiter> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.REGISTER}`;
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.CREATE}`;
 
     console.log('Registering recruiter', request);
 
