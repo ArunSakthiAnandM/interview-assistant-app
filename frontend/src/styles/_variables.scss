@@ -1,0 +1,193 @@
+// ============================================================================
+// COLOR VARIABLES - Blue-White Theme
+// ============================================================================
+// All colors used throughout the application are defined here for easy theming
+
+// PRIMARY COLORS - Main brand colors (Blue palette)
+// ----------------------------------------------------------------------------
+$primary-900: #0d2d5e; // Darkest blue
+$primary-800: #1e3a8a; // Dark blue
+$primary-700: #1e40af; // Deep blue
+$primary-600: #2563eb; // Medium blue
+$primary-500: #3b82f6; // Standard blue
+$primary-400: #60a5fa; // Light blue
+$primary-300: #93c5fd; // Lighter blue
+$primary-200: #bfdbfe; // Very light blue
+$primary-100: #dbeafe; // Pale blue
+$primary-50: #eff6ff; // Ultra light blue
+
+// SECONDARY COLORS - Accent colors (Purple/Indigo palette)
+// ----------------------------------------------------------------------------
+$secondary-900: #4c1d95; // Darkest purple
+$secondary-800: #5b21b6; // Dark purple
+$secondary-700: #6d28d9; // Deep purple
+$secondary-600: #7c3aed; // Medium purple
+$secondary-500: #8b5cf6; // Standard purple
+$secondary-400: #a78bfa; // Light purple
+$secondary-300: #c4b5fd; // Lighter purple
+$secondary-200: #ddd6fe; // Very light purple
+$secondary-100: #ede9fe; // Pale purple
+$secondary-50: #f5f3ff; // Ultra light purple
+
+// NEUTRAL COLORS - Grays and whites
+// ----------------------------------------------------------------------------
+$white: #ffffff;
+$neutral-50: #fafafa; // Off-white
+$neutral-100: #f5f5f5; // Very light gray
+$neutral-200: #e5e5e5; // Light gray
+$neutral-300: #d4d4d4; // Medium light gray
+$neutral-400: #a3a3a3; // Medium gray
+$neutral-500: #737373; // Gray
+$neutral-600: #525252; // Dark gray
+$neutral-700: #404040; // Darker gray
+$neutral-800: #262626; // Very dark gray
+$neutral-900: #171717; // Almost black
+$black: #000000;
+
+// SEMANTIC COLORS - Status indicators
+// ----------------------------------------------------------------------------
+// Success (Green)
+$success-700: #15803d;
+$success-600: #16a34a;
+$success-500: #22c55e;
+$success-400: #4ade80;
+$success-300: #86efac;
+$success-100: #dcfce7;
+$success-50: #f0fdf4;
+
+// Warning (Orange/Amber)
+$warning-700: #c2410c;
+$warning-600: #ea580c;
+$warning-500: #f97316;
+$warning-400: #fb923c;
+$warning-300: #fdba74;
+$warning-100: #ffedd5;
+$warning-50: #fff7ed;
+
+// Error/Danger (Red)
+$error-700: #b91c1c;
+$error-600: #dc2626;
+$error-500: #ef4444;
+$error-400: #f87171;
+$error-300: #fca5a5;
+$error-100: #fee2e2;
+$error-50: #fef2f2;
+
+// Info (Cyan/Sky)
+$info-700: #0369a1;
+$info-600: #0284c7;
+$info-500: #0ea5e9;
+$info-400: #38bdf8;
+$info-300: #7dd3fc;
+$info-100: #e0f2fe;
+$info-50: #f0f9ff;
+
+// ============================================================================
+// FUNCTIONAL COLOR ASSIGNMENTS
+// ============================================================================
+
+// Main theme colors
+$color-primary: $primary-500;
+$color-primary-dark: $primary-700;
+$color-primary-darker: $primary-800;
+$color-primary-light: $primary-400;
+$color-primary-lighter: $primary-100;
+$color-primary-pale: $primary-50;
+
+$color-secondary: $secondary-500;
+$color-secondary-dark: $secondary-700;
+$color-secondary-light: $secondary-400;
+$color-secondary-lighter: $secondary-100;
+
+// Background colors
+$bg-primary: $white;
+$bg-secondary: $neutral-50;
+$bg-tertiary: $neutral-100;
+$bg-dark: $primary-900;
+$bg-light-blue: $primary-50;
+
+// Text colors
+$text-primary: rgba($black, 0.87);
+$text-secondary: rgba($black, 0.6);
+$text-tertiary: rgba($black, 0.45);
+$text-disabled: rgba($black, 0.38);
+$text-on-primary: $white;
+$text-on-dark: $white;
+
+// Border colors
+$border-light: rgba($black, 0.08);
+$border-medium: rgba($black, 0.12);
+$border-dark: rgba($black, 0.2);
+$border-primary: $primary-500;
+$border-dashed: $neutral-300;
+
+// Status colors
+$color-success: $success-500;
+$color-success-bg: $success-50;
+$color-warning: $warning-500;
+$color-warning-bg: $warning-50;
+$color-error: $error-500;
+$color-error-bg: $error-50;
+$color-info: $info-500;
+$color-info-bg: $info-50;
+
+// Hover & interaction states
+$hover-overlay-light: rgba($black, 0.04);
+$hover-overlay-medium: rgba($black, 0.08);
+$hover-overlay-primary: rgba($primary-500, 0.08);
+$active-overlay: rgba($black, 0.12);
+$focus-outline: $primary-500;
+
+// Shadows
+$shadow-color: rgba($black, 0.1);
+$shadow-color-dark: rgba($black, 0.15);
+$shadow-color-darker: rgba($black, 0.2);
+
+// ============================================================================
+// GRADIENT DEFINITIONS
+// ============================================================================
+
+$gradient-primary: linear-gradient(135deg, $primary-600 0%, $primary-500 100%);
+$gradient-primary-reverse: linear-gradient(135deg, $primary-500 0%, $primary-600 100%);
+$gradient-header: linear-gradient(90deg, $primary-800 0%, $primary-500 100%);
+$gradient-accent: linear-gradient(135deg, $secondary-500 0%, $secondary-700 100%);
+$gradient-blue-purple: linear-gradient(135deg, $primary-500 0%, $secondary-600 100%);
+$gradient-light: linear-gradient(180deg, $white 0%, $neutral-50 100%);
+
+// ============================================================================
+// SPACING & SIZING (Optional - but good to have centralized)
+// ============================================================================
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+$border-radius-full: 50%;
+
+// ============================================================================
+// TRANSITIONS
+// ============================================================================
+
+$transition-fast: 0.15s ease;
+$transition-normal: 0.2s ease;
+$transition-slow: 0.3s ease;
+$transition-smooth: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============================================================================
+// Z-INDEX LAYERS
+// ============================================================================
+
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;

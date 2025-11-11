@@ -1,28 +1,30 @@
+@use '../../../styles/variables' as *;
+
 .candidate-registration-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: $spacing-xl $spacing-md;
+  background: $gradient-blue-purple;
 
   .registration-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    background: $white;
+    border-radius: $border-radius-xl;
+    box-shadow: 0 10px 40px $shadow-color;
     max-width: 800px;
     width: 100%;
     overflow: hidden;
   }
 
   .registration-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
+    background: $gradient-accent;
+    color: $white;
+    padding: $spacing-xl;
     text-align: center;
 
     h1 {
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 $spacing-sm 0;
       font-size: 2rem;
       font-weight: 600;
     }
@@ -40,13 +42,13 @@
 
   .registration-form,
   .verification-container {
-    padding: 2rem;
+    padding: $spacing-xl;
   }
 
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: $spacing-md;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
@@ -61,20 +63,20 @@
     }
 
     mat-icon {
-      color: #667eea;
-      margin-right: 0.5rem;
+      color: $color-primary;
+      margin-right: $spacing-sm;
     }
   }
 
   .terms-container {
-    margin: 1.5rem 0;
+    margin: $spacing-lg 0;
 
     mat-checkbox {
       font-size: 0.9rem;
     }
 
     a {
-      color: #667eea;
+      color: $color-primary;
       text-decoration: none;
       font-weight: 500;
 
@@ -87,8 +89,8 @@
   .action-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: $spacing-md;
+    margin-top: $spacing-xl;
 
     button {
       flex: 1;
@@ -98,7 +100,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: $spacing-sm;
 
       mat-icon {
         font-size: 20px;
@@ -107,16 +109,16 @@
       }
 
       mat-spinner {
-        margin-right: 0.5rem;
+        margin-right: $spacing-sm;
       }
     }
 
     .secondary-button {
-      background: #f5f5f5;
-      color: #333;
+      background: $neutral-100;
+      color: $text-primary;
 
       &:hover {
-        background: #e0e0e0;
+        background: $neutral-200;
       }
     }
 
@@ -133,52 +135,52 @@
   .verification-container {
     .verification-intro {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: $spacing-xl;
 
       .verification-icon {
         font-size: 64px;
         width: 64px;
         height: 64px;
-        color: #667eea;
-        margin-bottom: 1rem;
+        color: $color-primary;
+        margin-bottom: $spacing-md;
       }
 
       h2 {
-        margin: 0 0 0.5rem 0;
-        color: #333;
+        margin: 0 0 $spacing-sm 0;
+        color: $text-primary;
         font-size: 1.5rem;
       }
 
       p {
         margin: 0;
-        color: #666;
+        color: $text-secondary;
         font-size: 1rem;
       }
     }
 
     .otp-section {
-      background: #f9f9f9;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      background: $neutral-50;
+      border-radius: $border-radius-lg;
+      padding: $spacing-lg;
+      margin-bottom: $spacing-lg;
 
       .otp-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
+        margin-bottom: $spacing-md;
 
         h3 {
           margin: 0;
           font-size: 1.1rem;
           font-weight: 600;
-          color: #333;
+          color: $text-primary;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: $spacing-sm;
 
           mat-icon {
-            color: #667eea;
+            color: $color-primary;
           }
         }
 
@@ -186,7 +188,7 @@
           display: flex;
           align-items: center;
           gap: 0.25rem;
-          color: #4caf50;
+          color: $color-success;
           font-weight: 600;
           font-size: 0.9rem;
 
@@ -199,18 +201,18 @@
       }
 
       .otp-info {
-        margin: 0 0 1.5rem 0;
-        color: #666;
+        margin: 0 0 $spacing-lg 0;
+        color: $text-secondary;
         font-size: 0.9rem;
       }
 
       .otp-actions {
         display: flex;
         justify-content: center;
-        margin-top: 1rem;
+        margin-top: $spacing-md;
 
         button {
-          color: #667eea;
+          color: $color-primary;
           font-weight: 500;
         }
       }
@@ -218,17 +220,17 @@
   }
 
   .registration-footer {
-    padding: 1.5rem 2rem;
-    background: #f9f9f9;
+    padding: $spacing-lg $spacing-xl;
+    background: $neutral-50;
     text-align: center;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid $border-light;
 
     p {
       margin: 0;
-      color: #666;
+      color: $text-secondary;
 
       a {
-        color: #667eea;
+        color: $color-primary;
         text-decoration: none;
         font-weight: 600;
         cursor: pointer;
@@ -246,7 +248,7 @@
       &.cdk-keyboard-focused,
       &.cdk-program-focused,
       &:hover {
-        background-color: rgba(102, 126, 234, 0.04);
+        background-color: rgba($primary-500, 0.04);
       }
     }
 
@@ -255,24 +257,24 @@
     }
 
     .mat-step-icon-selected {
-      background-color: #667eea;
+      background-color: $color-primary;
     }
 
     .mat-step-icon-state-edit {
-      background-color: #667eea;
+      background-color: $color-primary;
     }
   }
 
   // Responsive Design
   @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
+    padding: $spacing-md $spacing-sm;
 
     .registration-card {
       border-radius: 0;
     }
 
     .registration-header {
-      padding: 1.5rem 1rem;
+      padding: $spacing-lg $spacing-md;
 
       h1 {
         font-size: 1.5rem;
@@ -281,11 +283,11 @@
 
     .registration-form,
     .verification-container {
-      padding: 1.5rem 1rem;
+      padding: $spacing-lg $spacing-md;
     }
 
     .otp-section {
-      padding: 1rem;
+      padding: $spacing-md;
     }
   }
 

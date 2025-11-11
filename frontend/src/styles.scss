@@ -1,3 +1,6 @@
+// ============================================================================
+// GLOBAL STYLES - Interview Assistant Application
+// ============================================================================
 
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
@@ -6,40 +9,281 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+// Import centralized color variables (must come after @use)
+@use 'styles/variables' as *;
+
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$blue-palette,
+        tertiary: mat.$azure-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
+// ============================================================================
+// BASE STYLES
+// ============================================================================
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-}
-/* You can add global styles to this file, and also import other style files */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  // Light color theme
+  color-scheme: light;
+
+  // Use custom theme colors
+  background-color: $bg-secondary;
+  color: $text-primary;
+  font-family: 'Roboto', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial,
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ============================================================================
+// TYPOGRAPHY
+// ============================================================================
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: 500;
+  color: $text-primary;
+}
+
+p {
+  margin: 0;
+  color: $text-secondary;
+}
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-normal;
+
+  &:hover {
+    color: $color-primary-dark;
+  }
+}
+
+// ============================================================================
+// UTILITY CLASSES
+// ============================================================================
+
+.text-primary {
+  color: $text-primary;
+}
+.text-secondary {
+  color: $text-secondary;
+}
+.text-tertiary {
+  color: $text-tertiary;
+}
+.text-success {
+  color: $color-success;
+}
+.text-warning {
+  color: $color-warning;
+}
+.text-error {
+  color: $color-error;
+}
+.text-info {
+  color: $color-info;
+}
+
+.bg-primary {
+  background-color: $bg-primary;
+}
+.bg-secondary {
+  background-color: $bg-secondary;
+}
+.bg-light-blue {
+  background-color: $bg-light-blue;
+}
+
+// ============================================================================
+// MATERIAL DESIGN OVERRIDES
+// ============================================================================
+
+// Card styling
+.mat-mdc-card {
+  background-color: $white;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 1px 3px $shadow-color, 0 1px 2px rgba($black, 0.06);
+  transition: box-shadow $transition-normal;
+
+  &:hover {
+    box-shadow: 0 4px 6px $shadow-color, 0 2px 4px rgba($black, 0.06);
+  }
+}
+
+// Button styling
+.mat-mdc-raised-button {
+  border-radius: $border-radius-md;
+  font-weight: 500;
+  transition: all $transition-normal;
+
+  &.mat-primary {
+    background: $gradient-primary !important;
+    color: $text-on-primary;
+
+    &:hover:not([disabled]) {
+      background: $gradient-primary-reverse !important;
+      box-shadow: 0 4px 12px rgba($primary-500, 0.3);
+    }
+  }
+
+  &.mat-accent {
+    background: $gradient-accent !important;
+    color: $text-on-primary;
+  }
+
+  &.mat-warn {
+    background-color: $color-error;
+    color: $text-on-primary;
+  }
+}
+
+.mat-mdc-button {
+  border-radius: $border-radius-md;
+  transition: background-color $transition-normal;
+
+  &:hover:not([disabled]) {
+    background-color: $hover-overlay-light;
+  }
+}
+
+// Form field styling
+.mat-mdc-form-field {
+  .mat-mdc-form-field-focus-overlay {
+    background-color: transparent;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: $white;
+  }
+
+  &.mat-focused {
+    .mdc-text-field--outlined .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $color-primary;
+      }
+    }
+  }
+}
+
+// Chip styling
+.mat-mdc-chip {
+  border-radius: $border-radius-xl !important;
+  font-weight: 500;
+
+  &.mat-primary {
+    background-color: $color-primary !important;
+    color: $text-on-primary !important;
+  }
+
+  &.mat-accent {
+    background-color: $color-secondary !important;
+    color: $text-on-primary !important;
+  }
+}
+
+// Menu styling
+.mat-mdc-menu-panel {
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 24px $shadow-color-dark, 0 2px 8px $shadow-color;
+}
+
+// Progress spinner
+.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #{$color-primary};
+}
+
+// Divider
+.mat-divider {
+  border-top-color: $border-light;
+}
+
+// ============================================================================
+// SCROLLBAR STYLING
+// ============================================================================
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $neutral-100;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $neutral-400;
+  border-radius: $border-radius-sm;
+
+  &:hover {
+    background: $neutral-500;
+  }
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// ============================================================================
+// RESPONSIVE HELPERS
+// ============================================================================
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}

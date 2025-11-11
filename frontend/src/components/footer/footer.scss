@@ -1,10 +1,13 @@
+@use '../../styles/variables' as *;
+
 .footer-container {
-  background-color: #f8f9fa;
+  background-color: $neutral-50;
   padding: 10px 0;
   text-align: center;
-  border-top: 1px solid #e7e7e7;
+  border-top: 1px solid $border-light;
+
   .footer {
     font-size: 14px;
-    color: #6c757d;
+    color: $text-secondary;
   }
 }

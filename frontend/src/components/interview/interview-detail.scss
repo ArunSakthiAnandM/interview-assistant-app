@@ -1,5 +1,7 @@
+@use '../../styles/variables' as *;
+
 .interview-detail {
-  padding: 24px;
+  padding: $spacing-lg;
   max-width: 1200px;
   margin: 0 auto;
 
@@ -10,27 +12,27 @@
     align-items: center;
     justify-content: center;
     padding: 60px 20px;
-    gap: 16px;
+    gap: $spacing-md;
 
     mat-icon {
       font-size: 64px;
       width: 64px;
       height: 64px;
-      color: rgba(0, 0, 0, 0.38);
+      color: $text-disabled;
     }
   }
 
   .detail-header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 32px;
+    gap: $spacing-md;
+    margin-bottom: $spacing-xl;
 
     .header-info {
       flex: 1;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: $spacing-md;
 
       h1 {
         font-size: 28px;
@@ -41,7 +43,7 @@
       mat-chip {
         font-size: 12px;
         font-weight: 500;
-        color: white;
+        color: $white;
       }
     }
   }
@@ -49,33 +51,33 @@
   .detail-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 24px;
+    gap: $spacing-lg;
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
     }
 
     mat-card-content {
-      padding: 16px;
+      padding: $spacing-md;
 
       .detail-row {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        margin-bottom: 16px;
+        margin-bottom: $spacing-md;
 
         label {
           font-size: 12px;
           font-weight: 500;
           text-transform: uppercase;
-          color: rgba(0, 0, 0, 0.6);
+          color: $text-secondary;
           letter-spacing: 0.5px;
         }
 
         span,
         p {
           font-size: 14px;
-          color: rgba(0, 0, 0, 0.87);
+          color: $text-primary;
           margin: 0;
         }
       }
@@ -83,13 +85,13 @@
       .actions-list {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: $spacing-md;
 
         button {
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          gap: 8px;
+          gap: $spacing-sm;
         }
       }
     }

@@ -1,13 +1,15 @@
+@use '../../../styles/variables' as *;
+
 .otp-input-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 16px 0;
+  margin: $spacing-md 0;
 }
 
 .otp-inputs {
   display: flex;
-  gap: 12px;
+  gap: $spacing-md;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -18,26 +20,26 @@
   text-align: center;
   font-size: 24px;
   font-weight: 600;
-  border: 2px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid $border-dashed;
+  border-radius: $border-radius-md;
   outline: none;
-  transition: all 0.2s ease;
-  background-color: #fff;
-  color: #333;
+  transition: all $transition-normal;
+  background-color: $white;
+  color: $text-primary;
 
   &:focus {
-    border-color: #1976d2;
-    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($primary-500, 0.1);
   }
 
   &:disabled {
-    background-color: #f5f5f5;
+    background-color: $neutral-100;
     cursor: not-allowed;
-    color: #999;
+    color: $text-tertiary;
   }
 
   &:not(:disabled):hover {
-    border-color: #1976d2;
+    border-color: $color-primary;
   }
 
   // Prevent spinner in number input
@@ -62,6 +64,6 @@
   }
 
   .otp-inputs {
-    gap: 8px;
+    gap: $spacing-sm;
   }
 }

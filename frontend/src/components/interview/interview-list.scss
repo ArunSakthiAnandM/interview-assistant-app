@@ -1,5 +1,7 @@
+@use '../../styles/variables' as *;
+
 .interview-list {
-  padding: 24px;
+  padding: $spacing-lg;
   max-width: 1400px;
   margin: 0 auto;
 
@@ -7,19 +9,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: $spacing-xl;
 
     .header-content {
       h1 {
         font-size: 32px;
         font-weight: 500;
-        margin: 0 0 8px 0;
-        color: rgba(0, 0, 0, 0.87);
+        margin: 0 0 $spacing-sm 0;
+        color: $text-primary;
       }
 
       .subtitle {
         font-size: 16px;
-        color: rgba(0, 0, 0, 0.6);
+        color: $text-secondary;
         margin: 0;
       }
     }
@@ -27,13 +29,13 @@
     button {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: $spacing-sm;
     }
 
     @media (max-width: 768px) {
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: $spacing-md;
 
       button {
         width: 100%;
@@ -43,13 +45,13 @@
   }
 
   .filters-card {
-    margin-bottom: 24px;
+    margin-bottom: $spacing-lg;
 
     .filters-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      padding: 16px;
+      gap: $spacing-md;
+      padding: $spacing-md;
 
       mat-form-field {
         width: 100%;
@@ -67,12 +69,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding: $spacing-md;
+      border-bottom: 1px solid $border-medium;
 
       .results-count {
         font-size: 14px;
-        color: rgba(0, 0, 0, 0.6);
+        color: $text-secondary;
       }
     }
   }
@@ -83,11 +85,11 @@
     align-items: center;
     justify-content: center;
     padding: 60px 20px;
-    gap: 16px;
+    gap: $spacing-md;
 
     p {
       font-size: 16px;
-      color: rgba(0, 0, 0, 0.6);
+      color: $text-secondary;
       margin: 0;
     }
   }
@@ -95,24 +97,24 @@
   .empty-state {
     text-align: center;
     padding: 60px 20px;
-    color: rgba(0, 0, 0, 0.6);
+    color: $text-secondary;
 
     mat-icon {
       font-size: 64px;
       width: 64px;
       height: 64px;
-      margin-bottom: 16px;
-      color: rgba(0, 0, 0, 0.38);
+      margin-bottom: $spacing-md;
+      color: $text-disabled;
     }
 
     h3 {
       font-size: 20px;
-      margin: 0 0 8px 0;
+      margin: 0 0 $spacing-sm 0;
     }
 
     p {
       font-size: 14px;
-      margin: 0 0 16px 0;
+      margin: 0 0 $spacing-md 0;
     }
   }
 
@@ -123,23 +125,23 @@
     .interview-row {
       display: grid;
       grid-template-columns: 80px 1fr auto auto;
-      gap: 16px;
+      gap: $spacing-md;
       align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding: $spacing-md;
+      border-bottom: 1px solid $border-medium;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color $transition-normal;
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.04);
+        background-color: $hover-overlay-light;
       }
 
       .interview-date {
         text-align: center;
-        padding: 8px;
-        background-color: #1976d2;
-        color: white;
-        border-radius: 8px;
+        padding: $spacing-sm;
+        background-color: $color-primary;
+        color: $white;
+        border-radius: $border-radius-md;
 
         .month {
           font-size: 12px;
@@ -157,15 +159,15 @@
         h3 {
           font-size: 16px;
           font-weight: 500;
-          margin: 0 0 8px 0;
+          margin: 0 0 $spacing-sm 0;
         }
 
         .meta-info {
           display: flex;
           flex-wrap: wrap;
-          gap: 16px;
+          gap: $spacing-md;
           font-size: 14px;
-          color: rgba(0, 0, 0, 0.6);
+          color: $text-secondary;
 
           span {
             display: flex;
@@ -185,7 +187,7 @@
         mat-chip {
           font-size: 12px;
           font-weight: 500;
-          color: white;
+          color: $white;
         }
       }
 
@@ -207,20 +209,20 @@
   .grid-view {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
-    padding: 16px;
+    gap: $spacing-md;
+    padding: $spacing-md;
 
     .interview-card {
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all $transition-normal;
 
       &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px $shadow-color-dark;
         transform: translateY(-2px);
       }
 
       mat-card-header {
-        padding: 16px 16px 0 16px;
+        padding: $spacing-md $spacing-md 0 $spacing-md;
 
         .card-header-content {
           display: flex;
@@ -238,43 +240,43 @@
           mat-chip {
             font-size: 11px;
             font-weight: 500;
-            color: white;
-            margin-left: 8px;
+            color: $white;
+            margin-left: $spacing-sm;
           }
         }
       }
 
       mat-card-content {
-        padding: 16px;
+        padding: $spacing-md;
 
         .card-detail {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 8px;
+          gap: $spacing-sm;
+          margin-bottom: $spacing-sm;
           font-size: 14px;
-          color: rgba(0, 0, 0, 0.75);
+          color: $text-primary;
 
           mat-icon {
             font-size: 18px;
             width: 18px;
             height: 18px;
-            color: rgba(0, 0, 0, 0.54);
+            color: $text-secondary;
           }
         }
       }
 
       mat-card-actions {
-        padding: 0 16px 16px 16px;
+        padding: 0 $spacing-md $spacing-md $spacing-md;
       }
     }
   }
 
   .danger {
-    color: #f44336 !important;
+    color: $color-error !important;
 
     mat-icon {
-      color: #f44336 !important;
+      color: $color-error !important;
     }
   }
 }

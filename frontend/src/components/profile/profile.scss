@@ -1,42 +1,44 @@
+@use '../../styles/variables' as *;
+
 .profile {
-  padding: 24px;
+  padding: $spacing-lg;
   max-width: 1000px;
   margin: 0 auto;
 
   .page-header {
-    margin-bottom: 32px;
+    margin-bottom: $spacing-xl;
 
     h1 {
       font-size: 32px;
       font-weight: 500;
-      margin: 0 0 8px 0;
+      margin: 0 0 $spacing-sm 0;
     }
 
     .subtitle {
       font-size: 16px;
-      color: rgba(0, 0, 0, 0.6);
+      color: $text-secondary;
       margin: 0;
     }
   }
 
   .profile-grid {
     display: grid;
-    gap: 24px;
+    gap: $spacing-lg;
   }
 
   .profile-info {
     mat-card-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 24px;
+      gap: $spacing-md;
+      padding: $spacing-lg;
 
       .avatar {
         width: 80px;
         height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        border-radius: $border-radius-full;
+        background: $gradient-accent;
+        color: $white;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -54,13 +56,13 @@
 
         mat-card-subtitle {
           font-size: 14px;
-          margin-bottom: 8px;
+          margin-bottom: $spacing-sm;
         }
 
         .role-chip {
           font-size: 11px;
-          background-color: #1976d2;
-          color: white;
+          background-color: $color-primary;
+          color: $white;
         }
       }
     }
@@ -68,17 +70,17 @@
 
   .edit-form {
     mat-card-content {
-      padding: 24px;
+      padding: $spacing-lg;
 
       form {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: $spacing-md;
 
         h3 {
           font-size: 16px;
           font-weight: 500;
-          margin: 16px 0 0 0;
+          margin: $spacing-md 0 0 0;
         }
 
         mat-form-field {
@@ -88,14 +90,14 @@
         mat-card-actions {
           display: flex;
           justify-content: flex-end;
-          gap: 12px;
-          margin-top: 16px;
+          gap: $spacing-md;
+          margin-top: $spacing-md;
           padding: 0;
 
           button {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: $spacing-sm;
           }
         }
       }
@@ -104,15 +106,15 @@
 
   .security-section {
     mat-card-content {
-      padding: 24px;
+      padding: $spacing-lg;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: $spacing-md;
 
       button {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: $spacing-sm;
         justify-content: flex-start;
       }
     }
@@ -121,23 +123,23 @@
   .danger-zone {
     mat-card-header {
       mat-card-title {
-        color: #f44336;
+        color: $color-error;
       }
     }
 
     mat-card-content {
-      padding: 24px;
+      padding: $spacing-lg;
 
       p {
         font-size: 14px;
-        color: rgba(0, 0, 0, 0.6);
-        margin: 0 0 16px 0;
+        color: $text-secondary;
+        margin: 0 0 $spacing-md 0;
       }
 
       button {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: $spacing-sm;
       }
     }
   }

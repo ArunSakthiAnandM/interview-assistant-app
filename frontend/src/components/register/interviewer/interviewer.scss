@@ -1,28 +1,30 @@
+@use '../../../styles/variables' as *;
+
 .interviewer-registration-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: $spacing-xl $spacing-md;
+  background: $gradient-blue-purple;
 
   .registration-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    background: $white;
+    border-radius: $border-radius-xl;
+    box-shadow: 0 10px 40px $shadow-color;
     max-width: 900px;
     width: 100%;
     overflow: hidden;
   }
 
   .registration-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
+    background: $gradient-accent;
+    color: $white;
+    padding: $spacing-xl;
     text-align: center;
 
     h1 {
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 $spacing-sm 0;
       font-size: 2rem;
       font-weight: 600;
     }
@@ -35,41 +37,12 @@
   }
 
   .registration-form {
-    padding: 2rem;
+    padding: $spacing-xl;
   }
-
-  .form-section {
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #e0e0e0;
-
-    &:last-of-type {
-      border-bottom: none;
-      margin-bottom: 1.5rem;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0 0 1.5rem 0;
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #333;
-
-      mat-icon {
-        color: #667eea;
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-    }
-  }
-
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: $spacing-md;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
@@ -84,17 +57,17 @@
     }
 
     mat-icon {
-      color: #667eea;
-      margin-right: 0.5rem;
+      color: $color-primary;
+      margin-right: $spacing-sm;
     }
   }
 
   // Expertise section styles
   .expertise-input-container {
     display: flex;
-    gap: 1rem;
+    gap: $spacing-md;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    margin-bottom: $spacing-md;
 
     .expertise-field {
       flex: 1;
@@ -103,17 +76,17 @@
     button {
       margin-top: 4px;
       height: 56px;
-      padding: 0 1.5rem;
-      background: #667eea;
-      color: white;
+      padding: 0 $spacing-lg;
+      background: $color-primary;
+      color: $white;
 
       &:hover:not([disabled]) {
-        background: #5568d3;
+        background: $color-primary-dark;
       }
 
       &[disabled] {
-        background: #e0e0e0;
-        color: #999;
+        background: $neutral-200;
+        color: $text-tertiary;
       }
 
       mat-icon {
@@ -133,18 +106,18 @@
   .expertise-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    padding: 1rem;
-    background: #f5f5f5;
-    border-radius: 8px;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    background: $neutral-100;
+    border-radius: $border-radius-md;
 
     mat-chip {
-      background: #667eea;
-      color: white;
+      background: $color-primary;
+      color: $white;
       font-weight: 500;
 
       button[matChipRemove] {
-        color: white;
+        color: $white;
         opacity: 0.8;
 
         &:hover {
@@ -157,15 +130,15 @@
   .expertise-empty {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    background: #fff3cd;
-    border: 1px solid #ffc107;
-    border-radius: 8px;
-    color: #856404;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    background: $warning-50;
+    border: 1px solid $color-warning;
+    border-radius: $border-radius-md;
+    color: $warning-700;
 
     mat-icon {
-      color: #ffc107;
+      color: $color-warning;
     }
 
     p {
@@ -175,17 +148,17 @@
   }
 
   .terms-container {
-    margin: 1.5rem 0;
-    padding: 1rem;
-    background: #f9f9f9;
-    border-radius: 8px;
+    margin: $spacing-lg 0;
+    padding: $spacing-md;
+    background: $neutral-50;
+    border-radius: $border-radius-md;
 
     mat-checkbox {
       font-size: 0.9rem;
     }
 
     a {
-      color: #667eea;
+      color: $color-primary;
       text-decoration: none;
       font-weight: 500;
 
@@ -198,8 +171,8 @@
   .action-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: $spacing-md;
+    margin-top: $spacing-xl;
 
     button {
       flex: 1;
@@ -209,7 +182,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: $spacing-sm;
 
       mat-icon {
         font-size: 20px;
@@ -218,16 +191,16 @@
       }
 
       mat-spinner {
-        margin-right: 0.5rem;
+        margin-right: $spacing-sm;
       }
     }
 
     .secondary-button {
-      background: #f5f5f5;
-      color: #333;
+      background: $neutral-100;
+      color: $text-primary;
 
       &:hover {
-        background: #e0e0e0;
+        background: $neutral-200;
       }
     }
 
@@ -241,17 +214,17 @@
   }
 
   .registration-footer {
-    padding: 1.5rem 2rem;
-    background: #f9f9f9;
+    padding: $spacing-lg $spacing-xl;
+    background: $neutral-50;
     text-align: center;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid $border-light;
 
     p {
       margin: 0;
-      color: #666;
+      color: $text-secondary;
 
       a {
-        color: #667eea;
+        color: $color-primary;
         text-decoration: none;
         font-weight: 600;
         cursor: pointer;
@@ -266,24 +239,24 @@
   // Material Select Customization
   ::ng-deep {
     .mat-mdc-select-value {
-      color: #333;
+      color: $text-primary;
     }
 
     .mat-mdc-select-arrow {
-      color: #667eea;
+      color: $color-primary;
     }
   }
 
   // Responsive Design
   @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
+    padding: $spacing-md $spacing-sm;
 
     .registration-card {
       border-radius: 0;
     }
 
     .registration-header {
-      padding: 1.5rem 1rem;
+      padding: $spacing-lg $spacing-md;
 
       h1 {
         font-size: 1.5rem;
@@ -291,12 +264,12 @@
     }
 
     .registration-form {
-      padding: 1.5rem 1rem;
+      padding: $spacing-lg $spacing-md;
     }
 
     .form-section {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
+      margin-bottom: $spacing-xl;
+      padding-bottom: $spacing-lg;
 
       .section-title {
         font-size: 1.1rem;

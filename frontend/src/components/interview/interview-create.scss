@@ -1,30 +1,32 @@
+@use '../../styles/variables' as *;
+
 .interview-create {
-  padding: 24px;
+  padding: $spacing-lg;
   max-width: 900px;
   margin: 0 auto;
 
   .page-header {
-    margin-bottom: 32px;
+    margin-bottom: $spacing-xl;
 
     h1 {
       font-size: 32px;
       font-weight: 500;
-      margin: 0 0 8px 0;
+      margin: 0 0 $spacing-sm 0;
     }
 
     .subtitle {
       font-size: 16px;
-      color: rgba(0, 0, 0, 0.6);
+      color: $text-secondary;
       margin: 0;
     }
   }
 
   .form-card {
     .form-section {
-      padding: 24px 0;
+      padding: $spacing-lg 0;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: $spacing-md;
 
       mat-form-field {
         width: 100%;
@@ -32,25 +34,25 @@
 
       .step-actions {
         display: flex;
-        gap: 12px;
+        gap: $spacing-md;
         justify-content: flex-end;
-        margin-top: 16px;
+        margin-top: $spacing-md;
       }
     }
 
     .review-section {
-      padding: 24px 0;
+      padding: $spacing-lg 0;
 
       h3 {
         font-size: 20px;
-        margin: 0 0 24px 0;
+        margin: 0 0 $spacing-lg 0;
       }
 
       .review-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
+        gap: $spacing-md;
+        margin-bottom: $spacing-lg;
 
         @media (max-width: 600px) {
           grid-template-columns: 1fr;
@@ -65,26 +67,26 @@
             font-size: 12px;
             font-weight: 500;
             text-transform: uppercase;
-            color: rgba(0, 0, 0, 0.6);
+            color: $text-secondary;
             letter-spacing: 0.5px;
           }
 
           span {
             font-size: 14px;
-            color: rgba(0, 0, 0, 0.87);
+            color: $text-primary;
           }
         }
       }
 
       .step-actions {
         display: flex;
-        gap: 12px;
+        gap: $spacing-md;
         justify-content: flex-end;
 
         button {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: $spacing-sm;
         }
       }
     }
