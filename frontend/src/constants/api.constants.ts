@@ -40,6 +40,7 @@ export const API_ENDPOINTS = {
     CREATE: '/recruiters',
     UPDATE: (id: string) => `/recruiters/${id}`,
     VERIFY: (id: string) => `/recruiters/${id}/verify`,
+    UNVERIFY: (id: string) => `/recruiters/${id}/unverify`,
     REJECT: (id: string) => `/recruiters/${id}/reject`,
     DELETE: (id: string) => `/recruiters/${id}`,
   },
@@ -60,6 +61,7 @@ export const API_ENDPOINTS = {
     BASE: '/interviewers',
     BY_ID: (id: string) => `/interviewers/${id}`,
     CREATE: '/interviewers',
+    INVITE: '/interviewers/invite',
     UPDATE: (id: string) => `/interviewers/${id}`,
     DELETE: (id: string) => `/interviewers/${id}`,
   },
@@ -71,6 +73,10 @@ export const API_ENDPOINTS = {
     CREATE: '/interviews',
     UPDATE: (id: string) => `/interviews/${id}`,
     UPDATE_STATUS: (id: string) => `/interviews/${id}/status`,
+    CONFIRM: (id: string) => `/interviews/${id}/confirm`,
+    RESULT: (id: string) => `/interviews/${id}/result`,
+    NEXT_ROUND: (id: string) => `/interviews/${id}/next-round`,
+    REQUEST_FEEDBACK: (id: string) => `/interviews/${id}/request-feedback`,
     CANCEL: (id: string) => `/interviews/${id}`,
   },
 
@@ -95,6 +101,14 @@ export const API_ENDPOINTS = {
     UPLOAD: '/files/upload',
     DOWNLOAD: (fileId: string) => `/files/${fileId}`,
     DELETE: (fileId: string) => `/files/${fileId}`,
+  },
+
+  // Dashboard
+  DASHBOARD: {
+    ADMIN: '/dashboard/admin',
+    RECRUITER: (recruiterId: string) => `/dashboard/recruiter/${recruiterId}`,
+    INTERVIEWER: (interviewerId: string) => `/dashboard/interviewer/${interviewerId}`,
+    CANDIDATE: (candidateId: string) => `/dashboard/candidate/${candidateId}`,
   },
 } as const;
 

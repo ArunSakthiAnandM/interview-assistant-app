@@ -55,6 +55,15 @@ export enum InterviewOutcome {
 }
 
 /**
+ * Interview result enumeration (as per API.md)
+ */
+export enum InterviewResult {
+  SELECTED = 'SELECTED',
+  REJECTED = 'REJECTED',
+  NEXT_ROUND = 'NEXT_ROUND',
+}
+
+/**
  * Interview feedback
  */
 export interface InterviewFeedback {

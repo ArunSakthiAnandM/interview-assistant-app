@@ -32,11 +32,14 @@ export interface InterviewerRegistrationRequest {
 
 /**
  * Interviewer invite request (sent by org admin)
+ * Note: Backend API also accepts recruiterId and message fields
  */
 export interface InterviewerInviteRequest {
   email: string;
-  firstName: string;
-  lastName: string;
-  designation: string;
+  firstName?: string;
+  lastName?: string;
+  designation?: string;
   department?: string;
+  recruiterId?: string;
+  message?: string;
 }

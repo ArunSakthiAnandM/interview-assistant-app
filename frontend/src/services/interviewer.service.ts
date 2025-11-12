@@ -1,8 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { InterviewerRegistrationRequest, Interviewer } from '../models';
+import {
+  InterviewerRegistrationRequest,
+  Interviewer,
+  InterviewerInviteRequest,
+  PaginatedInterviewerResponse,
+} from '../models';
 import { API_CONFIG, API_ENDPOINTS } from '../constants';
 
 /**
@@ -17,27 +22,51 @@ export class InterviewerService {
 
   /**
    * Register new interviewer
-   * TODO: Integrate with Spring Boot backend interviewer registration endpoint
    */
   registerInterviewer(request: InterviewerRegistrationRequest): Observable<Interviewer> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.CREATE}`;
-
-    // TODO: Replace with actual backend call
-    console.log('TODO: Register interviewer', request);
-
     return this.http.post<Interviewer>(endpoint, request).pipe(catchError(this.handleError));
   }
 
   /**
+   * Get all interviewers with optional filters
+   */
+  getAllInterviewers(
+    expertise?: string,
+    available?: boolean,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PaginatedInterviewerResponse> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BASE}`;
+
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+    if (expertise) {
+      params = params.set('expertise', expertise);
+    }
+    if (available !== undefined) {
+      params = params.set('available', available.toString());
+    }
+
+    return this.http
+      .get<PaginatedInterviewerResponse>(endpoint, { params })
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
    * Get interviewer by ID
-   * TODO: Integrate with Spring Boot backend
    */
   getInterviewer(id: string): Observable<Interviewer> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BY_ID(id)}`;
-
-    console.log('TODO: Get interviewer', id);
-
     return this.http.get<Interviewer>(endpoint).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Update interviewer profile
+   */
+  updateInterviewer(id: string, interviewer: Partial<Interviewer>): Observable<Interviewer> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.UPDATE(id)}`;
+    return this.http.put<Interviewer>(endpoint, interviewer).pipe(catchError(this.handleError));
   }
 
   /**
@@ -45,27 +74,24 @@ export class InterviewerService {
    */
   getInterviewersByRecruiter(recruiterId: string): Observable<Interviewer[]> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.BASE}`;
-
-    console.log('Get interviewers by recruiter', recruiterId);
-
-    // Using query parameters as per API.md
-    return this.http
-      .get<Interviewer[]>(endpoint, { params: { recruiterId } })
-      .pipe(catchError(this.handleError));
+    const params = new HttpParams().set('recruiterId', recruiterId);
+    return this.http.get<Interviewer[]>(endpoint, { params }).pipe(catchError(this.handleError));
   }
 
   /**
    * Send interviewer invitation
-   * TODO: Integrate with Spring Boot backend
    */
-  sendInterviewerInvite(email: string, firstName: string, lastName: string): Observable<any> {
-    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.CREATE}`;
+  inviteInterviewer(request: InterviewerInviteRequest): Observable<any> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.INVITE}`;
+    return this.http.post<any>(endpoint, request).pipe(catchError(this.handleError));
+  }
 
-    console.log('TODO: Send interviewer invite', email);
-
-    return this.http
-      .post<any>(endpoint, { email, firstName, lastName })
-      .pipe(catchError(this.handleError));
+  /**
+   * Delete interviewer
+   */
+  deleteInterviewer(id: string): Observable<void> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.INTERVIEWER.DELETE(id)}`;
+    return this.http.delete<void>(endpoint).pipe(catchError(this.handleError));
   }
 
   /**

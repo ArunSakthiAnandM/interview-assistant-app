@@ -1,8 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { RecruiterRegistrationRequest, Recruiter } from '../models';
+import {
+  RecruiterRegistrationRequest,
+  Recruiter,
+  VerificationStatus,
+  PaginatedRecruiterResponse,
+} from '../models';
 import { API_CONFIG, API_ENDPOINTS } from '../constants';
 
 /**
@@ -17,14 +22,36 @@ export class RecruiterService {
 
   /**
    * Register new recruiter
-   * Integrate with Spring Boot backend recruiter registration endpoint
    */
   registerRecruiter(request: RecruiterRegistrationRequest): Observable<Recruiter> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.CREATE}`;
-
-    console.log('Registering recruiter', request);
-
     return this.http.post<Recruiter>(endpoint, request).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Get all recruiters with optional filters
+   * Supports filtering by status and isActive
+   */
+  getAllRecruiters(
+    status?: VerificationStatus,
+    isActive?: boolean,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PaginatedRecruiterResponse> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.BASE}`;
+
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (isActive !== undefined) {
+      params = params.set('isActive', isActive.toString());
+    }
+
+    return this.http
+      .get<PaginatedRecruiterResponse>(endpoint, { params })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -32,10 +59,15 @@ export class RecruiterService {
    */
   getRecruiter(id: string): Observable<Recruiter> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.BY_ID(id)}`;
-
-    console.log('Get recruiter', id);
-
     return this.http.get<Recruiter>(endpoint).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Update recruiter details
+   */
+  updateRecruiter(id: string, recruiter: Partial<Recruiter>): Observable<Recruiter> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.UPDATE(id)}`;
+    return this.http.put<Recruiter>(endpoint, recruiter).pipe(catchError(this.handleError));
   }
 
   /**
@@ -43,10 +75,16 @@ export class RecruiterService {
    */
   verifyRecruiter(id: string): Observable<Recruiter> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.VERIFY(id)}`;
-
-    console.log('Verify recruiter', id);
-
     return this.http.put<Recruiter>(endpoint, {}).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Unverify recruiter (admin action)
+   */
+  unverifyRecruiter(id: string, reason: string): Observable<Recruiter> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.UNVERIFY(id)}`;
+    const params = new HttpParams().set('reason', reason);
+    return this.http.put<Recruiter>(endpoint, {}, { params }).pipe(catchError(this.handleError));
   }
 
   /**
@@ -54,10 +92,16 @@ export class RecruiterService {
    */
   rejectRecruiter(id: string, reason: string): Observable<Recruiter> {
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.REJECT(id)}`;
+    const params = new HttpParams().set('reason', reason);
+    return this.http.put<Recruiter>(endpoint, {}, { params }).pipe(catchError(this.handleError));
+  }
 
-    console.log('Reject recruiter', id, reason);
-
-    return this.http.put<Recruiter>(endpoint, { reason }).pipe(catchError(this.handleError));
+  /**
+   * Delete recruiter
+   */
+  deleteRecruiter(id: string): Observable<void> {
+    const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.RECRUITER.DELETE(id)}`;
+    return this.http.delete<void>(endpoint).pipe(catchError(this.handleError));
   }
 
   /**

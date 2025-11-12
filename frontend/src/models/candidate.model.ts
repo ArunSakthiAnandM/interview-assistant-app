@@ -1,6 +1,18 @@
 import { User } from './user.model';
 
 /**
+ * Candidate status enumeration
+ */
+export enum CandidateStatus {
+  APPLIED = 'APPLIED',
+  SCREENING = 'SCREENING',
+  INTERVIEW_SCHEDULED = 'INTERVIEW_SCHEDULED',
+  INTERVIEWED = 'INTERVIEWED',
+  SELECTED = 'SELECTED',
+  REJECTED = 'REJECTED',
+}
+
+/**
  * Candidate profile
  */
 export interface Candidate extends User {
@@ -9,6 +21,8 @@ export interface Candidate extends User {
   mobile: string;
   mobileVerified: boolean;
   emailVerified: boolean;
+  status?: CandidateStatus;
+  position?: string;
   resume?: string; // URL to resume
   skills?: string[];
   experience?: number; // years of experience
@@ -16,6 +30,7 @@ export interface Candidate extends User {
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
+  recruiterId?: string;
 }
 
 /**
