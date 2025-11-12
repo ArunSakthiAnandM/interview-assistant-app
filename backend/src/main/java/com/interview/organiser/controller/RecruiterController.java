@@ -54,6 +54,13 @@ public class RecruiterController {
         return ResponseEntity.ok(recruiterService.verifyRecruiter(recruiterId));
     }
 
+    @PutMapping("/{recruiterId}/unverify")
+    public ResponseEntity<RecruiterResponse> unverifyRecruiter(
+            @PathVariable String recruiterId,
+            @RequestParam String reason) {
+        return ResponseEntity.ok(recruiterService.unverifyRecruiter(recruiterId, reason));
+    }
+
     @PutMapping("/{recruiterId}/reject")
     public ResponseEntity<RecruiterResponse> rejectRecruiter(
             @PathVariable String recruiterId,

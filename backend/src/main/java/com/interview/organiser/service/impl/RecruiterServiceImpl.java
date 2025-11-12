@@ -141,6 +141,27 @@ public class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     @Transactional
+    public RecruiterResponse unverifyRecruiter(String recruiterId, String reason) {
+        log.info("Unverifying recruiter with id: {}, reason: {}", recruiterId, reason);
+
+        Recruiter recruiter = recruiterRepository.findById(recruiterId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter not found"));
+
+        recruiter.setVerificationStatus(VerificationStatus.REJECTED);
+        recruiter.setIsActive(false);
+        recruiter.setUpdatedAt(LocalDateTime.now());
+
+        Recruiter unverifiedRecruiter = recruiterRepository.save(recruiter);
+
+        // TODO: Send notification to recruiter about unverification
+        // notificationService.notifyRecruiterVerificationStatus(
+        //     recruiter.getContactEmail(), "UNVERIFIED", reason);
+
+        return toRecruiterResponse(unverifiedRecruiter);
+    }
+
+    @Override
+    @Transactional
     public RecruiterResponse rejectRecruiter(String recruiterId, String reason) {
         log.info("Rejecting recruiter with id: {}, reason: {}", recruiterId, reason);
 

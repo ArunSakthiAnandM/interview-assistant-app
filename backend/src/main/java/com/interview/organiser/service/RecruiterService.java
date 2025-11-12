@@ -20,6 +20,8 @@ public interface RecruiterService {
 
     RecruiterResponse verifyRecruiter(String recruiterId);
 
+    RecruiterResponse unverifyRecruiter(String recruiterId, String reason);
+
     RecruiterResponse rejectRecruiter(String recruiterId, String reason);
 
     MessageResponse deleteRecruiter(String recruiterId);

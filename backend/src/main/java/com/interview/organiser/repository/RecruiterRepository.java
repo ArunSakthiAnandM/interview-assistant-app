@@ -21,5 +21,7 @@ public interface RecruiterRepository extends MongoRepository<Recruiter, String> 
     Page<Recruiter> findByVerificationStatus(VerificationStatus status, Pageable pageable);
 
     Page<Recruiter> findByIsActive(Boolean isActive, Pageable pageable);
+
+    long countByVerificationStatus(VerificationStatus status);
 }
 
