@@ -21,5 +21,9 @@ public interface InterviewerRepository extends MongoRepository<Interviewer, Stri
 
     @Query("{ 'expertise': { $in: [?0] }, 'availability': ?1 }")
     Page<Interviewer> findByExpertiseAndAvailability(String expertise, Boolean availability, Pageable pageable);
+
+    Optional<Interviewer> findByEmail(String email);
+
+    Optional<Interviewer> findByInvitationToken(String invitationToken);
 }
 

@@ -3,14 +3,17 @@ package com.interview.organiser.service.impl;
 import com.interview.organiser.constants.AppConstants;
 import com.interview.organiser.exception.ResourceNotFoundException;
 import com.interview.organiser.model.dto.request.CreateInterviewerRequest;
+import com.interview.organiser.model.dto.request.InviteInterviewerRequest;
 import com.interview.organiser.model.dto.request.UpdateInterviewerRequest;
 import com.interview.organiser.model.dto.response.InterviewerResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
 import com.interview.organiser.model.entity.Interviewer;
 import com.interview.organiser.repository.InterviewerRepository;
+import com.interview.organiser.repository.RecruiterRepository;
 import com.interview.organiser.repository.UserRepository;
 import com.interview.organiser.service.InterviewerService;
+import com.interview.organiser.service.NotificationService;
 import com.interview.organiser.util.EntityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +34,8 @@ public class InterviewerServiceImpl implements InterviewerService {
 
     private final InterviewerRepository interviewerRepository;
     private final UserRepository userRepository;
+    private final RecruiterRepository recruiterRepository;
+    private final NotificationService notificationService;
     private final EntityMapper entityMapper;
 
     @Override
@@ -71,11 +77,13 @@ public class InterviewerServiceImpl implements InterviewerService {
 
         Interviewer interviewer = Interviewer.builder()
                 .user(user)
+                .email(user.getEmail())
                 .department(request.getDepartment())
                 .expertise(request.getExpertise())
                 .yearsOfExperience(request.getYearsOfExperience())
                 .availability(request.getAvailability() != null ? request.getAvailability() : true)
                 .totalInterviews(0)
+                .isRegistered(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -83,6 +91,52 @@ public class InterviewerServiceImpl implements InterviewerService {
         Interviewer savedInterviewer = interviewerRepository.save(interviewer);
 
         return entityMapper.toInterviewerResponse(savedInterviewer);
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse inviteInterviewer(InviteInterviewerRequest request) {
+        log.info("Inviting interviewer with email: {}", request.getEmail());
+
+        // Check if interviewer already exists
+        if (interviewerRepository.findByEmail(request.getEmail()).isPresent()) {
+            return MessageResponse.builder()
+                    .message("Interviewer with this email already exists")
+                    .timestamp(LocalDateTime.now())
+                    .build();
+        }
+
+        // Get recruiter name for notification
+        String recruiterName = "Recruiter";
+        if (request.getRecruiterId() != null) {
+            recruiterRepository.findById(request.getRecruiterId())
+                    .ifPresent(recruiter -> {});
+        }
+
+        // Generate invitation token
+        String invitationToken = UUID.randomUUID().toString();
+
+        // Create interviewer record with pending status
+        Interviewer interviewer = Interviewer.builder()
+                .email(request.getEmail())
+                .invitationToken(invitationToken)
+                .invitationSentAt(LocalDateTime.now())
+                .isRegistered(false)
+                .availability(true)
+                .totalInterviews(0)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        interviewerRepository.save(interviewer);
+
+        // Send invitation notification (mocked)
+        notificationService.sendInterviewerInvitation(request.getEmail(), invitationToken, recruiterName);
+
+        return MessageResponse.builder()
+                .message("Invitation sent successfully to " + request.getEmail())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 
     @Override

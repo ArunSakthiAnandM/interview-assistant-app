@@ -1,6 +1,7 @@
 package com.interview.organiser.controller;
 
 import com.interview.organiser.model.dto.request.CreateInterviewerRequest;
+import com.interview.organiser.model.dto.request.InviteInterviewerRequest;
 import com.interview.organiser.model.dto.request.UpdateInterviewerRequest;
 import com.interview.organiser.model.dto.response.InterviewerResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
@@ -34,6 +35,11 @@ public class InterviewerController {
     @PostMapping
     public ResponseEntity<InterviewerResponse> createInterviewer(@Valid @RequestBody CreateInterviewerRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(interviewerService.createInterviewer(request));
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<MessageResponse> inviteInterviewer(@Valid @RequestBody InviteInterviewerRequest request) {
+        return ResponseEntity.ok(interviewerService.inviteInterviewer(request));
     }
 
     @GetMapping("/{interviewerId}")

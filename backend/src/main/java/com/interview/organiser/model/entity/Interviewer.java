@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,6 +25,9 @@ public class Interviewer {
     @DBRef
     private User user;
 
+    @Indexed(unique = true)
+    private String email; // For invitation tracking before registration
+
     private String department;
 
     private List<String> expertise;
@@ -35,6 +39,16 @@ public class Interviewer {
 
     @Builder.Default
     private Integer totalInterviews = 0;
+
+    // Invitation tracking
+    private String invitationToken;
+
+    private LocalDateTime invitationSentAt;
+
+    private LocalDateTime invitationAcceptedAt;
+
+    @Builder.Default
+    private Boolean isRegistered = false;
 
     private LocalDateTime createdAt;
 
