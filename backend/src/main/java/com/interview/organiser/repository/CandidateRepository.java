@@ -24,5 +24,12 @@ public interface CandidateRepository extends MongoRepository<Candidate, String> 
 
     @Query("{ 'status': ?0, $or: [ { 'firstName': { $regex: ?1, $options: 'i' } }, { 'lastName': { $regex: ?1, $options: 'i' } }, { 'email': { $regex: ?1, $options: 'i' } }, { 'position': { $regex: ?1, $options: 'i' } } ] }")
     Page<Candidate> searchCandidatesByStatus(CandidateStatus status, String search, Pageable pageable);
+
+    // Count methods for dashboard
+    long countByRecruiterId(String recruiterId);
+
+    long countByRecruiterIdAndStatusNot(String recruiterId, CandidateStatus status);
+
+    Optional<Candidate> findByEmail(String email);
 }
 
