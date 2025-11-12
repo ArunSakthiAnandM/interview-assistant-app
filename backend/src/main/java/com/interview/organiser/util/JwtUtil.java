@@ -51,7 +51,12 @@ public class JwtUtil {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", user.getEmail());
-        claims.put("role", user.getRole().toString());
+        // Convert roles Set to comma-separated string
+        String rolesString = user.getRoles().stream()
+                .map(Enum::toString)
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
+        claims.put("roles", rolesString);
         return createToken(claims, user.getId());
     }
 

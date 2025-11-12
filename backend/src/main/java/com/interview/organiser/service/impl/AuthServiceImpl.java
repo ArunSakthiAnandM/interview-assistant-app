@@ -52,11 +52,13 @@ public class AuthServiceImpl implements AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .phone(request.getPhone())
-                .role(request.getRole())
                 .isActive(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+
+        // Add the requested role to the roles set
+        user.getRoles().add(request.getRole());
 
         User savedUser = userRepository.save(user);
 

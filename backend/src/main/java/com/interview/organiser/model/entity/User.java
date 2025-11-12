@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -32,7 +34,9 @@ public class User {
 
     private String phone;
 
-    private UserRole role;
+    // Support multiple roles - a single account can have multiple roles
+    @Builder.Default
+    private Set<UserRole> roles = new HashSet<>();
 
     private String recruiterId;
 

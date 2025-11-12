@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
         Page<com.interview.organiser.model.entity.User> userPage;
         if (role != null) {
-            userPage = userRepository.findByRole(role, pageable);
+            userPage = userRepository.findByRolesContaining(role, pageable);
         } else {
             userPage = userRepository.findAll(pageable);
         }

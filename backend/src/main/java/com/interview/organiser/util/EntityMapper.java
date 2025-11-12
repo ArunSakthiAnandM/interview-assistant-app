@@ -18,7 +18,10 @@ public class EntityMapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phone(user.getPhone())
-                .role(user.getRole())
+                // Return the first role for backwards compatibility, or null if no roles
+                .role(user.getRoles() != null && !user.getRoles().isEmpty()
+                        ? user.getRoles().iterator().next()
+                        : null)
                 .isActive(user.getIsActive())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
