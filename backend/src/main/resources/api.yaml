@@ -1,45 +1,1012 @@
 openapi: 3.0.3
 info:
   title: Interview Organiser API
-  description: |
-    A comprehensive REST API for managing the complete interview process, from candidate application to feedback collection.
-    
-    ## Features
-    - User Management (Admin, Recruiter, Interviewer, Candidate roles)
-    - Candidate Tracking and Management
-    - Interview Scheduling and Management
-    - Interviewer Coordination
-    - Feedback System with Ratings
-    - Recruiter Management
-    - JWT-based Authentication
+  description: Complete REST API for managing interview processes
   version: 1.0.0
   contact:
     name: API Support
-    email: support@intervieworganiser.com
 
 servers:
   - url: http://localhost:8080/api/v1
-    description: Local Development Server
-  - url: https://api.intervieworganiser.com/api/v1
-    description: Production Server
+    description: Local Development
+
+security:
+  - bearerAuth: []
 
 tags:
   - name: Health
-    description: Health check endpoints
+    description: Health check
   - name: Authentication
-    description: User authentication and authorization
+    description: User authentication
   - name: Users
-    description: User management operations
+    description: User management
   - name: Recruiters
-    description: Recruiter/Organization management
+    description: Recruiter management
   - name: Candidates
-    description: Candidate management and tracking
+    description: Candidate management
   - name: Interviewers
-    description: Interviewer profile management
+    description: Interviewer management
   - name: Interviews
-    description: Interview scheduling and management
+    description: Interview scheduling
   - name: Feedback
-    description: Interview feedback operations
+    description: Interview feedback
+  - name: Dashboards
+    description: Role-specific dashboards
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Check API health
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: User logout
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all users
+      parameters:
+        - name: role
+          in: query
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPageResponse'
+
+  /users/{userId}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+
+    put:
+      tags: [Users]
+      summary: Update user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+    delete:
+      tags: [Users]
+      summary: Delete user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /recruiters:
+    get:
+      tags: [Recruiters]
+      summary: Get all recruiters
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/VerificationStatus'
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of recruiters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterPageResponse'
+
+    post:
+      tags: [Recruiters]
+      summary: Create recruiter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecruiterRequest'
+      responses:
+        '201':
+          description: Recruiter created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterResponse'
+
+  /recruiters/{recruiterId}:
+    get:
+      tags: [Recruiters]
+      summary: Get recruiter by ID
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recruiter found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterResponse'
+
+    put:
+      tags: [Recruiters]
+      summary: Update recruiter
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecruiterRequest'
+      responses:
+        '200':
+          description: Recruiter updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterResponse'
+
+    delete:
+      tags: [Recruiters]
+      summary: Delete recruiter
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recruiter deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /recruiters/{recruiterId}/verify:
+    put:
+      tags: [Recruiters]
+      summary: Verify recruiter (Admin)
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recruiter verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterResponse'
+
+  /recruiters/{recruiterId}/unverify:
+    put:
+      tags: [Recruiters]
+      summary: Unverify recruiter (Admin)
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reason
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recruiter unverified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterResponse'
+
+  /recruiters/{recruiterId}/reject:
+    put:
+      tags: [Recruiters]
+      summary: Reject recruiter (Admin)
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reason
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recruiter rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterResponse'
+
+  /candidates:
+    get:
+      tags: [Candidates]
+      summary: Get all candidates
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/CandidateStatus'
+        - name: search
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of candidates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidatePageResponse'
+
+    post:
+      tags: [Candidates]
+      summary: Create candidate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCandidateRequest'
+      responses:
+        '201':
+          description: Candidate created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+
+  /candidates/{candidateId}:
+    get:
+      tags: [Candidates]
+      summary: Get candidate by ID
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidate found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+
+    put:
+      tags: [Candidates]
+      summary: Update candidate
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCandidateRequest'
+      responses:
+        '200':
+          description: Candidate updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+
+    delete:
+      tags: [Candidates]
+      summary: Delete candidate
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidate deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /candidates/invite:
+    post:
+      tags: [Candidates]
+      summary: Invite candidate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteCandidateRequest'
+      responses:
+        '200':
+          description: Invitation sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /candidates/invitation/respond:
+    post:
+      tags: [Candidates]
+      summary: Respond to invitation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespondToInvitationRequest'
+      responses:
+        '200':
+          description: Response recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviewers:
+    get:
+      tags: [Interviewers]
+      summary: Get all interviewers
+      parameters:
+        - name: expertise
+          in: query
+          schema:
+            type: string
+        - name: available
+          in: query
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of interviewers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerPageResponse'
+
+    post:
+      tags: [Interviewers]
+      summary: Create interviewer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInterviewerRequest'
+      responses:
+        '201':
+          description: Interviewer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerResponse'
+
+  /interviewers/invite:
+    post:
+      tags: [Interviewers]
+      summary: Invite interviewer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteInterviewerRequest'
+      responses:
+        '200':
+          description: Invitation sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviewers/{interviewerId}:
+    get:
+      tags: [Interviewers]
+      summary: Get interviewer by ID
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviewer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerResponse'
+
+    put:
+      tags: [Interviewers]
+      summary: Update interviewer
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInterviewerRequest'
+      responses:
+        '200':
+          description: Interviewer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerResponse'
+
+    delete:
+      tags: [Interviewers]
+      summary: Delete interviewer
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviewer deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviews:
+    get:
+      tags: [Interviews]
+      summary: Get all interviews
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/InterviewStatus'
+        - name: candidateId
+          in: query
+          schema:
+            type: string
+        - name: interviewerId
+          in: query
+          schema:
+            type: string
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of interviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewPageResponse'
+
+    post:
+      tags: [Interviews]
+      summary: Schedule interview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleInterviewRequest'
+      responses:
+        '201':
+          description: Interview scheduled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /interviews/{interviewId}:
+    get:
+      tags: [Interviews]
+      summary: Get interview by ID
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+    put:
+      tags: [Interviews]
+      summary: Update interview
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInterviewRequest'
+      responses:
+        '200':
+          description: Interview updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+    delete:
+      tags: [Interviews]
+      summary: Cancel interview
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /interviews/{interviewId}/status:
+    patch:
+      tags: [Interviews]
+      summary: Update interview status
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInterviewStatusRequest'
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /interviews/{interviewId}/confirm:
+    post:
+      tags: [Interviews]
+      summary: Confirm interview (Candidate)
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmInterviewRequest'
+      responses:
+        '200':
+          description: Interview confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /interviews/{interviewId}/result:
+    post:
+      tags: [Interviews]
+      summary: Mark interview result
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkInterviewResultRequest'
+      responses:
+        '200':
+          description: Result marked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /interviews/{interviewId}/next-round:
+    post:
+      tags: [Interviews]
+      summary: Create next round interview
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNextRoundInterviewRequest'
+      responses:
+        '201':
+          description: Next round created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewResponse'
+
+  /interviews/{interviewId}/request-feedback:
+    post:
+      tags: [Interviews]
+      summary: Request feedback
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /feedback:
+    get:
+      tags: [Feedback]
+      summary: Get all feedback
+      parameters:
+        - name: interviewId
+          in: query
+          schema:
+            type: string
+        - name: candidateId
+          in: query
+          schema:
+            type: string
+        - name: interviewerId
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of feedback
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackPageResponse'
+
+    post:
+      tags: [Feedback]
+      summary: Submit feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitFeedbackRequest'
+      responses:
+        '201':
+          description: Feedback submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+
+  /feedback/{feedbackId}:
+    get:
+      tags: [Feedback]
+      summary: Get feedback by ID
+      parameters:
+        - name: feedbackId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+
+    put:
+      tags: [Feedback]
+      summary: Update feedback
+      parameters:
+        - name: feedbackId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFeedbackRequest'
+      responses:
+        '200':
+          description: Feedback updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+
+    delete:
+      tags: [Feedback]
+      summary: Delete feedback
+      parameters:
+        - name: feedbackId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /dashboard/admin:
+    get:
+      tags: [Dashboards]
+      summary: Get admin dashboard
+      responses:
+        '200':
+          description: Admin dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDashboardResponse'
+
+  /dashboard/recruiter/{recruiterId}:
+    get:
+      tags: [Dashboards]
+      summary: Get recruiter dashboard
+      parameters:
+        - name: recruiterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recruiter dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruiterDashboardResponse'
+
+  /dashboard/interviewer/{interviewerId}:
+    get:
+      tags: [Dashboards]
+      summary: Get interviewer dashboard
+      parameters:
+        - name: interviewerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interviewer dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewerDashboardResponse'
+
+  /dashboard/candidate/{candidateId}:
+    get:
+      tags: [Dashboards]
+      summary: Get candidate dashboard
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidate dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateDashboardResponse'
 
 components:
   securitySchemes:
@@ -47,10 +1014,55 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT token for authentication
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    SizeParam:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
 
   schemas:
-    # Common Response Types
+    # Enums
+    UserRole:
+      type: string
+      enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
+
+    VerificationStatus:
+      type: string
+      enum: [PENDING, VERIFIED, REJECTED]
+
+    CandidateStatus:
+      type: string
+      enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+
+    InterviewStatus:
+      type: string
+      enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+
+    InterviewType:
+      type: string
+      enum: [TECHNICAL, HR, CULTURAL_FIT, MANAGERIAL]
+
+    InterviewResult:
+      type: string
+      enum: [SELECTED, REJECTED, NEXT_ROUND]
+
+    FeedbackRecommendation:
+      type: string
+      enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
+
+    # Common
     MessageResponse:
       type: object
       properties:
@@ -60,25 +1072,11 @@ components:
           type: string
           format: date-time
 
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-        path:
-          type: string
-
     HealthResponse:
       type: object
       properties:
         status:
           type: string
-          enum: [UP, DOWN]
         timestamp:
           type: string
           format: date-time
@@ -98,11 +1096,10 @@ components:
           type: integer
         totalElements:
           type: integer
-          format: int64
         totalPages:
           type: integer
 
-    # Authentication
+    # Auth
     RegisterRequest:
       type: object
       required: [email, password, firstName, lastName, role]
@@ -112,7 +1109,6 @@ components:
           format: email
         password:
           type: string
-          format: password
           minLength: 8
         firstName:
           type: string
@@ -121,8 +1117,7 @@ components:
         phone:
           type: string
         role:
-          type: string
-          enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
+          $ref: '#/components/schemas/UserRole'
 
     LoginRequest:
       type: object
@@ -130,10 +1125,8 @@ components:
       properties:
         email:
           type: string
-          format: email
         password:
           type: string
-          format: password
 
     RefreshTokenRequest:
       type: object
@@ -151,10 +1144,8 @@ components:
           type: string
         tokenType:
           type: string
-          default: Bearer
         expiresIn:
           type: integer
-          format: int64
         user:
           $ref: '#/components/schemas/UserResponse'
 
@@ -173,8 +1164,7 @@ components:
         phone:
           type: string
         role:
-          type: string
-          enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
+          $ref: '#/components/schemas/UserRole'
         isActive:
           type: boolean
         createdAt:
@@ -196,6 +1186,16 @@ components:
         isActive:
           type: boolean
 
+    UserPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserResponse'
+
     # Recruiter
     RecruiterResponse:
       type: object
@@ -206,8 +1206,6 @@ components:
           type: string
         registrationNumber:
           type: string
-        address:
-          $ref: '#/components/schemas/AddressDTO'
         contactEmail:
           type: string
         contactPhone:
@@ -217,16 +1215,10 @@ components:
         description:
           type: string
         verificationStatus:
-          type: string
-          enum: [PENDING, VERIFIED, REJECTED]
-        adminUserId:
-          type: string
+          $ref: '#/components/schemas/VerificationStatus'
         isActive:
           type: boolean
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
 
@@ -238,11 +1230,8 @@ components:
           type: string
         registrationNumber:
           type: string
-        address:
-          $ref: '#/components/schemas/AddressDTO'
         contactEmail:
           type: string
-          format: email
         contactPhone:
           type: string
         website:
@@ -264,19 +1253,15 @@ components:
         description:
           type: string
 
-    AddressDTO:
-      type: object
-      properties:
-        street:
-          type: string
-        city:
-          type: string
-        state:
-          type: string
-        country:
-          type: string
-        postalCode:
-          type: string
+    RecruiterPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecruiterResponse'
 
     # Candidate
     CandidateResponse:
@@ -296,7 +1281,6 @@ components:
           type: string
         experience:
           type: number
-          format: double
         skills:
           type: array
           items:
@@ -308,12 +1292,8 @@ components:
         githubUrl:
           type: string
         status:
-          type: string
-          enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
+          $ref: '#/components/schemas/CandidateStatus'
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
 
@@ -327,14 +1307,12 @@ components:
           type: string
         email:
           type: string
-          format: email
         phone:
           type: string
         position:
           type: string
         experience:
           type: number
-          format: double
         skills:
           type: array
           items:
@@ -368,7 +1346,7 @@ components:
         githubUrl:
           type: string
         status:
-          type: string
+          $ref: '#/components/schemas/CandidateStatus'
 
     InviteCandidateRequest:
       type: object
@@ -386,10 +1364,16 @@ components:
         response:
           type: string
           enum: [ACCEPT, DECLINE]
-          description: Response to the invitation
-        reason:
-          type: string
-          description: Optional reason for declining the invitation
+
+    CandidatePageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/CandidateResponse'
 
     # Interviewer
     InterviewerResponse:
@@ -397,8 +1381,6 @@ components:
       properties:
         id:
           type: string
-        user:
-          $ref: '#/components/schemas/UserResponse'
         department:
           type: string
         expertise:
@@ -412,9 +1394,6 @@ components:
         totalInterviews:
           type: integer
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
 
@@ -449,37 +1428,59 @@ components:
         availability:
           type: boolean
 
+    InviteInterviewerRequest:
+      type: object
+      required: [email, recruiterId]
+      properties:
+        email:
+          type: string
+        recruiterId:
+          type: string
+        message:
+          type: string
+
+    InterviewerPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/InterviewerResponse'
+
     # Interview
     InterviewResponse:
       type: object
       properties:
         id:
           type: string
+        recruiterId:
+          type: string
         candidate:
           $ref: '#/components/schemas/CandidateResponse'
-        interviewer:
-          $ref: '#/components/schemas/InterviewerResponse'
         scheduledAt:
           type: string
           format: date-time
         duration:
           type: integer
         interviewType:
-          type: string
-          enum: [TECHNICAL, HR, CULTURAL_FIT, MANAGERIAL]
+          $ref: '#/components/schemas/InterviewType'
         round:
           type: integer
         status:
-          type: string
-          enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+          $ref: '#/components/schemas/InterviewStatus'
         meetingLink:
+          type: string
+        location:
           type: string
         notes:
           type: string
+        candidateConfirmed:
+          type: boolean
+        result:
+          $ref: '#/components/schemas/InterviewResult'
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
 
@@ -500,13 +1501,13 @@ components:
           format: date-time
         duration:
           type: integer
-          default: 60
         interviewType:
-          type: string
-          enum: [TECHNICAL, HR, CULTURAL_FIT, MANAGERIAL]
+          $ref: '#/components/schemas/InterviewType'
         round:
           type: integer
         meetingLink:
+          type: string
+        location:
           type: string
         notes:
           type: string
@@ -519,6 +1520,8 @@ components:
           format: date-time
         duration:
           type: integer
+        interviewType:
+          $ref: '#/components/schemas/InterviewType'
         meetingLink:
           type: string
         notes:
@@ -529,8 +1532,67 @@ components:
       required: [status]
       properties:
         status:
+          $ref: '#/components/schemas/InterviewStatus'
+        reason:
           type: string
-          enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
+
+    ConfirmInterviewRequest:
+      type: object
+      required: [interviewId, candidateId, confirmed]
+      properties:
+        interviewId:
+          type: string
+        candidateId:
+          type: string
+        confirmed:
+          type: boolean
+        notes:
+          type: string
+
+    MarkInterviewResultRequest:
+      type: object
+      required: [interviewId, result]
+      properties:
+        interviewId:
+          type: string
+        result:
+          $ref: '#/components/schemas/InterviewResult'
+        comments:
+          type: string
+
+    CreateNextRoundInterviewRequest:
+      type: object
+      required: [previousInterviewId, scheduledAt, interviewType]
+      properties:
+        previousInterviewId:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        interviewType:
+          $ref: '#/components/schemas/InterviewType'
+        interviewerIds:
+          type: array
+          items:
+            type: string
+        meetingLink:
+          type: string
+        location:
+          type: string
+        notes:
+          type: string
+
+    InterviewPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/InterviewResponse'
 
     # Feedback
     FeedbackResponse:
@@ -538,50 +1600,33 @@ components:
       properties:
         id:
           type: string
-        interview:
-          $ref: '#/components/schemas/InterviewResponse'
+        interviewId:
+          type: string
         rating:
           type: integer
-          minimum: 1
-          maximum: 10
         technicalSkills:
           type: integer
-          minimum: 1
-          maximum: 10
         communicationSkills:
           type: integer
-          minimum: 1
-          maximum: 10
         problemSolving:
           type: integer
-          minimum: 1
-          maximum: 10
         culturalFit:
           type: integer
-          minimum: 1
-          maximum: 10
-        comments:
-          type: string
         strengths:
           type: string
         weaknesses:
           type: string
+        comments:
+          type: string
         recommendation:
-          type: string
-          enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
-        submittedAt:
-          type: string
-          format: date-time
+          $ref: '#/components/schemas/FeedbackRecommendation'
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
 
     SubmitFeedbackRequest:
       type: object
-      required: [interviewId, rating, recommendation]
+      required: [interviewId]
       properties:
         interviewId:
           type: string
@@ -589,7 +1634,6 @@ components:
           type: integer
           minimum: 1
           maximum: 10
-          description: Overall rating (required)
         technicalSkills:
           type: integer
           minimum: 1
@@ -606,1075 +1650,121 @@ components:
           type: integer
           minimum: 1
           maximum: 10
-        comments:
-          type: string
         strengths:
           type: string
         weaknesses:
           type: string
-        recommendation:
+        comments:
           type: string
-          enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
+        recommendation:
+          $ref: '#/components/schemas/FeedbackRecommendation'
 
     UpdateFeedbackRequest:
       type: object
       properties:
         rating:
           type: integer
-          minimum: 1
-          maximum: 10
         technicalSkills:
           type: integer
-          minimum: 1
-          maximum: 10
         communicationSkills:
           type: integer
-          minimum: 1
-          maximum: 10
         problemSolving:
           type: integer
-          minimum: 1
-          maximum: 10
         culturalFit:
           type: integer
-          minimum: 1
-          maximum: 10
-        comments:
-          type: string
         strengths:
           type: string
         weaknesses:
           type: string
-        recommendation:
+        comments:
           type: string
-          enum: [STRONG_HIRE, HIRE, HOLD, NO_HIRE]
+        recommendation:
+          $ref: '#/components/schemas/FeedbackRecommendation'
 
-paths:
-  # Health
-  /health:
-    get:
-      tags: [Health]
-      summary: Check API health status
-      description: Returns the health status of the API
-      operationId: checkHealth
-      responses:
-        '200':
-          description: API is healthy
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HealthResponse'
-
-  # Authentication
-  /auth/register:
-    post:
-      tags: [Authentication]
-      summary: Register a new user
-      description: Creates a new user account
-      operationId: register
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '201':
-          description: User registered successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Invalid request data
-        '409':
-          description: User already exists
-
-  /auth/login:
-    post:
-      tags: [Authentication]
-      summary: User login
-      description: Authenticates user and returns JWT tokens
-      operationId: login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
-          description: Invalid credentials
-
-  /auth/refresh:
-    post:
-      tags: [Authentication]
-      summary: Refresh access token
-      description: Gets a new access token using refresh token
-      operationId: refreshToken
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RefreshTokenRequest'
-      responses:
-        '200':
-          description: Token refreshed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
-          description: Invalid refresh token
-
-  /auth/logout:
-    post:
-      tags: [Authentication]
-      summary: User logout
-      description: Invalidates the user's refresh token
-      operationId: logout
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Logout successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-
-  # Users
-  /users:
-    get:
-      tags: [Users]
-      summary: Get all users
-      description: Returns a paginated list of users with optional role filter
-      operationId: getAllUsers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: role
-          in: query
-          schema:
-            type: string
-            enum: [ADMIN, RECRUITER, INTERVIEWER, CANDIDATE]
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Users retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageResponse'
-
-  /users/{userId}:
-    get:
-      tags: [Users]
-      summary: Get user by ID
-      description: Returns a single user by ID
-      operationId: getUserById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
-          description: User not found
-
-    put:
-      tags: [Users]
-      summary: Update user
-      description: Updates user details
-      operationId: updateUser
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
-      responses:
-        '200':
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
-          description: User not found
-
-    delete:
-      tags: [Users]
-      summary: Delete user
-      description: Deletes a user by ID
-      operationId: deleteUser
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: User not found
-
-  # Recruiters
-  /recruiters:
-    get:
-      tags: [Recruiters]
-      summary: Get all recruiters
-      description: Returns a paginated list of recruiters with optional filters
-      operationId: getAllRecruiters
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [PENDING, VERIFIED, REJECTED]
-        - name: isActive
-          in: query
-          schema:
-            type: boolean
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Recruiters retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageResponse'
-
-    post:
-      tags: [Recruiters]
-      summary: Create recruiter
-      description: Creates a new recruiter/organization
-      operationId: createRecruiter
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRecruiterRequest'
-      responses:
-        '201':
-          description: Recruiter created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecruiterResponse'
-        '400':
-          description: Invalid request data
-
-  /recruiters/{recruiterId}:
-    get:
-      tags: [Recruiters]
-      summary: Get recruiter by ID
-      description: Returns a single recruiter by ID
-      operationId: getRecruiterById
-      parameters:
-        - name: recruiterId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Recruiter found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecruiterResponse'
-        '404':
-          description: Recruiter not found
-
-    put:
-      tags: [Recruiters]
-      summary: Update recruiter
-      description: Updates recruiter details
-      operationId: updateRecruiter
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: recruiterId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateRecruiterRequest'
-      responses:
-        '200':
-          description: Recruiter updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecruiterResponse'
-        '404':
-          description: Recruiter not found
-
-    delete:
-      tags: [Recruiters]
-      summary: Delete recruiter
-      description: Deletes a recruiter by ID
-      operationId: deleteRecruiter
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: recruiterId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Recruiter deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: Recruiter not found
-
-  /recruiters/{recruiterId}/verify:
-    put:
-      tags: [Recruiters]
-      summary: Verify recruiter
-      description: Verifies a recruiter organization
-      operationId: verifyRecruiter
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: recruiterId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Recruiter verified successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecruiterResponse'
-        '404':
-          description: Recruiter not found
-
-  /recruiters/{recruiterId}/reject:
-    put:
-      tags: [Recruiters]
-      summary: Reject recruiter
-      description: Rejects a recruiter organization
-      operationId: rejectRecruiter
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: recruiterId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: reason
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Recruiter rejected successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecruiterResponse'
-        '404':
-          description: Recruiter not found
-
-  # Candidates
-  /candidates:
-    get:
-      tags: [Candidates]
-      summary: Get all candidates
-      description: Returns a paginated list of candidates with optional filters
-      operationId: getAllCandidates
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [APPLIED, SCREENING, INTERVIEW_SCHEDULED, INTERVIEWED, SELECTED, REJECTED]
-        - name: search
-          in: query
-          schema:
-            type: string
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Candidates retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageResponse'
-
-    post:
-      tags: [Candidates]
-      summary: Create candidate
-      description: Creates a new candidate profile
-      operationId: createCandidate
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCandidateRequest'
-      responses:
-        '201':
-          description: Candidate created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CandidateResponse'
-        '400':
-          description: Invalid request data
-
-  /candidates/{candidateId}:
-    get:
-      tags: [Candidates]
-      summary: Get candidate by ID
-      description: Returns a single candidate by ID
-      operationId: getCandidateById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: candidateId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Candidate found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CandidateResponse'
-        '404':
-          description: Candidate not found
-
-    put:
-      tags: [Candidates]
-      summary: Update candidate
-      description: Updates candidate details
-      operationId: updateCandidate
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: candidateId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCandidateRequest'
-      responses:
-        '200':
-          description: Candidate updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CandidateResponse'
-        '404':
-          description: Candidate not found
-
-    delete:
-      tags: [Candidates]
-      summary: Delete candidate
-      description: Deletes a candidate by ID
-      operationId: deleteCandidate
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: candidateId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Candidate deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: Candidate not found
-
-  /candidates/invite:
-    post:
-      tags: [Candidates]
-      summary: Invite candidate
-      description: Sends an invitation to a candidate
-      operationId: inviteCandidate
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InviteCandidateRequest'
-      responses:
-        '200':
-          description: Invitation sent successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: Candidate not found
-
-  /candidates/invitation/respond:
-    post:
-      tags: [Candidates]
-      summary: Respond to invitation
-      description: Candidate responds to an invitation
-      operationId: respondToInvitation
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RespondToInvitationRequest'
-      responses:
-        '200':
-          description: Response recorded successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '400':
-          description: Invalid token
-
-  # Interviewers
-  /interviewers:
-    get:
-      tags: [Interviewers]
-      summary: Get all interviewers
-      description: Returns a paginated list of interviewers with optional filters
-      operationId: getAllInterviewers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: expertise
-          in: query
-          schema:
-            type: string
-        - name: available
-          in: query
-          schema:
-            type: boolean
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Interviewers retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageResponse'
-
-    post:
-      tags: [Interviewers]
-      summary: Create interviewer
-      description: Creates a new interviewer profile
-      operationId: createInterviewer
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateInterviewerRequest'
-      responses:
-        '201':
-          description: Interviewer created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewerResponse'
-        '400':
-          description: Invalid request data
-
-  /interviewers/{interviewerId}:
-    get:
-      tags: [Interviewers]
-      summary: Get interviewer by ID
-      description: Returns a single interviewer by ID
-      operationId: getInterviewerById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewerId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Interviewer found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewerResponse'
-        '404':
-          description: Interviewer not found
-
-    put:
-      tags: [Interviewers]
-      summary: Update interviewer
-      description: Updates interviewer details
-      operationId: updateInterviewer
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewerId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateInterviewerRequest'
-      responses:
-        '200':
-          description: Interviewer updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewerResponse'
-        '404':
-          description: Interviewer not found
-
-    delete:
-      tags: [Interviewers]
-      summary: Delete interviewer
-      description: Deletes an interviewer by ID
-      operationId: deleteInterviewer
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewerId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Interviewer deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: Interviewer not found
-
-  # Interviews
-  /interviews:
-    get:
-      tags: [Interviews]
-      summary: Get all interviews
-      description: Returns a paginated list of interviews with optional filters
-      operationId: getAllInterviews
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED]
-        - name: candidateId
-          in: query
-          schema:
-            type: string
-        - name: interviewerId
-          in: query
-          schema:
-            type: string
-        - name: fromDate
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - name: toDate
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Interviews retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageResponse'
-
-    post:
-      tags: [Interviews]
-      summary: Schedule interview
-      description: Schedules a new interview
-      operationId: scheduleInterview
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ScheduleInterviewRequest'
-      responses:
-        '201':
-          description: Interview scheduled successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewResponse'
-        '400':
-          description: Invalid request data
-
-  /interviews/{interviewId}:
-    get:
-      tags: [Interviews]
-      summary: Get interview by ID
-      description: Returns a single interview by ID
-      operationId: getInterviewById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Interview found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewResponse'
-        '404':
-          description: Interview not found
-
-    put:
-      tags: [Interviews]
-      summary: Update interview
-      description: Updates interview details
-      operationId: updateInterview
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateInterviewRequest'
-      responses:
-        '200':
-          description: Interview updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewResponse'
-        '404':
-          description: Interview not found
-
-    delete:
-      tags: [Interviews]
-      summary: Cancel interview
-      description: Cancels an interview
-      operationId: cancelInterview
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Interview cancelled successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: Interview not found
-
-  /interviews/{interviewId}/status:
-    patch:
-      tags: [Interviews]
-      summary: Update interview status
-      description: Updates the status of an interview
-      operationId: updateInterviewStatus
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateInterviewStatusRequest'
-      responses:
-        '200':
-          description: Interview status updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewResponse'
-        '404':
-          description: Interview not found
-
-  # Feedback
-  /feedback:
-    get:
-      tags: [Feedback]
-      summary: Get all feedback
-      description: Returns a paginated list of feedback with optional filters
-      operationId: getAllFeedback
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: interviewId
-          in: query
-          schema:
-            type: string
-        - name: candidateId
-          in: query
-          schema:
-            type: string
-        - name: interviewerId
-          in: query
-          schema:
-            type: string
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Feedback retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageResponse'
-
-    post:
-      tags: [Feedback]
-      summary: Submit feedback
-      description: Submits feedback for an interview
-      operationId: submitFeedback
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubmitFeedbackRequest'
-      responses:
-        '201':
-          description: Feedback submitted successfully
-          content:
-            application/json:
-              schema:
+    FeedbackPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
                 $ref: '#/components/schemas/FeedbackResponse'
-        '400':
-          description: Invalid request data
 
-  /feedback/{feedbackId}:
-    get:
-      tags: [Feedback]
-      summary: Get feedback by ID
-      description: Returns a single feedback by ID
-      operationId: getFeedbackById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: feedbackId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Feedback found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FeedbackResponse'
-        '404':
-          description: Feedback not found
+    # Dashboards
+    AdminDashboardResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalRecruiters:
+              type: integer
+            verifiedRecruiters:
+              type: integer
+            pendingRecruiters:
+              type: integer
+            totalUsers:
+              type: integer
+            totalInterviews:
+              type: integer
+            totalCandidates:
+              type: integer
+            activeInterviews:
+              type: integer
 
-    put:
-      tags: [Feedback]
-      summary: Update feedback
-      description: Updates feedback details
-      operationId: updateFeedback
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: feedbackId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateFeedbackRequest'
-      responses:
-        '200':
-          description: Feedback updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FeedbackResponse'
-        '404':
-          description: Feedback not found
+    RecruiterDashboardResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalCandidates:
+              type: integer
+            activeCandidates:
+              type: integer
+            totalInterviews:
+              type: integer
+            upcomingInterviews:
+              type: integer
+            completedInterviews:
+              type: integer
+            totalInterviewers:
+              type: integer
+            pendingFeedbacks:
+              type: integer
 
-    delete:
-      tags: [Feedback]
-      summary: Delete feedback
-      description: Deletes feedback by ID
-      operationId: deleteFeedback
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: feedbackId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Feedback deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '404':
-          description: Feedback not found
+    InterviewerDashboardResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalInterviews:
+              type: integer
+            upcomingInterviews:
+              type: integer
+            completedInterviews:
+              type: integer
+            pendingFeedbacks:
+              type: integer
+            availability:
+              type: boolean
+
+    CandidateDashboardResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalInterviews:
+              type: integer
+            upcomingInterviews:
+              type: integer
+            completedInterviews:
+              type: integer
+            pendingConfirmations:
+              type: integer
+            currentStatus:
+              type: string
 
