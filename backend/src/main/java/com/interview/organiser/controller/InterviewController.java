@@ -1,9 +1,7 @@
 package com.interview.organiser.controller;
 
 import com.interview.organiser.constants.enums.InterviewStatus;
-import com.interview.organiser.model.dto.request.ScheduleInterviewRequest;
-import com.interview.organiser.model.dto.request.UpdateInterviewRequest;
-import com.interview.organiser.model.dto.request.UpdateInterviewStatusRequest;
+import com.interview.organiser.model.dto.request.*;
 import com.interview.organiser.model.dto.response.InterviewResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
@@ -61,6 +59,33 @@ public class InterviewController {
             @PathVariable String interviewId,
             @Valid @RequestBody UpdateInterviewStatusRequest request) {
         return ResponseEntity.ok(interviewService.updateInterviewStatus(interviewId, request));
+    }
+
+    @PostMapping("/{interviewId}/confirm")
+    public ResponseEntity<InterviewResponse> confirmInterview(
+            @PathVariable String interviewId,
+            @Valid @RequestBody ConfirmInterviewRequest request) {
+        return ResponseEntity.ok(interviewService.confirmInterview(interviewId, request));
+    }
+
+    @PostMapping("/{interviewId}/result")
+    public ResponseEntity<InterviewResponse> markInterviewResult(
+            @PathVariable String interviewId,
+            @Valid @RequestBody MarkInterviewResultRequest request) {
+        return ResponseEntity.ok(interviewService.markInterviewResult(interviewId, request));
+    }
+
+    @PostMapping("/{interviewId}/next-round")
+    public ResponseEntity<InterviewResponse> createNextRoundInterview(
+            @PathVariable String interviewId,
+            @Valid @RequestBody CreateNextRoundInterviewRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(interviewService.createNextRoundInterview(interviewId, request));
+    }
+
+    @PostMapping("/{interviewId}/request-feedback")
+    public ResponseEntity<MessageResponse> requestFeedback(@PathVariable String interviewId) {
+        return ResponseEntity.ok(interviewService.requestFeedback(interviewId));
     }
 
     @DeleteMapping("/{interviewId}")

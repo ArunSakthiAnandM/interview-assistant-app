@@ -3,9 +3,7 @@ package com.interview.organiser.service.impl;
 import com.interview.organiser.constants.AppConstants;
 import com.interview.organiser.constants.enums.InterviewStatus;
 import com.interview.organiser.exception.ResourceNotFoundException;
-import com.interview.organiser.model.dto.request.ScheduleInterviewRequest;
-import com.interview.organiser.model.dto.request.UpdateInterviewRequest;
-import com.interview.organiser.model.dto.request.UpdateInterviewStatusRequest;
+import com.interview.organiser.model.dto.request.*;
 import com.interview.organiser.model.dto.response.InterviewResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
@@ -16,6 +14,7 @@ import com.interview.organiser.repository.CandidateRepository;
 import com.interview.organiser.repository.InterviewRepository;
 import com.interview.organiser.repository.InterviewerRepository;
 import com.interview.organiser.service.InterviewService;
+import com.interview.organiser.service.NotificationService;
 import com.interview.organiser.util.EntityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +35,7 @@ public class InterviewServiceImpl implements InterviewService {
     private final InterviewRepository interviewRepository;
     private final CandidateRepository candidateRepository;
     private final InterviewerRepository interviewerRepository;
+    private final NotificationService notificationService;
     private final EntityMapper entityMapper;
 
     @Override
@@ -191,8 +191,145 @@ public class InterviewServiceImpl implements InterviewService {
         interview.setUpdatedAt(LocalDateTime.now());
         interviewRepository.save(interview);
 
+        // Notify all parties about cancellation
+        notificationService.notifyInterviewCancelled(interview, "Interview cancelled");
+
         return MessageResponse.builder()
                 .message("Interview cancelled successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public InterviewResponse confirmInterview(String interviewId, ConfirmInterviewRequest request) {
+        log.info("Confirming interview with id: {}", interviewId);
+
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.INTERVIEW_NOT_FOUND));
+
+        interview.setCandidateConfirmed(request.getConfirmed());
+        interview.setCandidateConfirmedAt(LocalDateTime.now());
+
+        if (request.getNotes() != null) {
+            String currentNotes = interview.getNotes() != null ? interview.getNotes() : "";
+            interview.setNotes(currentNotes + "\nCandidate confirmation notes: " + request.getNotes());
+        }
+
+        interview.setUpdatedAt(LocalDateTime.now());
+        Interview updatedInterview = interviewRepository.save(interview);
+
+        // Notify all parties about confirmation
+        if (Boolean.TRUE.equals(request.getConfirmed())) {
+            notificationService.notifyInterviewConfirmed(interview);
+        }
+
+        return entityMapper.toInterviewResponse(updatedInterview);
+    }
+
+    @Override
+    @Transactional
+    public InterviewResponse markInterviewResult(String interviewId, MarkInterviewResultRequest request) {
+        log.info("Marking interview result for id: {} as {}", interviewId, request.getResult());
+
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.INTERVIEW_NOT_FOUND));
+
+        // Parse result string to enum
+        com.interview.organiser.constants.enums.InterviewResult result;
+        try {
+            result = com.interview.organiser.constants.enums.InterviewResult.valueOf(request.getResult());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid result. Must be SELECTED, REJECTED, or NEXT_ROUND");
+        }
+
+        interview.setResult(result);
+        interview.setStatus(InterviewStatus.COMPLETED);
+
+        if (request.getComments() != null) {
+            String currentNotes = interview.getNotes() != null ? interview.getNotes() : "";
+            interview.setNotes(currentNotes + "\nResult comments: " + request.getComments());
+        }
+
+        interview.setUpdatedAt(LocalDateTime.now());
+        Interview updatedInterview = interviewRepository.save(interview);
+
+        // Notify candidate about result
+        notificationService.notifyCandidateResult(interview.getCandidate(), interview, request.getResult());
+
+        return entityMapper.toInterviewResponse(updatedInterview);
+    }
+
+    @Override
+    @Transactional
+    public InterviewResponse createNextRoundInterview(String interviewId, CreateNextRoundInterviewRequest request) {
+        log.info("Creating next round interview for interview id: {}", interviewId);
+
+        Interview previousInterview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.INTERVIEW_NOT_FOUND));
+
+        // Get interviewers for next round
+        List<Interviewer> interviewers = request.getInterviewerIds().stream()
+                .map(interviewerId -> interviewerRepository.findById(interviewerId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Interviewer not found: " + interviewerId)))
+                .collect(Collectors.toList());
+
+        // Create next round interview
+        Interview nextRoundInterview = Interview.builder()
+                .recruiterId(previousInterview.getRecruiterId())
+                .candidate(previousInterview.getCandidate())
+                .interviewers(interviewers)
+                .scheduledAt(request.getScheduledAt())
+                .duration(request.getDuration() != null ? request.getDuration() : AppConstants.DEFAULT_INTERVIEW_DURATION)
+                .interviewType(request.getInterviewType())
+                .round(previousInterview.getRound() + 1)
+                .status(InterviewStatus.SCHEDULED)
+                .meetingLink(request.getMeetingLink())
+                .location(request.getLocation())
+                .notes(request.getNotes())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Interview savedNextRound = interviewRepository.save(nextRoundInterview);
+
+        // Update previous interview with next round reference
+        previousInterview.setNextRoundInterviewId(savedNextRound.getId());
+        interviewRepository.save(previousInterview);
+
+        // Notify candidate about next round
+        notificationService.notifyNextRoundScheduled(previousInterview.getCandidate(), savedNextRound);
+
+        // Notify assigned interviewers
+        interviewers.forEach(interviewer ->
+            notificationService.notifyInterviewerAssigned(interviewer, savedNextRound)
+        );
+
+        return entityMapper.toInterviewResponse(savedNextRound);
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse requestFeedback(String interviewId) {
+        log.info("Requesting feedback for interview id: {}", interviewId);
+
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.INTERVIEW_NOT_FOUND));
+
+        interview.setFeedbackRequested(true);
+        interview.setFeedbackRequestedAt(LocalDateTime.now());
+        interviewRepository.save(interview);
+
+        // Send feedback requests to all interviewers
+        interview.getInterviewers().forEach(interviewer ->
+            notificationService.requestFeedback(interviewer, interview)
+        );
+
+        // Send feedback request to candidate (optional)
+        notificationService.requestCandidateFeedback(interview.getCandidate(), interview);
+
+        return MessageResponse.builder()
+                .message("Feedback requests sent successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
     }

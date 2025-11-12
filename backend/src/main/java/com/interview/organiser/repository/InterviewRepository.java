@@ -29,5 +29,15 @@ public interface InterviewRepository extends MongoRepository<Interview, String> 
 
     @Query("{ 'interviewers.$id': ?0, 'status': ?1 }")
     Page<Interview> findByInterviewerIdAndStatus(String interviewerId, InterviewStatus status, Pageable pageable);
+
+    // Count methods for dashboard
+    long countByStatus(InterviewStatus status);
+
+    long countByRecruiterId(String recruiterId);
+
+    long countByRecruiterIdAndStatus(String recruiterId, InterviewStatus status);
+
+    @Query(value = "{ 'recruiterId': ?0, 'status': ?1, 'scheduledAt': { $gt: ?2 } }", count = true)
+    long countByRecruiterIdAndStatusAndScheduledAtAfter(String recruiterId, InterviewStatus status, LocalDateTime dateTime);
 }
 

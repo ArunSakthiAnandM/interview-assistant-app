@@ -1,9 +1,7 @@
 package com.interview.organiser.service;
 
 import com.interview.organiser.constants.enums.InterviewStatus;
-import com.interview.organiser.model.dto.request.ScheduleInterviewRequest;
-import com.interview.organiser.model.dto.request.UpdateInterviewRequest;
-import com.interview.organiser.model.dto.request.UpdateInterviewStatusRequest;
+import com.interview.organiser.model.dto.request.*;
 import com.interview.organiser.model.dto.response.InterviewResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
@@ -23,6 +21,14 @@ public interface InterviewService {
     InterviewResponse updateInterview(String interviewId, UpdateInterviewRequest request);
 
     InterviewResponse updateInterviewStatus(String interviewId, UpdateInterviewStatusRequest request);
+
+    InterviewResponse confirmInterview(String interviewId, ConfirmInterviewRequest request);
+
+    InterviewResponse markInterviewResult(String interviewId, MarkInterviewResultRequest request);
+
+    InterviewResponse createNextRoundInterview(String interviewId, CreateNextRoundInterviewRequest request);
+
+    MessageResponse requestFeedback(String interviewId);
 
     MessageResponse cancelInterview(String interviewId);
 }

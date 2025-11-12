@@ -1,5 +1,6 @@
 package com.interview.organiser.model.entity;
 
+import com.interview.organiser.constants.enums.InterviewResult;
 import com.interview.organiser.constants.enums.InterviewStatus;
 import com.interview.organiser.constants.enums.InterviewType;
 import lombok.AllArgsConstructor;
@@ -45,7 +46,26 @@ public class Interview {
 
     private String meetingLink;
 
+    private String location; // For offline interviews
+
     private String notes;
+
+    // Candidate confirmation tracking
+    @Builder.Default
+    private Boolean candidateConfirmed = false;
+
+    private LocalDateTime candidateConfirmedAt;
+
+    // Feedback tracking
+    @Builder.Default
+    private Boolean feedbackRequested = false;
+
+    private LocalDateTime feedbackRequestedAt;
+
+    // Result tracking
+    private InterviewResult result; // SELECTED, REJECTED, NEXT_ROUND
+
+    private String nextRoundInterviewId; // Reference to next round if created
 
     private LocalDateTime createdAt;
 
