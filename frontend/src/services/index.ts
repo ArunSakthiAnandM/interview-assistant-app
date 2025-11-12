@@ -7,3 +7,4 @@ export * from './candidate.service';
 export * from './interviewer.service';
 export * from './notification.service';
 export * from './interview.service';
+export * from './dashboard.service';

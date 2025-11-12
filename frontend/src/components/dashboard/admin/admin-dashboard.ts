@@ -8,6 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthStore } from '../../../store/auth.store';
 import { NotificationStore } from '../../../store/notification.store';
+import { DashboardService } from '../../../services/dashboard.service';
+import { RecruiterService } from '../../../services/recruiter.service';
+import { VerificationStatus } from '../../../models';
 
 interface DashboardStats {
   totalRecruiters: number;
@@ -24,6 +27,7 @@ interface PendingRecruiter {
   name: string;
   email: string;
   registrationDate: Date;
+  contactEmail?: string;
 }
 
 interface Activity {
@@ -57,6 +61,8 @@ interface SystemHealth {
 export class AdminDashboard implements OnInit {
   private authStore = inject(AuthStore);
   private notificationStore = inject(NotificationStore);
+  private dashboardService = inject(DashboardService);
+  private recruiterService = inject(RecruiterService);
   private router = inject(Router);
 
   stats: DashboardStats = {
@@ -85,26 +91,24 @@ export class AdminDashboard implements OnInit {
   }
 
   private loadDashboardData(): void {
-    // TODO: Implement API call to fetch dashboard statistics
-    // GET /api/v1/admin/dashboard/stats
-    this.stats = {
-      totalRecruiters: 45,
-      pendingRecruiters: 8,
-      totalUsers: 234,
-      activeUsers: 189,
-      totalInterviews: 567,
-      todayInterviews: 12,
-      successRate: 78.5,
-    };
-
-    // TODO: Implement API call to fetch system health metrics
-    // GET /api/v1/admin/system/health
-    this.systemHealth = {
-      apiResponseTime: 145,
-      databaseStatus: 'Healthy',
-      activeSessions: 42,
-      uptime: '15d 7h',
-    };
+    // Load admin dashboard stats from API
+    this.dashboardService.getAdminDashboard().subscribe({
+      next: (data) => {
+        this.stats = {
+          totalRecruiters: data.stats.totalRecruiters,
+          pendingRecruiters: data.stats.pendingRecruiters,
+          totalUsers: data.stats.totalUsers,
+          activeUsers: data.stats.totalUsers, // Assuming all are active
+          totalInterviews: data.stats.totalInterviews,
+          todayInterviews: 0, // Not in API response
+          successRate: 0, // Calculate if needed
+        };
+      },
+      error: (error) => {
+        console.error('Failed to load dashboard stats', error);
+        this.notificationStore.error('Failed to load dashboard statistics');
+      },
+    });
 
     this.loadPendingRecruiters();
     this.loadRecentActivity();
@@ -113,30 +117,31 @@ export class AdminDashboard implements OnInit {
   loadPendingRecruiters(): void {
     this.isLoadingRecruiters.set(true);
 
-    // TODO: Implement API call to fetch pending recruiters
-    // GET /api/v1/admin/recruiters/pending
-    setTimeout(() => {
-      this.pendingRecruiters.set([
-        {
-          id: '1',
-          name: 'Tech Innovations Inc.',
-          email: 'admin@techinnovations.com',
-          registrationDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-        },
-        {
-          id: '2',
-          name: 'Global Solutions Ltd.',
-          email: 'contact@globalsolutions.com',
-          registrationDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-        },
-      ]);
-      this.isLoadingRecruiters.set(false);
-    }, 1000);
+    // Fetch pending recruiters from API
+    this.recruiterService.getAllRecruiters(VerificationStatus.PENDING, undefined, 0, 20).subscribe({
+      next: (response) => {
+        this.pendingRecruiters.set(
+          response.content.map((recruiter) => ({
+            id: recruiter.id || '',
+            name: recruiter.name,
+            email: recruiter.contactEmail,
+            registrationDate: recruiter.createdAt || new Date(),
+            contactEmail: recruiter.contactEmail,
+          }))
+        );
+        this.isLoadingRecruiters.set(false);
+      },
+      error: (error) => {
+        console.error('Failed to load pending recruiters', error);
+        this.notificationStore.error('Failed to load pending recruiters');
+        this.isLoadingRecruiters.set(false);
+      },
+    });
   }
 
   private loadRecentActivity(): void {
-    // TODO: Implement API call to fetch recent activity
-    // GET /api/v1/admin/activity/recent
+    // TODO: Implement API call to fetch recent activity when available
+    // For now, keeping mock data
     this.recentActivity.set([
       {
         id: '1',
@@ -163,24 +168,39 @@ export class AdminDashboard implements OnInit {
   }
 
   viewRecruiter(recruiterId: string): void {
-    // TODO: Navigate to recruiter detail view
-    // this.router.navigate(['/admin/recruiters', recruiterId]);
+    // TODO: Navigate to recruiter detail view when component is created
     this.notificationStore.info(`Viewing recruiter ${recruiterId}`, 'Recruiter Details');
   }
 
   approveRecruiter(recruiterId: string): void {
-    console.log('Approving recruiter:', recruiterId);
-    // TODO: Implement API call to approve recruiter
-    // PUT /api/v1/recruiters/{recruiterId}/verify
-    this.notificationStore.success(`Recruiter approved successfully`);
-    this.loadPendingRecruiters();
+    this.recruiterService.verifyRecruiter(recruiterId).subscribe({
+      next: () => {
+        this.notificationStore.success('Recruiter approved successfully');
+        this.loadPendingRecruiters();
+      },
+      error: (error) => {
+        console.error('Failed to approve recruiter', error);
+        this.notificationStore.error('Failed to approve recruiter');
+      },
+    });
   }
 
   rejectRecruiter(recruiterId: string): void {
-    console.log('Rejecting recruiter:', recruiterId);
-    // TODO: Implement API call to reject recruiter
-    // PUT /api/v1/recruiters/{recruiterId}/reject?reason={reason}
-    this.notificationStore.warning(`Recruiter rejected`);
-    this.loadPendingRecruiters();
+    const reason = prompt('Please provide a reason for rejection:');
+    if (!reason) {
+      this.notificationStore.warning('Rejection cancelled - reason is required');
+      return;
+    }
+
+    this.recruiterService.rejectRecruiter(recruiterId, reason).subscribe({
+      next: () => {
+        this.notificationStore.warning('Recruiter rejected');
+        this.loadPendingRecruiters();
+      },
+      error: (error) => {
+        console.error('Failed to reject recruiter', error);
+        this.notificationStore.error('Failed to reject recruiter');
+      },
+    });
   }
 }
