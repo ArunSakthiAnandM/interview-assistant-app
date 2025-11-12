@@ -65,6 +65,7 @@ export class InterviewFeedback implements OnInit {
     this.isSubmitting.set(true);
 
     const feedback = {
+      interviewId: this.interviewId,
       interviewerId: this.authStore.currentUser()?.id || '',
       ...this.feedbackForm.value,
       strengths: this.feedbackForm.value.strengths
@@ -76,7 +77,7 @@ export class InterviewFeedback implements OnInit {
       submittedAt: new Date(),
     };
 
-    this.interviewService.submitFeedback(this.interviewId, feedback).subscribe({
+    this.interviewService.submitFeedback(feedback).subscribe({
       next: () => {
         this.notificationStore.success('Feedback submitted successfully', 'Success');
         this.router.navigate(['/interviews', this.interviewId]);
