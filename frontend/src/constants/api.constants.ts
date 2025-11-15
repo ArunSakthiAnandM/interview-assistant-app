@@ -136,18 +136,64 @@ export const HTTP_HEADERS = {
  * Error messages
  */
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: 'Network error. Please check your connection.',
-  UNAUTHORIZED: 'You are not authorized to perform this action.',
+  // Network and connection errors
+  NETWORK_ERROR:
+    'Unable to connect to the server. Please check your internet connection and try again.',
+  TIMEOUT_ERROR: 'Request timed out. The server is taking too long to respond. Please try again.',
+
+  // Authentication errors
+  UNAUTHORIZED: 'Your session has expired. Please login again.',
+  INVALID_CREDENTIALS: 'Invalid email or password. Please check your credentials and try again.',
   SESSION_EXPIRED: 'Your session has expired. Please login again.',
-  INVALID_CREDENTIALS: 'Invalid email or password.',
-  SERVER_ERROR: 'Server error. Please try again later.',
-  VALIDATION_ERROR: 'Please check the form for errors.',
+  ACCOUNT_LOCKED: 'Your account has been locked. Please contact support.',
+
+  // Authorization errors
+  FORBIDDEN: 'You do not have permission to perform this action.',
+  ACCESS_DENIED: 'Access denied. You are not authorized to view this resource.',
+
+  // Server errors
+  SERVER_ERROR: 'Something went wrong on our end. Please try again in a few moments.',
+  SERVICE_UNAVAILABLE: 'Service temporarily unavailable. Please try again later.',
+  GATEWAY_TIMEOUT: 'Server is not responding. Please try again later.',
+
+  // Validation errors
+  VALIDATION_ERROR: 'Please check the form for errors and try again.',
+  INVALID_INPUT: 'Invalid input provided. Please check your data and try again.',
+  MISSING_REQUIRED_FIELDS: 'Please fill in all required fields.',
+
+  // Resource errors
+  NOT_FOUND: 'The requested resource was not found.',
+  ALREADY_EXISTS: 'This resource already exists. Please use a different value.',
+  CONFLICT: 'A conflict occurred. The resource may already exist or be in use.',
+
+  // Rate limiting
+  TOO_MANY_REQUESTS: 'Too many requests. Please wait a moment and try again.',
+  RATE_LIMIT_EXCEEDED: 'You have exceeded the rate limit. Please try again after some time.',
+
+  // File upload errors
   FILE_UPLOAD_ERROR: 'Failed to upload file. Please try again.',
-  FILE_SIZE_ERROR: 'File size exceeds the maximum limit.',
-  INVALID_FILE_TYPE: 'Invalid file type. Please upload a valid file.',
+  FILE_SIZE_ERROR: 'File size exceeds the maximum limit of 5MB.',
+  INVALID_FILE_TYPE: 'Invalid file type. Please upload a valid file (PDF, JPG, PNG).',
+  FILE_PROCESSING_ERROR: 'Error processing file. Please try uploading again.',
+
+  // OTP errors
   OTP_EXPIRED: 'OTP has expired. Please request a new one.',
-  OTP_INVALID: 'Invalid OTP. Please try again.',
-  REGISTRATION_FAILED: 'Registration failed. Please try again.',
+  OTP_INVALID: 'Invalid OTP. Please check and try again.',
+  OTP_MAX_ATTEMPTS: 'Maximum OTP attempts exceeded. Please request a new OTP.',
+  OTP_SEND_FAILED: 'Failed to send OTP. Please try again.',
+
+  // Registration errors
+  REGISTRATION_FAILED: 'Registration failed. Please check your information and try again.',
+  EMAIL_ALREADY_EXISTS: 'This email is already registered. Please use a different email or login.',
+  MOBILE_ALREADY_EXISTS: 'This mobile number is already registered.',
+
+  // Interview errors
+  INTERVIEW_NOT_FOUND: 'Interview not found or has been deleted.',
+  INTERVIEW_ALREADY_SCHEDULED: 'An interview is already scheduled for this time slot.',
+  CANNOT_MODIFY_INTERVIEW: 'Cannot modify a completed or cancelled interview.',
+
+  // Generic fallback
+  UNKNOWN_ERROR: 'An unexpected error occurred. Please try again.',
 } as const;
 
 /**

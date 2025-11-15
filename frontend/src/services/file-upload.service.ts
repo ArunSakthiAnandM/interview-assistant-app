@@ -185,24 +185,15 @@ export class FileUploadService {
 
   /**
    * Handle service errors
+   * Error notifications are shown by the error interceptor
+   * This just handles state cleanup
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('File Upload Service error:', error);
     this.isUploadingSignal.set(false);
     this.uploadProgressSignal.set(0);
-
-    let errorMessage: string = ERROR_MESSAGES.FILE_UPLOAD_ERROR;
-
-    if (error.status === 413) {
-      errorMessage = ERROR_MESSAGES.FILE_SIZE_ERROR;
-    } else if (error.status === 415) {
-      errorMessage = ERROR_MESSAGES.INVALID_FILE_TYPE;
-    } else if (error.status === 0) {
-      errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
-    }
-
-    return throwError(() => ({ message: errorMessage, error }));
-  }
+    return throwError(() => error);
+  };
 
   /**
    * Reset service state

@@ -82,7 +82,7 @@ export class NotificationService {
       }),
       catchError((error) => {
         console.error('Failed to send email:', error);
-        this.notificationStore.error('Failed to send email');
+        // Error notification shown by interceptor
         throw error;
       })
     );
@@ -103,7 +103,7 @@ export class NotificationService {
       }),
       catchError((error) => {
         console.error('Failed to send SMS:', error);
-        this.notificationStore.error('Failed to send SMS');
+        // Error notification shown by interceptor
         throw error;
       })
     );

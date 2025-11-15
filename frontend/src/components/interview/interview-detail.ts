@@ -26,7 +26,7 @@ import { Interview, InterviewStatus } from '../../models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterviewDetail implements OnInit {
-  private authStore = inject(AuthStore);
+  protected authStore = inject(AuthStore);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);

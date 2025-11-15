@@ -58,15 +58,19 @@ export class AuthService {
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     this.authStore.setLoading(true);
 
-    // TODO: Replace with actual backend call
     const endpoint = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.AUTH.LOGIN}`;
 
     return this.http.post<AuthResponse>(endpoint, credentials).pipe(
       tap((response) => {
         this.handleAuthSuccess(response);
-        this.notificationStore.success('Login successful!');
+        this.notificationStore.success('Welcome back! Login successful.');
       }),
-      catchError((error) => this.handleAuthError(error)),
+      catchError((error) => {
+        // Error notifications are handled by error interceptor
+        // Just handle state cleanup here
+        this.authStore.setLoading(false);
+        return throwError(() => error);
+      }),
       tap(() => this.authStore.setLoading(false))
     );
   }
@@ -171,39 +175,6 @@ export class AuthService {
 
     // Navigate to role-specific dashboard after successful login
     this.navigateByRole(authResponse.user.role);
-  }
-
-  /**
-   * Handle authentication error
-   */
-  private handleAuthError(error: any): Observable<never> {
-    console.error('Authentication error:', error);
-    this.authStore.setLoading(false);
-
-    let errorMessage: string;
-
-    // Handle different error status codes
-    if (error.status === 400 || error.status === 401) {
-      // Invalid credentials
-      errorMessage = 'Invalid email or password. Please try again.';
-    } else if (
-      error.status === 500 ||
-      error.status === 502 ||
-      error.status === 503 ||
-      error.status === 504
-    ) {
-      // Server errors
-      errorMessage = 'Server is currently unavailable. Please try again later.';
-    } else if (error.status === 0) {
-      // Network error
-      errorMessage = 'Network error. Please check your connection and try again.';
-    } else {
-      // Generic error
-      errorMessage = error.error?.message || 'An error occurred. Please try again.';
-    }
-
-    this.notificationStore.error(errorMessage);
-    return throwError(() => ({ message: errorMessage, error }));
   }
 
   /**

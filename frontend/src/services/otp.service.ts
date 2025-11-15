@@ -175,23 +175,14 @@ export class OtpService {
 
   /**
    * Handle service errors
+   * Error notifications are shown by the error interceptor
+   * This just handles state cleanup
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('OTP Service error:', error);
     this.isLoadingSignal.set(false);
-
-    let errorMessage: string = ERROR_MESSAGES.SERVER_ERROR;
-
-    if (error.status === 400) {
-      errorMessage = error.error?.message || ERROR_MESSAGES.VALIDATION_ERROR;
-    } else if (error.status === 429) {
-      errorMessage = 'Too many requests. Please try again later.';
-    } else if (error.status === 0) {
-      errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
-    }
-
-    return throwError(() => ({ message: errorMessage, error }));
-  }
+    return throwError(() => error);
+  };
 
   /**
    * Reset service state
