@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ import { NotificationStore } from '../../store/notification.store';
   ],
   templateUrl: './interview-feedback.html',
   styleUrl: './interview-feedback.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterviewFeedback implements OnInit {
   private fb = inject(FormBuilder);
@@ -58,7 +59,7 @@ export class InterviewFeedback implements OnInit {
 
   onSubmit(): void {
     if (this.feedbackForm.invalid) {
-      this.notificationStore.error('Please fill all required fields', 'Validation Error');
+      this.notificationStore.error('Please fill all required fields');
       return;
     }
 
@@ -79,12 +80,12 @@ export class InterviewFeedback implements OnInit {
 
     this.interviewService.submitFeedback(feedback).subscribe({
       next: () => {
-        this.notificationStore.success('Feedback submitted successfully', 'Success');
+        this.notificationStore.success('Feedback submitted successfully');
         this.router.navigate(['/interviews', this.interviewId]);
       },
       error: () => {
         this.isSubmitting.set(false);
-        this.notificationStore.error('Failed to submit feedback', 'Error');
+        this.notificationStore.error('Failed to submit feedback');
       },
     });
   }

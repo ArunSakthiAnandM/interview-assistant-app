@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Location, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -23,9 +23,10 @@ import { Interview, InterviewStatus } from '../../models';
   ],
   templateUrl: './interview-detail.html',
   styleUrl: './interview-detail.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterviewDetail implements OnInit {
-  authStore = inject(AuthStore);
+  private authStore = inject(AuthStore);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
@@ -48,7 +49,7 @@ export class InterviewDetail implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        this.notificationStore.error('Failed to load interview', 'Error');
+        this.notificationStore.error('Failed to load interview');
       },
     });
   }
@@ -58,7 +59,7 @@ export class InterviewDetail implements OnInit {
   }
 
   startInterview(): void {
-    this.notificationStore.success('Interview started', 'Success');
+    this.notificationStore.success('Interview started');
   }
 
   submitFeedback(): void {
@@ -69,11 +70,11 @@ export class InterviewDetail implements OnInit {
   }
 
   editInterview(): void {
-    this.notificationStore.info('Edit feature coming soon', 'Feature');
+    this.notificationStore.info('Edit feature coming soon');
   }
 
   cancelInterview(): void {
-    this.notificationStore.warning('Interview cancelled', 'Cancelled');
+    this.notificationStore.warning('Interview cancelled');
   }
 
   getStatusColor(status: InterviewStatus): string {

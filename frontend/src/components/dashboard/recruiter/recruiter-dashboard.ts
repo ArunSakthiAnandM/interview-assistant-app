@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -60,6 +60,7 @@ interface Analytics {
   ],
   templateUrl: './recruiter-dashboard.html',
   styleUrl: './recruiter-dashboard.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecruiterDashboard implements OnInit {
   authStore = inject(AuthStore);

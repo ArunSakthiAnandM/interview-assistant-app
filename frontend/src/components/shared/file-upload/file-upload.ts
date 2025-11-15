@@ -1,4 +1,4 @@
-import { Component, input, output, signal, inject } from '@angular/core';
+import { Component, input, output, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -14,6 +14,7 @@ import { FILE_CONFIG } from '../../../constants';
   imports: [MatButtonModule, MatIconModule, MatProgressBarModule],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FileUploadComponent {
   private fileUploadService = inject(FileUploadService);

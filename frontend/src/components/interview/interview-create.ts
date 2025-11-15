@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -37,6 +37,7 @@ interface InterviewerOption {
   ],
   templateUrl: './interview-create.html',
   styleUrl: './interview-create.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterviewCreate implements OnInit {
   private fb = inject(FormBuilder);

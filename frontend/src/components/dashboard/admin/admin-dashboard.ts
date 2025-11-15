@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -57,6 +57,7 @@ interface SystemHealth {
   ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboard implements OnInit {
   private authStore = inject(AuthStore);

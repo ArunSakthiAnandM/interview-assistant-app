@@ -1,4 +1,11 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  signal,
+  computed,
+  inject,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +48,7 @@ import { InterviewStatus, InterviewType } from '../../models';
   ],
   templateUrl: './interview-list.html',
   styleUrl: './interview-list.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterviewList implements OnInit {
   private authStore = inject(AuthStore);

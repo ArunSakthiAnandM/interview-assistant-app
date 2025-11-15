@@ -1,4 +1,13 @@
-import { Component, input, output, signal, effect, ElementRef, viewChildren } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  effect,
+  ElementRef,
+  viewChildren,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +22,7 @@ import { OTP_CONFIG } from '../../../constants';
   imports: [FormsModule, MatFormFieldModule, MatInputModule],
   templateUrl: './otp-input.html',
   styleUrl: './otp-input.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OtpInputComponent {
   // Inputs
