@@ -55,8 +55,8 @@ export class DashboardService {
   /**
    * Handle service errors
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('Dashboard Service error:', error);
     throw error;
-  }
+  };
 }

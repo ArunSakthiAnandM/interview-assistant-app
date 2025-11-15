@@ -220,10 +220,10 @@ export class InterviewService {
   /**
    * Handle service errors
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('Interview Service error:', error);
     const message = error.error?.message || 'An error occurred';
     this.notificationStore.error(message);
     throw error;
-  }
+  };
 }

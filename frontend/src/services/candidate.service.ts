@@ -109,8 +109,8 @@ export class CandidateService {
   /**
    * Handle service errors
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('Candidate Service error:', error);
     throw error;
-  }
+  };
 }

@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -16,6 +16,8 @@ import { FILE_CONFIG } from '../../../constants';
   styleUrl: './file-upload.scss',
 })
 export class FileUploadComponent {
+  private fileUploadService = inject(FileUploadService);
+
   // Inputs
   accept = input<string>(FILE_CONFIG.ALLOWED_EXTENSIONS.join(','));
   multiple = input<boolean>(false);
@@ -31,8 +33,6 @@ export class FileUploadComponent {
   isDragging = signal<boolean>(false);
   selectedFileName = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
-
-  constructor(private fileUploadService: FileUploadService) {}
 
   /**
    * Handle file input change

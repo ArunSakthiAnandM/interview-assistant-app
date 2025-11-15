@@ -43,7 +43,7 @@ import { InterviewStatus, InterviewType } from '../../models';
   styleUrl: './interview-list.scss',
 })
 export class InterviewList implements OnInit {
-  authStore = inject(AuthStore);
+  private authStore = inject(AuthStore);
   interviewStore = inject(InterviewStore);
   private notificationStore = inject(NotificationStore);
   private router = inject(Router);

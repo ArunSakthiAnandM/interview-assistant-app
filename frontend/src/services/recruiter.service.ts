@@ -107,8 +107,8 @@ export class RecruiterService {
   /**
    * Handle service errors
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('Recruiter Service error:', error);
     throw error;
-  }
+  };
 }

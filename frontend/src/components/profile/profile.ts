@@ -7,7 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { AuthStore } from '../../store/auth.store';
 import { NotificationStore } from '../../store/notification.store';
@@ -24,7 +23,6 @@ import { API_CONFIG, API_ENDPOINTS } from '../../constants';
     MatInputModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatDialogModule,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
@@ -33,7 +31,6 @@ export class Profile implements OnInit {
   authStore = inject(AuthStore);
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
-  private dialog = inject(MatDialog);
   private notificationStore = inject(NotificationStore);
 
   profileForm!: FormGroup;

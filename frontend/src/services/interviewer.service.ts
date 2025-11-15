@@ -97,8 +97,8 @@ export class InterviewerService {
   /**
    * Handle service errors
    */
-  private handleError(error: any): Observable<never> {
+  private handleError = (error: any): Observable<never> => {
     console.error('Interviewer Service error:', error);
     throw error;
-  }
+  };
 }
