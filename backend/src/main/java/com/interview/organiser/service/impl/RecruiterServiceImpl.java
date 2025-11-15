@@ -1,6 +1,8 @@
 package com.interview.organiser.service.impl;
 
+import com.interview.organiser.constants.enums.UserRole;
 import com.interview.organiser.constants.enums.VerificationStatus;
+import com.interview.organiser.exception.ResourceAlreadyExistsException;
 import com.interview.organiser.exception.ResourceNotFoundException;
 import com.interview.organiser.model.dto.request.CreateRecruiterRequest;
 import com.interview.organiser.model.dto.request.UpdateRecruiterRequest;
@@ -8,12 +10,15 @@ import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.RecruiterResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
 import com.interview.organiser.model.entity.Recruiter;
+import com.interview.organiser.model.entity.User;
 import com.interview.organiser.repository.RecruiterRepository;
+import com.interview.organiser.repository.UserRepository;
 import com.interview.organiser.service.RecruiterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +32,41 @@ import java.util.stream.Collectors;
 public class RecruiterServiceImpl implements RecruiterService {
 
     private final RecruiterRepository recruiterRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public RecruiterResponse createRecruiter(CreateRecruiterRequest request) {
         log.info("Creating recruiter: {}", request.getName());
 
+        // Check if admin user email already exists
+        if (userRepository.existsByEmail(request.getAdminEmail())) {
+            throw new ResourceAlreadyExistsException("User", "email", request.getAdminEmail());
+        }
+
+        // Check if recruiter contact email already exists
+        if (recruiterRepository.findByContactEmail(request.getContactEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Recruiter", "contactEmail", request.getContactEmail());
+        }
+
+        // Create admin user account for the recruiter
+        User adminUser = User.builder()
+                .email(request.getAdminEmail())
+                .password(passwordEncoder.encode(request.getAdminPassword()))
+                .firstName(request.getAdminFirstName())
+                .lastName(request.getAdminLastName())
+                .phone(request.getAdminPhone())
+                .isActive(false) // Will be activated when recruiter is verified
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        // Add RECRUITER role to the admin user
+        adminUser.getRoles().add(UserRole.RECRUITER);
+        User savedAdminUser = userRepository.save(adminUser);
+
+        // Create recruiter entity
         Recruiter recruiter = Recruiter.builder()
                 .name(request.getName())
                 .registrationNumber(request.getRegistrationNumber())
@@ -42,12 +76,19 @@ public class RecruiterServiceImpl implements RecruiterService {
                 .website(request.getWebsite())
                 .description(request.getDescription())
                 .verificationStatus(VerificationStatus.PENDING)
+                .adminUserId(savedAdminUser.getId()) // Link to the admin user
                 .isActive(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
         Recruiter savedRecruiter = recruiterRepository.save(recruiter);
+
+        // Update user with recruiterId
+        savedAdminUser.setRecruiterId(savedRecruiter.getId());
+        userRepository.save(savedAdminUser);
+
+        log.info("Created recruiter {} with admin user {}", savedRecruiter.getId(), savedAdminUser.getId());
 
         return toRecruiterResponse(savedRecruiter);
     }
@@ -136,6 +177,16 @@ public class RecruiterServiceImpl implements RecruiterService {
 
         Recruiter verifiedRecruiter = recruiterRepository.save(recruiter);
 
+        // Activate the admin user account
+        if (recruiter.getAdminUserId() != null) {
+            userRepository.findById(recruiter.getAdminUserId()).ifPresent(user -> {
+                user.setIsActive(true);
+                user.setUpdatedAt(LocalDateTime.now());
+                userRepository.save(user);
+                log.info("Activated admin user {} for recruiter {}", user.getId(), recruiterId);
+            });
+        }
+
         return toRecruiterResponse(verifiedRecruiter);
     }
 
@@ -152,6 +203,16 @@ public class RecruiterServiceImpl implements RecruiterService {
         recruiter.setUpdatedAt(LocalDateTime.now());
 
         Recruiter unverifiedRecruiter = recruiterRepository.save(recruiter);
+
+        // Deactivate the admin user account
+        if (recruiter.getAdminUserId() != null) {
+            userRepository.findById(recruiter.getAdminUserId()).ifPresent(user -> {
+                user.setIsActive(false);
+                user.setUpdatedAt(LocalDateTime.now());
+                userRepository.save(user);
+                log.info("Deactivated admin user {} for recruiter {}", user.getId(), recruiterId);
+            });
+        }
 
         // TODO: Send notification to recruiter about unverification
         // notificationService.notifyRecruiterVerificationStatus(
@@ -173,6 +234,16 @@ public class RecruiterServiceImpl implements RecruiterService {
         recruiter.setUpdatedAt(LocalDateTime.now());
 
         Recruiter rejectedRecruiter = recruiterRepository.save(recruiter);
+
+        // Deactivate the admin user account
+        if (recruiter.getAdminUserId() != null) {
+            userRepository.findById(recruiter.getAdminUserId()).ifPresent(user -> {
+                user.setIsActive(false);
+                user.setUpdatedAt(LocalDateTime.now());
+                userRepository.save(user);
+                log.info("Deactivated admin user {} for recruiter {}", user.getId(), recruiterId);
+            });
+        }
 
         return toRecruiterResponse(rejectedRecruiter);
     }

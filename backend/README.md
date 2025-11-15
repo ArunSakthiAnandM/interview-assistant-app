@@ -57,7 +57,7 @@ src/main/java/com/interview/organiser/
 └── validation/        # Custom validators
 ```
 
-## API Endpoints (52 total)
+## API Endpoints (53 total)
 
 ### Authentication (4)
 - `POST /auth/register` - Register user
@@ -90,10 +90,11 @@ src/main/java/com/interview/organiser/
 - `POST /candidates/invite` - Send invitation
 - `POST /candidates/invitation/respond` - Respond to invitation
 
-### Interviewers (6)
+### Interviewers (7)
 - `GET /interviewers` - List interviewers
 - `POST /interviewers` - Create interviewer
 - `POST /interviewers/invite` - Invite interviewer
+- `POST /interviewers/complete-registration` - Complete registration via invitation
 - `GET /interviewers/{id}` - Get interviewer
 - `PUT /interviewers/{id}` - Update interviewer
 - `DELETE /interviewers/{id}` - Delete interviewer
@@ -136,6 +137,172 @@ src/main/java/com/interview/organiser/
 - **Dashboard Analytics**: Role-specific statistics and metrics
 - **Pagination**: All list endpoints support pagination
 - **Filtering**: Advanced filtering on most GET endpoints
+
+## User Registration & Authentication Flow
+
+### Overview
+The system maintains a **single source of truth** for user authentication in the `users` collection. All user types (Recruiters, Interviewers, Candidates) must have a corresponding User account to login.
+
+### Recruiter Registration Flow
+
+**Step 1: Register Recruiter Organization**
+```http
+POST /recruiters
+Content-Type: application/json
+
+{
+  "name": "Tech Corp",
+  "registrationNumber": "REG12345",
+  "contactEmail": "contact@techcorp.com",
+  "contactPhone": "+1234567890",
+  "website": "https://techcorp.com",
+  "description": "Leading tech company",
+  "adminFirstName": "John",
+  "adminLastName": "Doe",
+  "adminEmail": "john.doe@techcorp.com",
+  "adminPassword": "SecurePass123!",
+  "adminPhone": "+1234567890",
+  "address": {
+    "street": "123 Tech Street",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA",
+    "postalCode": "94102"
+  }
+}
+```
+
+**What happens:**
+1. Creates a `Recruiter` entity in the `recruiters` collection
+2. Creates an admin `User` account in the `users` collection with RECRUITER role
+3. Links the recruiter to the admin user via `adminUserId` and `recruiterId`
+4. User account is initially **inactive** (isActive: false)
+5. Recruiter verification status is set to **PENDING**
+
+**Step 2: Admin Verifies Recruiter**
+```http
+PUT /recruiters/{recruiterId}/verify
+```
+
+**What happens:**
+1. Updates recruiter status to **VERIFIED**
+2. **Activates the admin user account** (isActive: true)
+3. Admin can now login
+
+**Step 3: Admin Login**
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@techcorp.com",
+  "password": "SecurePass123!"
+}
+```
+
+**Returns:**
+- Access token (JWT)
+- Refresh token
+- User details with roles
+
+### Interviewer Registration Flow
+
+**Step 1: Recruiter Invites Interviewer**
+```http
+POST /interviewers/invite
+Content-Type: application/json
+
+{
+  "email": "interviewer@techcorp.com",
+  "recruiterId": "recruiter123"
+}
+```
+
+**What happens:**
+1. Creates an `Interviewer` entity with invitation token
+2. Sends invitation email (mocked - logs to console)
+3. Interviewer record is marked as **not registered** (isRegistered: false)
+
+**Step 2: Interviewer Completes Registration**
+```http
+POST /interviewers/complete-registration
+Content-Type: application/json
+
+{
+  "invitationToken": "uuid-token-from-email",
+  "password": "SecurePass123!",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "phone": "+1234567890",
+  "department": "Engineering",
+  "expertise": ["Java", "Spring Boot", "System Design"],
+  "yearsOfExperience": 5
+}
+```
+
+**What happens:**
+1. Validates invitation token
+2. Creates a `User` account with INTERVIEWER role
+3. Updates interviewer record with user reference
+4. Marks interviewer as **registered** (isRegistered: true)
+5. **Automatically logs in** - returns access token and refresh token
+
+**Step 3: Subsequent Logins**
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "interviewer@techcorp.com",
+  "password": "SecurePass123!"
+}
+```
+
+### Candidate Registration Flow
+
+Candidates typically don't register themselves - they are invited by recruiters:
+
+**Step 1: Recruiter Creates Candidate**
+```http
+POST /candidates
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Johnson",
+  "email": "alice@example.com",
+  "phone": "+1234567890",
+  "position": "Senior Software Engineer",
+  "experience": 5.5,
+  "skills": ["Java", "Python", "AWS"],
+  "recruiterId": "recruiter123"
+}
+```
+
+**Step 2: Send Interview Invitation**
+```http
+POST /candidates/invite
+Content-Type: application/json
+
+{
+  "candidateId": "candidate123",
+  "interviewId": "interview123"
+}
+```
+
+**Note:** Candidates currently don't have user accounts for login. They receive invitations via email/token for interview participation.
+
+### Important Design Principles
+
+1. **Single User Collection**: All authentication happens through the `users` collection
+2. **Role-Based Access**: Users can have multiple roles in the `roles` Set field
+3. **Entity Linking**: 
+   - `User.recruiterId` → links to Recruiter entity
+   - `Interviewer.user` → DBRef to User entity
+   - `Recruiter.adminUserId` → links to admin User entity
+4. **Verification Workflow**: Recruiters must be verified by admin before their accounts are activated
+5. **Invitation System**: Interviewers complete registration via invitation tokens
+6. **Email Uniqueness**: Each email can only have one user account across the entire system
 
 ## Enums
 

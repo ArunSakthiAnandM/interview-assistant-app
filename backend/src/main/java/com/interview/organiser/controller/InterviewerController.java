@@ -1,8 +1,10 @@
 package com.interview.organiser.controller;
 
+import com.interview.organiser.model.dto.request.InterviewerRegistrationRequest;
 import com.interview.organiser.model.dto.request.CreateInterviewerRequest;
 import com.interview.organiser.model.dto.request.InviteInterviewerRequest;
 import com.interview.organiser.model.dto.request.UpdateInterviewerRequest;
+import com.interview.organiser.model.dto.response.AuthResponse;
 import com.interview.organiser.model.dto.response.InterviewerResponse;
 import com.interview.organiser.model.dto.response.MessageResponse;
 import com.interview.organiser.model.dto.response.PageResponse;
@@ -40,6 +42,13 @@ public class InterviewerController {
     @PostMapping("/invite")
     public ResponseEntity<MessageResponse> inviteInterviewer(@Valid @RequestBody InviteInterviewerRequest request) {
         return ResponseEntity.ok(interviewerService.inviteInterviewer(request));
+    }
+
+    @PostMapping("/complete-registration")
+    public ResponseEntity<AuthResponse> completeInterviewerRegistration(
+            @Valid @RequestBody InterviewerRegistrationRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(interviewerService.completeInterviewerRegistration(request));
     }
 
     @GetMapping("/{interviewerId}")

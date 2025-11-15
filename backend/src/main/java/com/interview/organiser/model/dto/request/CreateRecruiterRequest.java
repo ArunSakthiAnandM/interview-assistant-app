@@ -4,6 +4,7 @@ import com.interview.organiser.model.entity.Recruiter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +34,23 @@ public class CreateRecruiterRequest {
     private String website;
 
     private String description;
+
+    // Admin user credentials
+    @NotBlank(message = "Admin first name is required")
+    private String adminFirstName;
+
+    @NotBlank(message = "Admin last name is required")
+    private String adminLastName;
+
+    @NotBlank(message = "Admin email is required")
+    @Email(message = "Invalid admin email format")
+    private String adminEmail;
+
+    @NotBlank(message = "Admin password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    private String adminPassword;
+
+    private String adminPhone;
 
     @Data
     @Builder
