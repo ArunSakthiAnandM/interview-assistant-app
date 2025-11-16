@@ -65,6 +65,7 @@ export const API_ENDPOINTS = {
   INVITATIONS: {
     BASE: `${API_BASE_URL}/invitations`,
     SEND: `${API_BASE_URL}/invitations/send`,
+    BULK_SEND: `${API_BASE_URL}/invitations/bulk-send`,
     DETAIL: (id: string) => `${API_BASE_URL}/invitations/${id}`,
     ACCEPT: (id: string) => `${API_BASE_URL}/invitations/${id}/accept`,
     DECLINE: (id: string) => `${API_BASE_URL}/invitations/${id}/decline`,

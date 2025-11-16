@@ -7,6 +7,7 @@ import {
   InvitationStatus,
   SendInvitationDto,
   BulkSendInvitationsDto,
+  BulkSendResult,
 } from '../../models/invitation.model';
 import { PaginatedResponse } from '../../models/common.model';
 
@@ -27,6 +28,13 @@ export class InvitationService {
    */
   send(data: SendInvitationDto): Observable<Invitation> {
     return this.http.post<Invitation>(API_ENDPOINTS.INVITATIONS.SEND, data);
+  }
+
+  /**
+   * Send multiple invitations at once
+   */
+  bulkSend(data: BulkSendInvitationsDto): Observable<BulkSendResult> {
+    return this.http.post<BulkSendResult>(API_ENDPOINTS.INVITATIONS.BULK_SEND, data);
   }
 
   /**
