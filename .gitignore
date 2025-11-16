@@ -242,3 +242,5 @@ generated/
 !API.md
 
 legacy/
+.vscode/
+.idea/
