@@ -9,12 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-
-import { AuthService } from '../../services/auth/auth.service';
-import { LoginDto } from '../../models/auth.model';
-import { ROUTES } from '../../constants/routes';
-import { VALIDATION_PATTERNS, VALIDATION_MESSAGES } from '../../constants/app-config';
-import { extractErrorMessage } from '../../interceptors/error.interceptor';
+import { VALIDATION_PATTERNS, VALIDATION_MESSAGES, ROUTES } from '../../../constants';
+import { extractErrorMessage } from '../../../interceptors';
+import { LoginDto } from '../../../models';
+import { AuthService } from '../../../services';
 
 /**
  * Login Component

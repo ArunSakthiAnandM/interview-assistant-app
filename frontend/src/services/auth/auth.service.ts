@@ -8,7 +8,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../../models/auth.model';
-import { User, UserRole } from '../../models/user.model';
+import { User, UserRole, RegisterUserDto } from '../../models/user.model';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { ROUTES } from '../../constants/routes';
 import { STORAGE_KEYS } from '../../constants/app-config';
@@ -68,6 +68,23 @@ export class AuthService {
         this.clearAuthState();
       }
     }
+  }
+
+  /**
+   * Register a new user
+   */
+  register(dto: RegisterUserDto): Observable<User> {
+    this.isLoadingSignal.set(true);
+
+    return this.http.post<User>(API_ENDPOINTS.USERS.REGISTER, dto).pipe(
+      tap(() => {
+        this.isLoadingSignal.set(false);
+      }),
+      catchError((error) => {
+        this.isLoadingSignal.set(false);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

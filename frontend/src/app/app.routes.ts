@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from '../components/layout/main-layout/main-layout';
-import { LoginComponent } from '../components/auth/login';
+import { LoginComponent } from '../components/auth/login/login';
 import { authGuard, guestGuard } from '../guards';
 import { ROUTES } from '../constants/routes';
 import { UserRole } from '../models/user.model';
@@ -18,6 +18,12 @@ export const routes: Routes = [
       {
         path: ROUTES.LOGIN,
         component: LoginComponent,
+        canActivate: [guestGuard],
+      },
+      {
+        path: ROUTES.REGISTER,
+        loadComponent: () =>
+          import('../components/auth/register/register').then((m) => m.RegisterComponent),
         canActivate: [guestGuard],
       },
       {
