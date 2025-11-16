@@ -1,0 +1,509 @@
+/**
+ * SCSS Mixins for Interview Organiser Application
+ * Reusable styling patterns
+ */
+
+@use 'variables' as *;
+
+// ========================================
+// Flexbox Utilities
+// ========================================
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-row-between {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+// ========================================
+// Responsive Utilities
+// ========================================
+
+@mixin responsive($breakpoint) {
+  @if $breakpoint == xs {
+    @media (min-width: $breakpoint-xs) {
+      @content;
+    }
+  } @else if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) {
+      @content;
+    }
+  }
+}
+
+// ========================================
+// Card Styling
+// ========================================
+
+@mixin card {
+  background: $background-card;
+  border-radius: $card-border-radius;
+  box-shadow: $card-shadow;
+  padding: $card-padding;
+}
+
+@mixin card-hover {
+  transition: box-shadow $transition-base $transition-ease;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+  }
+}
+
+// ========================================
+// Text Utilities
+// ========================================
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@mixin heading($size: 'lg') {
+  @if $size == 'xs' {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  } @else if $size == 'sm' {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  } @else if $size == 'md' {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  } @else if $size == 'lg' {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  } @else if $size == 'xl' {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  }
+}
+
+// ========================================
+// Button Utilities
+// ========================================
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $button-padding-y $button-padding-x;
+  border: none;
+  border-radius: $button-border-radius;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-normal;
+  cursor: pointer;
+  transition: all $transition-base $transition-ease;
+  text-decoration: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: $primary-500;
+  color: $white;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-600;
+  }
+
+  &:active:not(:disabled) {
+    background-color: $primary-700;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: $gray-200;
+  color: $text-primary;
+
+  &:hover:not(:disabled) {
+    background-color: $gray-300;
+  }
+
+  &:active:not(:disabled) {
+    background-color: $gray-400;
+  }
+}
+
+@mixin button-outline {
+  @include button-base;
+  background-color: transparent;
+  color: $primary-500;
+  border: 1px solid $primary-500;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-50;
+  }
+
+  &:active:not(:disabled) {
+    background-color: $primary-100;
+  }
+}
+
+// ========================================
+// Form Utilities
+// ========================================
+
+@mixin input-base {
+  width: 100%;
+  padding: $input-padding-y $input-padding-x;
+  border: 1px solid $input-border-color;
+  border-radius: $input-border-radius;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+  transition: border-color $transition-fast $transition-ease;
+
+  &:focus {
+    outline: none;
+    border-color: $input-border-color-focus;
+  }
+
+  &:disabled {
+    background-color: $background-disabled;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: $text-hint;
+  }
+}
+
+@mixin input-error {
+  border-color: $error;
+
+  &:focus {
+    border-color: $error;
+  }
+}
+
+@mixin form-label {
+  display: block;
+  margin-bottom: $spacing-xs;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+}
+
+@mixin form-error-text {
+  display: block;
+  margin-top: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $error;
+}
+
+// ========================================
+// Shadow Utilities
+// ========================================
+
+@mixin shadow($level: 'md') {
+  @if $level == 'sm' {
+    box-shadow: $shadow-sm;
+  } @else if $level == 'md' {
+    box-shadow: $shadow-md;
+  } @else if $level == 'lg' {
+    box-shadow: $shadow-lg;
+  } @else if $level == 'xl' {
+    box-shadow: $shadow-xl;
+  }
+}
+
+// ========================================
+// Overlay Utilities
+// ========================================
+
+@mixin overlay($opacity: 0.5) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($black, $opacity);
+  z-index: $z-index-modal-backdrop;
+}
+
+// ========================================
+// Scroll Utilities
+// ========================================
+
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $gray-100;
+    border-radius: $border-radius-sm;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $gray-400;
+    border-radius: $border-radius-sm;
+
+    &:hover {
+      background: $gray-500;
+    }
+  }
+}
+
+@mixin hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ========================================
+// Animation Utilities
+// ========================================
+
+@mixin fade-in($duration: $transition-base) {
+  animation: fadeIn $duration $transition-ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@mixin slide-in-up($duration: $transition-base) {
+  animation: slideInUp $duration $transition-ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@mixin slide-in-down($duration: $transition-base) {
+  animation: slideInDown $duration $transition-ease;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ========================================
+// Loading Utilities
+// ========================================
+
+@mixin loading-spinner($size: 40px, $color: $primary-500) {
+  width: $size;
+  height: $size;
+  border: 4px solid rgba($color, 0.2);
+  border-top-color: $color;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ========================================
+// Focus Utilities
+// ========================================
+
+@mixin focus-ring($color: $primary-500) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($color, 0.3);
+}
+
+@mixin focus-visible {
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// ========================================
+// Status Badge Utilities
+// ========================================
+
+@mixin status-badge($bg-color, $text-color: $white) {
+  display: inline-flex;
+  align-items: center;
+  padding: $badge-padding-y $badge-padding-x;
+  background-color: $bg-color;
+  color: $text-color;
+  font-size: $badge-font-size;
+  font-weight: $font-weight-medium;
+  border-radius: $badge-border-radius;
+  white-space: nowrap;
+}
+
+// ========================================
+// Table Utilities
+// ========================================
+
+@mixin table-base {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background-color: $table-header-bg;
+    padding: $table-cell-padding;
+    text-align: left;
+    font-weight: $font-weight-medium;
+    border-bottom: 2px solid $table-border-color;
+  }
+
+  td {
+    padding: $table-cell-padding;
+    border-bottom: 1px solid $table-border-color;
+  }
+
+  tr:hover {
+    background-color: $table-row-hover-bg;
+  }
+}
+
+// ========================================
+// Utility Classes Generator
+// ========================================
+
+@mixin generate-spacing-utilities {
+  @each $name,
+    $value
+      in (
+        'xs': $spacing-xs,
+        'sm': $spacing-sm,
+        'md': $spacing-md,
+        'lg': $spacing-lg,
+        'xl': $spacing-xl,
+        '2xl': $spacing-2xl,
+        '3xl': $spacing-3xl
+      )
+  {
+    .p-#{$name} {
+      padding: $value !important;
+    }
+    .pt-#{$name} {
+      padding-top: $value !important;
+    }
+    .pr-#{$name} {
+      padding-right: $value !important;
+    }
+    .pb-#{$name} {
+      padding-bottom: $value !important;
+    }
+    .pl-#{$name} {
+      padding-left: $value !important;
+    }
+    .px-#{$name} {
+      padding-left: $value !important;
+      padding-right: $value !important;
+    }
+    .py-#{$name} {
+      padding-top: $value !important;
+      padding-bottom: $value !important;
+    }
+
+    .m-#{$name} {
+      margin: $value !important;
+    }
+    .mt-#{$name} {
+      margin-top: $value !important;
+    }
+    .mr-#{$name} {
+      margin-right: $value !important;
+    }
+    .mb-#{$name} {
+      margin-bottom: $value !important;
+    }
+    .ml-#{$name} {
+      margin-left: $value !important;
+    }
+    .mx-#{$name} {
+      margin-left: $value !important;
+      margin-right: $value !important;
+    }
+    .my-#{$name} {
+      margin-top: $value !important;
+      margin-bottom: $value !important;
+    }
+  }
+}

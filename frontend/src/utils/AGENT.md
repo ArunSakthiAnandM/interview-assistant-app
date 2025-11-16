@@ -4,12 +4,6 @@
 
 Contains utility functions, HTTP interceptors, helpers, and shared functionality that don't fit into services or other categories.
 
-## Files
-
-- `auth.interceptor.ts` - HTTP interceptor for adding auth tokens
-- `error.interceptor.ts` - HTTP interceptor for handling errors
-- `index.ts` - Barrel export
-
 ## Angular 20 Functional Interceptor Pattern
 
 ### Auth Interceptor

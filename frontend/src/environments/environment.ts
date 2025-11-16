@@ -1,5 +1,10 @@
+/**
+ * Environment Configuration for Development
+ */
 export const environment = {
-  production: true,
-  // TODO: Update this URL with the actual production backend API URL
-  apiBaseUrl: 'https://your-production-api-url.com/api/v1',
+  production: false,
+  apiUrl: 'http://localhost:8080/api/v1',
+  appUrl: 'http://localhost:4200',
+  enableDebugMode: true,
+  enableServiceWorker: false,
 };

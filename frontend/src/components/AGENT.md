@@ -4,22 +4,6 @@
 
 Contains all UI components for the Interview Assistant application, organized by feature or domain.
 
-## Structure
-
-Components are organized by feature areas:
-
-## Components Overview
-
-- `dashboard/` - Dashboard views (admin, candidate, interviewer, recruiter)
-- `footer/` - Application footer
-- `header/` - Application header/navigation
-- `home/` - Home/landing page
-- `interview/` - Interview management (create, list, detail, feedback)
-- `login/` - Authentication
-- `profile/` - User profile management
-- `register/` - User registration flows
-- `shared/` - Reusable shared components (file-upload, otp-input, etc.)
-
 ## Angular 20 Component Standards
 
 ### Component Structure

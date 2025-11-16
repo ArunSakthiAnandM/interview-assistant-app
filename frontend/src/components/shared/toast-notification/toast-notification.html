@@ -1,0 +1,18 @@
+<div class="toast-container">
+      @for (toast of toasts(); track toast.id) {
+      <div class="toast toast-{{ toast.type }}" (click)="closeToast(toast.id)">
+        <div class="toast-content">
+          <mat-icon class="toast-icon">{{ getIcon(toast.type) }}</mat-icon>
+          <span class="toast-message">{{ toast.message }}</span>
+        </div>
+        <button
+          mat-icon-button
+          class="toast-close"
+          (click)="closeToast(toast.id); $event.stopPropagation()"
+          aria-label="Close notification"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      }
+    </div>

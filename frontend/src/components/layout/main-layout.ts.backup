@@ -1,0 +1,104 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { Header } from '../header/header';
+import { Footer } from '../footer/footer';
+import { SidebarComponent } from './sidebar';
+import { AuthService } from '../../services/auth/auth.service';
+import { UiStore } from '../../stores/ui/ui.store';
+
+/**
+ * Main Layout Component
+ *
+ * Provides the main application layout with:
+ * - Header (always visible)
+ * - Sidebar (for authenticated users)
+ * - Main content area
+ * - Footer
+ */
+@Component({
+  selector: 'app-main-layout',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, Header, Footer, SidebarComponent],
+  template: `
+    <div class="app-layout">
+      <app-header></app-header>
+
+      <div class="layout-container" [class.with-sidebar]="isAuthenticated()">
+        @if (isAuthenticated()) {
+        <app-sidebar></app-sidebar>
+        }
+
+        <main class="main-content" [class.with-sidebar]="isAuthenticated() && isSidebarOpen()">
+          <div class="content-wrapper">
+            <router-outlet />
+          </div>
+        </main>
+      </div>
+
+      <app-footer></app-footer>
+    </div>
+  `,
+  styles: [
+    `
+      @import '../../styles/variables';
+      @import '../../styles/mixins';
+
+      .app-layout {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .layout-container {
+        display: flex;
+        flex: 1;
+        position: relative;
+        background: $background-primary;
+
+        &.with-sidebar {
+          @include responsive(desktop) {
+            padding-left: 260px;
+          }
+        }
+      }
+
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0; // Prevent flex item from overflowing
+        transition: margin-left $transition-base;
+
+        &.with-sidebar {
+          @include responsive(desktop) {
+            margin-left: 0;
+          }
+        }
+      }
+
+      .content-wrapper {
+        flex: 1;
+        padding: $spacing-xl;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+
+        @include responsive(tablet) {
+          padding: $spacing-lg;
+        }
+
+        @include responsive(mobile) {
+          padding: $spacing-md;
+        }
+      }
+    `,
+  ],
+})
+export class MainLayoutComponent {
+  protected authService = inject(AuthService);
+  protected uiStore = inject(UiStore);
+
+  protected isAuthenticated = this.authService.isAuthenticated;
+  protected isSidebarOpen = this.uiStore.isSidebarOpen;
+}

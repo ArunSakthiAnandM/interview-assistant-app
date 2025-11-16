@@ -87,10 +87,12 @@ This is the frontend application for the Interview Assistant platform, built wit
 - `/src/assets` - Static assets
 - `/src/components` - All UI components organized by feature
 - `/src/constants` - Application-wide constants
+- `/src/environments` - Environment based configurations
 - `/src/guards` - Route guards for authentication and authorization
 - `/src/models` - TypeScript interfaces and types
 - `/src/services` - Business logic and API services
-- `/src/store` - Signal-based state management stores
+- `/src/styles` - Application-wide styles
+- `/src/stores` - Signal-based state management stores
 - `/src/utils` - Utility functions and interceptors
 
 ## Development Commands

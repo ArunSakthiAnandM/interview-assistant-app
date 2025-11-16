@@ -1,0 +1,219 @@
+<div class="profile-container">
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <mat-card-title>
+            <div class="title-row">
+              <h1>Organisation Profile</h1>
+              @if (organisation()) {
+              <mat-chip [class]="'status-chip ' + organisation()!.verificationStatus.toLowerCase()">
+                {{ getStatusLabel(organisation()!.verificationStatus) }}
+              </mat-chip>
+              }
+            </div>
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          @if (isLoading()) {
+          <div class="loading-state">
+            <mat-icon>hourglass_empty</mat-icon>
+            <p>Loading profile...</p>
+          </div>
+          } @else if (organisation()) {
+          <mat-tab-group>
+            <!-- Profile Tab -->
+            <mat-tab label="Profile Information">
+              @if (!isEditing()) {
+              <div class="profile-view">
+                <div class="info-section">
+                  <h3>Basic Information</h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="label">Organisation Name</span>
+                      <span class="value">{{ organisation()!.name }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">Email</span>
+                      <span class="value">{{ organisation()!.adminEmail }}</span>
+                    </div>
+                    @if (organisation()!.phoneNumber) {
+                    <div class="info-item">
+                      <span class="label">Phone Number</span>
+                      <span class="value">{{ organisation()!.phoneNumber }}</span>
+                    </div>
+                    } @if (organisation()!.address) {
+                    <div class="info-item">
+                      <span class="label">Address</span>
+                      <span class="value">{{ organisation()!.address }}</span>
+                    </div>
+                    }
+                  </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="info-section">
+                  <h3>Verification Information</h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="label">Status</span>
+                      <mat-chip
+                        [class]="'status-chip ' + organisation()!.verificationStatus.toLowerCase()"
+                      >
+                        {{ getStatusLabel(organisation()!.verificationStatus) }}
+                      </mat-chip>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">Created Date</span>
+                      <span class="value">{{ formatDate(organisation()!.createdAt) }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">Last Updated</span>
+                      <span class="value">{{ formatDate(organisation()!.updatedAt) }}</span>
+                    </div>
+                  </div>
+
+                  @if (organisation()!.verificationStatus === VerificationStatus.REJECTED &&
+                  organisation()!.rejectionReason) {
+                  <div class="rejection-notice">
+                    <mat-icon>error</mat-icon>
+                    <div>
+                      <h4>Verification Rejected</h4>
+                      <p>{{ organisation()!.rejectionReason }}</p>
+                    </div>
+                  </div>
+                  }
+                </div>
+
+                <div class="actions">
+                  @if (canEdit()) {
+                  <button mat-raised-button color="primary" (click)="startEditing()">
+                    <mat-icon>edit</mat-icon>
+                    Edit Profile
+                  </button>
+                  } @if (canResubmit()) {
+                  <button mat-raised-button color="accent" (click)="startResubmission()">
+                    <mat-icon>send</mat-icon>
+                    Resubmit for Verification
+                  </button>
+                  }
+                </div>
+              </div>
+              } @else {
+              <form [formGroup]="profileForm" class="edit-form">
+                <div class="form-section">
+                  <h3>Basic Information</h3>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Organisation Name</mat-label>
+                    <input matInput formControlName="name" />
+                    @if (profileForm.get('name')?.hasError('required')) {
+                    <mat-error>Name is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput formControlName="phoneNumber" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Address</mat-label>
+                    <textarea matInput formControlName="address" rows="3"></textarea>
+                  </mat-form-field>
+
+                  @if (isResubmitting()) {
+                  <div class="document-upload">
+                    <h4>Upload New KYC Document</h4>
+                    <input
+                      type="file"
+                      #kycInput
+                      (change)="onKycFileSelected($event)"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      style="display: none"
+                    />
+                    <button mat-stroked-button (click)="kycInput.click()" type="button">
+                      <mat-icon>upload_file</mat-icon>
+                      {{ newKycFile() ? 'Change File' : 'Upload Document' }}
+                    </button>
+                    @if (newKycFile()) {
+                    <div class="file-info">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>{{ newKycFile()!.name }}</span>
+                    </div>
+                    }
+                  </div>
+                  }
+                </div>
+
+                <div class="form-actions">
+                  <button mat-button (click)="cancelEditing()" type="button">Cancel</button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="saveChanges()"
+                    [disabled]="isSaving() || !profileForm.valid"
+                    type="button"
+                  >
+                    @if (isSaving()) {
+                    <ng-container>
+                      <mat-icon>hourglass_empty</mat-icon>
+                      Saving...
+                    </ng-container>
+                    } @else {
+                    <ng-container>
+                      <mat-icon>save</mat-icon>
+                      Save Changes
+                    </ng-container>
+                    }
+                  </button>
+                </div>
+              </form>
+              }
+            </mat-tab>
+
+            <!-- Verification History Tab -->
+            <mat-tab label="Verification History">
+              <div class="history-section">
+                @if (isLoadingHistory()) {
+                <div class="loading-state">
+                  <mat-icon>hourglass_empty</mat-icon>
+                  <p>Loading history...</p>
+                </div>
+                } @else if (verificationHistory().length > 0) {
+                <div class="history-timeline">
+                  @for (entry of verificationHistory(); track entry.id) {
+                  <div class="history-item">
+                    <div class="history-icon">
+                      <mat-icon>{{ getHistoryIcon(entry.status) }}</mat-icon>
+                    </div>
+                    <div class="history-content">
+                      <div class="history-header">
+                        <h4>{{ getStatusLabel(entry.status) }}</h4>
+                        <span class="history-date">{{ formatDate(entry.submittedAt) }}</span>
+                      </div>
+                      @if (entry.reason) {
+                      <p class="history-reason">{{ entry.reason }}</p>
+                      } @if (entry.reviewedBy && entry.reviewedAt) {
+                      <p class="history-reviewer">
+                        Reviewed by {{ entry.reviewerName || entry.reviewedBy }} on
+                        {{ formatDate(entry.reviewedAt) }}
+                      </p>
+                      }
+                    </div>
+                  </div>
+                  }
+                </div>
+                } @else {
+                <div class="empty-state">
+                  <mat-icon>history</mat-icon>
+                  <p>No verification history available</p>
+                </div>
+                }
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>

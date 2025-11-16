@@ -1,0 +1,404 @@
+<div class="detail-container">
+      @if (isLoading()) {
+      <mat-card class="loading-card">
+        <mat-card-content>
+          <div class="loading">
+            <mat-icon>hourglass_empty</mat-icon>
+            <p>Loading interview details...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      } @else if (interview()) {
+      <mat-card>
+        <mat-card-header>
+          <div class="header-content">
+            <div class="title-section">
+              <mat-card-title>{{ interview()!.jobPosition }}</mat-card-title>
+              <mat-card-subtitle> Candidate: {{ interview()!.candidateEmail }} </mat-card-subtitle>
+            </div>
+            <div class="status-actions">
+              <mat-chip [class]="'status-' + interview()!.overallStatus.toLowerCase()">
+                {{ getStatusLabel(interview()!.overallStatus) }}
+              </mat-chip>
+              @if (canCancelInterview()) {
+              <button mat-button color="warn" (click)="cancelInterview()">
+                <mat-icon>cancel</mat-icon>
+                Cancel
+              </button>
+              }
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-tab-group>
+            <!-- Overview Tab -->
+            <mat-tab label="Overview">
+              <div class="tab-content">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="label">Organisation</span>
+                    <span class="value">{{ interview()!.organisationName || 'N/A' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Created By</span>
+                    <span class="value">{{ interview()!.createdByName || 'N/A' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Total Rounds</span>
+                    <span class="value">{{
+                      interview()!.totalRounds || interview()!.rounds.length
+                    }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Current Round</span>
+                    <span class="value">{{ interview()!.currentRoundNumber || 'N/A' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Candidate Status</span>
+                    <span class="value">
+                      <mat-chip class="candidate-status">
+                        {{ getCandidateStatusLabel(interview()!.candidateStatus) }}
+                      </mat-chip>
+                    </span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Created At</span>
+                    <span class="value">{{ formatDate(interview()!.createdAt) }}</span>
+                  </div>
+                </div>
+
+                @if (interview()!.jobDescription) {
+                <mat-divider class="section-divider"></mat-divider>
+                <div class="description-section">
+                  <h3>Job Description</h3>
+                  <p>{{ interview()!.jobDescription }}</p>
+                </div>
+                }
+              </div>
+            </mat-tab>
+
+            <!-- Rounds Tab -->
+            <mat-tab label="Interview Rounds">
+              <div class="tab-content">
+                @if (interview()!.rounds.length === 0) {
+                <div class="empty-rounds">
+                  <mat-icon>event_busy</mat-icon>
+                  <p>No rounds scheduled yet</p>
+                </div>
+                } @else {
+                <mat-accordion>
+                  @for (round of interview()!.rounds; track round.roundId) {
+                  <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        <div class="round-title">
+                          <span class="round-number">Round {{ round.roundNumber }}</span>
+                          <span class="round-type">{{ getRoundTypeLabel(round.type) }}</span>
+                          <mat-chip [class]="'round-status-' + round.status.toLowerCase()">
+                            {{ round.status }}
+                          </mat-chip>
+                        </div>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="round-details">
+                      <div class="round-info-grid">
+                        <div class="round-info-item">
+                          <mat-icon>event</mat-icon>
+                          <div>
+                            <span class="info-label">Scheduled</span>
+                            <span class="info-value">{{ formatDate(round.scheduledDate) }}</span>
+                          </div>
+                        </div>
+                        <div class="round-info-item">
+                          <mat-icon>schedule</mat-icon>
+                          <div>
+                            <span class="info-label">Duration</span>
+                            <span class="info-value">{{ round.durationMinutes }} minutes</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="interviewers-section">
+                        <h4>Interviewers</h4>
+                        <div class="interviewers-list">
+                          @for (interviewer of round.interviewers; track interviewer.id) {
+                          <mat-chip class="interviewer-chip">
+                            <mat-icon>person</mat-icon>
+                            {{ interviewer.name }}
+                            @if (interviewer.feedbackSubmitted) {
+                            <mat-icon class="feedback-icon">check_circle</mat-icon>
+                            }
+                          </mat-chip>
+                          }
+                        </div>
+                      </div>
+
+                      @if (canSubmitFeedback(round)) {
+                      <div class="feedback-form-section">
+                        <h4>Submit Feedback</h4>
+                        <form
+                          [formGroup]="getFeedbackForm(round.roundId)!"
+                          (ngSubmit)="submitFeedback(round.roundId)"
+                        >
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Recommendation</mat-label>
+                            <mat-select formControlName="recommendation">
+                              @for (rec of recommendations; track rec.value) {
+                              <mat-option [value]="rec.value">{{ rec.label }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Rating (1-10)</mat-label>
+                            <input
+                              matInput
+                              type="number"
+                              formControlName="rating"
+                              min="1"
+                              max="10"
+                            />
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Comments</mat-label>
+                            <textarea matInput formControlName="comments" rows="4"></textarea>
+                          </mat-form-field>
+
+                          <div class="chips-section">
+                            <h5>Strengths</h5>
+                            <div class="chip-inputs">
+                              <mat-form-field appearance="outline" class="chip-input">
+                                <mat-label>Add strength</mat-label>
+                                <input
+                                  matInput
+                                  #strengthInput
+                                  (keyup.enter)="
+                                    addStrength(round.roundId, strengthInput.value);
+                                    strengthInput.value = ''
+                                  "
+                                />
+                              </mat-form-field>
+                              <div class="chips-display">
+                                @for (strength of getStrengths(round.roundId); track $index; let i =
+                                $index) {
+                                <mat-chip class="strength-chip">
+                                  {{ strength }}
+                                  <button matChipRemove (click)="removeStrength(round.roundId, i)">
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                </mat-chip>
+                                }
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="chips-section">
+                            <h5>Areas for Improvement</h5>
+                            <div class="chip-inputs">
+                              <mat-form-field appearance="outline" class="chip-input">
+                                <mat-label>Add improvement</mat-label>
+                                <input
+                                  matInput
+                                  #improvementInput
+                                  (keyup.enter)="
+                                    addImprovement(round.roundId, improvementInput.value);
+                                    improvementInput.value = ''
+                                  "
+                                />
+                              </mat-form-field>
+                              <div class="chips-display">
+                                @for (improvement of getImprovements(round.roundId); track $index;
+                                let i = $index) {
+                                <mat-chip class="improvement-chip">
+                                  {{ improvement }}
+                                  <button
+                                    matChipRemove
+                                    (click)="removeImprovement(round.roundId, i)"
+                                  >
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                </mat-chip>
+                                }
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            type="submit"
+                            [disabled]="
+                              !getFeedbackForm(round.roundId)!.valid || isSubmittingFeedback()
+                            "
+                          >
+                            Submit Feedback
+                          </button>
+                        </form>
+                      </div>
+                      } @if (round.feedback && round.feedback.length > 0) {
+                      <div class="feedback-section">
+                        <h4>Feedback Received</h4>
+                        @for (feedback of round.feedback; track feedback.interviewerId) {
+                        <div class="feedback-card">
+                          <div class="feedback-header">
+                            <strong>{{ feedback.interviewerName || 'Anonymous' }}</strong>
+                            <mat-chip [class]="'rec-' + feedback.recommendation.toLowerCase()">
+                              {{ getRecommendationLabel(feedback.recommendation) }}
+                            </mat-chip>
+                          </div>
+                          <div class="feedback-rating">
+                            <span>Rating: {{ feedback.rating }}/10</span>
+                            <span class="feedback-date">{{
+                              formatDate(feedback.submittedAt)
+                            }}</span>
+                          </div>
+                          <p class="feedback-comments">{{ feedback.comments }}</p>
+                          @if (feedback.strengths && feedback.strengths.length > 0) {
+                          <div class="feedback-chips">
+                            <span class="chips-label">Strengths:</span>
+                            @for (strength of feedback.strengths; track $index) {
+                            <mat-chip class="strength-chip">{{ strength }}</mat-chip>
+                            }
+                          </div>
+                          } @if (feedback.improvements && feedback.improvements.length > 0) {
+                          <div class="feedback-chips">
+                            <span class="chips-label">Improvements:</span>
+                            @for (improvement of feedback.improvements; track $index) {
+                            <mat-chip class="improvement-chip">{{ improvement }}</mat-chip>
+                            }
+                          </div>
+                          }
+                        </div>
+                        }
+                      </div>
+                      } @if (canMakeDecision(round)) {
+                      <div class="decision-section">
+                        <h4>Make Decision</h4>
+                        @if (round.autoRecommendation) {
+                        <div class="auto-recommendation">
+                          <mat-icon>info</mat-icon>
+                          <span
+                            >System Recommendation:
+                            <strong>{{
+                              getRecommendationLabel(round.autoRecommendation)
+                            }}</strong></span
+                          >
+                        </div>
+                        }
+                        <div class="decision-buttons">
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="
+                              makeDecision(round.roundId, RoundDecision.SELECT_FOR_NEXT_ROUND)
+                            "
+                          >
+                            <mat-icon>arrow_forward</mat-icon>
+                            Select for Next Round
+                          </button>
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="makeDecision(round.roundId, RoundDecision.SELECTED)"
+                          >
+                            <mat-icon>check_circle</mat-icon>
+                            Select (Final)
+                          </button>
+                          <button
+                            mat-raised-button
+                            color="warn"
+                            (click)="makeDecision(round.roundId, RoundDecision.REJECTED)"
+                          >
+                            <mat-icon>cancel</mat-icon>
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                      } @if (round.recruiterDecision) {
+                      <div class="final-decision">
+                        <mat-icon>gavel</mat-icon>
+                        <div>
+                          <strong
+                            >Final Decision: {{ getDecisionLabel(round.recruiterDecision) }}</strong
+                          >
+                          <span class="decision-meta">
+                            By {{ round.decidedByName }} on {{ formatDate(round.decidedAt!) }}
+                          </span>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                  </mat-expansion-panel>
+                  }
+                </mat-accordion>
+                }
+              </div>
+            </mat-tab>
+
+            <!-- History Tab -->
+            <mat-tab label="History">
+              <div class="tab-content">
+                <div class="timeline">
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">event</mat-icon>
+                    <div class="timeline-content">
+                      <strong>Interview Created</strong>
+                      <span>{{ formatDate(interview()!.createdAt) }}</span>
+                    </div>
+                  </div>
+                  @for (round of interview()!.rounds; track round.roundId) {
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">layers</mat-icon>
+                    <div class="timeline-content">
+                      <strong
+                        >Round {{ round.roundNumber }} - {{ getRoundTypeLabel(round.type) }}</strong
+                      >
+                      <span>Scheduled: {{ formatDate(round.scheduledDate) }}</span>
+                      <span>Status: {{ round.status }}</span>
+                    </div>
+                  </div>
+                  @if (round.feedback.length > 0) {
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">feedback</mat-icon>
+                    <div class="timeline-content">
+                      <strong>{{ round.feedback.length }} Feedback(s) Submitted</strong>
+                      @for (fb of round.feedback; track fb.interviewerId) {
+                      <span
+                        >{{ fb.interviewerName }}:
+                        {{ getRecommendationLabel(fb.recommendation) }}</span
+                      >
+                      }
+                    </div>
+                  </div>
+                  } @if (round.recruiterDecision) {
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">gavel</mat-icon>
+                    <div class="timeline-content">
+                      <strong>Decision: {{ getDecisionLabel(round.recruiterDecision) }}</strong>
+                      <span
+                        >By {{ round.decidedByName }} on {{ formatDate(round.decidedAt!) }}</span
+                      >
+                    </div>
+                  </div>
+                  } }
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+      } @else {
+      <mat-card>
+        <mat-card-content>
+          <div class="error-state">
+            <mat-icon>error</mat-icon>
+            <h3>Interview Not Found</h3>
+            <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>

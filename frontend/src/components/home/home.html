@@ -1,22 +1,159 @@
-<div class="home-container">
-  <p class="introduction">
-    Your all-in-one platform to create, manage, and track interviews - effortlessly.
-  </p>
-  <div class="features-section">
-    <p class="list-header">What You Can Do?</p>
-    <div class="features-list">
-      <p>🏢 Company Registration: Get your company onboard in minutes.</p>
-      <p>🗓️ Create Interviews: Set up interview rounds with ease.</p>
-      <p>👥 Add Interviewers: Collaborate with your team for fair evaluations.</p>
-      <p>
-        🔗 Invite Candidates: Share unique interview links - candidates register securely via OTP.
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Interview Organiser</h1>
+      <p class="hero-subtitle">
+        Streamline your interview process with intelligent scheduling, feedback management, and
+        role-based workflows
       </p>
-      <p>✅ Manage Outcomes: Mark candidates as Selected for Next Round or Rejected instantly.</p>
-    </div>
-  </div>
 
-  <p class="description">
-    ⚙️ Built for Teams That Move Fast. No messy spreadsheets. No confusing email chains.
-  </p>
-  <p class="description">Just a clean, organized, and efficient way to run your interviews.</p>
+      @if (!isAuthenticated()) {
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" class="cta-button" (click)="goToLogin()">
+          <mat-icon>login</mat-icon>
+          Sign In
+        </button>
+        <button mat-raised-button color="accent" class="cta-button" (click)="goToRegister()">
+          <mat-icon>person_add</mat-icon>
+          Get Started
+        </button>
+      </div>
+
+      <div class="org-register-link">
+        <p>
+          <span>Are you an organisation?</span>
+          <button mat-button color="primary" (click)="goToOrgRegister()">
+            Register your organisation
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </p>
+      </div>
+      } @else {
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" class="cta-button" (click)="goToDashboard()">
+          <mat-icon>dashboard</mat-icon>
+          Go to Dashboard
+        </button>
+      </div>
+
+      @if (currentUser()) {
+      <p class="welcome-message">
+        Welcome back, <strong>{{ currentUser()?.name }}</strong>
+      </p>
+      } }
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2>Powerful Features</h2>
+      <p>Everything you need to manage your interview process efficiently</p>
+    </div>
+
+    <div class="features-grid">
+      @for (feature of features; track feature.title) {
+      <mat-card class="feature-card">
+        <mat-card-content>
+          <div class="feature-icon">
+            <mat-icon>{{ feature.icon }}</mat-icon>
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+  </section>
+
+  <!-- Roles Section -->
+  <section class="roles-section">
+    <div class="section-header">
+      <h2>Built for Every Role</h2>
+      <p>Tailored experiences for each user type in your organisation</p>
+    </div>
+
+    <div class="roles-grid">
+      @for (role of roles; track role.role) {
+      <mat-card class="role-card">
+        <mat-card-header>
+          <div class="role-icon" [style.background-color]="role.color">
+            <mat-icon>{{ role.icon }}</mat-icon>
+          </div>
+          <mat-card-title>{{ role.title }}</mat-card-title>
+          <mat-card-subtitle>{{ role.description }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="role-features">
+            @for (feature of role.features; track feature) {
+            <li>
+              <mat-icon>check_circle</mat-icon>
+              <span>{{ feature }}</span>
+            </li>
+            }
+          </ul>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works-section">
+    <div class="section-header">
+      <h2>How It Works</h2>
+      <p>Simple workflow to get started</p>
+    </div>
+
+    <div class="steps-container">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Register</h3>
+          <p>Create an account or register your organisation</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Invite Team</h3>
+          <p>Add team members and assign appropriate roles</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Schedule Interviews</h3>
+          <p>Create interviews and assign interviewers</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>Collect Feedback</h3>
+          <p>Gather structured feedback and make decisions</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  @if (!isAuthenticated()) {
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Ready to Transform Your Interview Process?</h2>
+      <p>Join organisations already using Interview Organiser to streamline their hiring</p>
+      <div class="cta-buttons">
+        <button mat-raised-button color="primary" class="large-cta" (click)="goToRegister()">
+          Get Started Free
+        </button>
+        <button mat-stroked-button class="large-cta" (click)="goToLogin()">Sign In</button>
+      </div>
+    </div>
+  </section>
+  }
 </div>

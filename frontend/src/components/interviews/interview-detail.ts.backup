@@ -1,0 +1,1219 @@
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { InterviewService } from '../../services/interview/interview.service';
+import { AuthService } from '../../services/auth/auth.service';
+import { NotificationStore } from '../../stores/notification/notification.store';
+import {
+  Interview,
+  InterviewRound,
+  InterviewStatus,
+  InterviewType,
+  RoundStatus,
+  RoundDecision,
+  FeedbackRecommendation,
+  Feedback,
+} from '../../models/interview.model';
+import { UserRole } from '../../models/user.model';
+
+/**
+ * Interview Detail Component
+ *
+ * Displays comprehensive interview details with tabbed interface.
+ * Supports feedback submission for interviewers and decision making for recruiters.
+ */
+@Component({
+  selector: 'app-interview-detail',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatTabsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSliderModule,
+    MatDividerModule,
+    MatTooltipModule,
+    MatExpansionModule,
+  ],
+  template: `
+    <div class="detail-container">
+      @if (isLoading()) {
+      <mat-card class="loading-card">
+        <mat-card-content>
+          <div class="loading">
+            <mat-icon>hourglass_empty</mat-icon>
+            <p>Loading interview details...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      } @else if (interview()) {
+      <mat-card>
+        <mat-card-header>
+          <div class="header-content">
+            <div class="title-section">
+              <mat-card-title>{{ interview()!.jobPosition }}</mat-card-title>
+              <mat-card-subtitle> Candidate: {{ interview()!.candidateEmail }} </mat-card-subtitle>
+            </div>
+            <div class="status-actions">
+              <mat-chip [class]="'status-' + interview()!.overallStatus.toLowerCase()">
+                {{ getStatusLabel(interview()!.overallStatus) }}
+              </mat-chip>
+              @if (canCancelInterview()) {
+              <button mat-button color="warn" (click)="cancelInterview()">
+                <mat-icon>cancel</mat-icon>
+                Cancel
+              </button>
+              }
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-tab-group>
+            <!-- Overview Tab -->
+            <mat-tab label="Overview">
+              <div class="tab-content">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="label">Organisation</span>
+                    <span class="value">{{ interview()!.organisationName || 'N/A' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Created By</span>
+                    <span class="value">{{ interview()!.createdByName || 'N/A' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Total Rounds</span>
+                    <span class="value">{{
+                      interview()!.totalRounds || interview()!.rounds.length
+                    }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Current Round</span>
+                    <span class="value">{{ interview()!.currentRoundNumber || 'N/A' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Candidate Status</span>
+                    <span class="value">
+                      <mat-chip class="candidate-status">
+                        {{ getCandidateStatusLabel(interview()!.candidateStatus) }}
+                      </mat-chip>
+                    </span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Created At</span>
+                    <span class="value">{{ formatDate(interview()!.createdAt) }}</span>
+                  </div>
+                </div>
+
+                @if (interview()!.jobDescription) {
+                <mat-divider class="section-divider"></mat-divider>
+                <div class="description-section">
+                  <h3>Job Description</h3>
+                  <p>{{ interview()!.jobDescription }}</p>
+                </div>
+                }
+              </div>
+            </mat-tab>
+
+            <!-- Rounds Tab -->
+            <mat-tab label="Interview Rounds">
+              <div class="tab-content">
+                @if (interview()!.rounds.length === 0) {
+                <div class="empty-rounds">
+                  <mat-icon>event_busy</mat-icon>
+                  <p>No rounds scheduled yet</p>
+                </div>
+                } @else {
+                <mat-accordion>
+                  @for (round of interview()!.rounds; track round.roundId) {
+                  <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        <div class="round-title">
+                          <span class="round-number">Round {{ round.roundNumber }}</span>
+                          <span class="round-type">{{ getRoundTypeLabel(round.type) }}</span>
+                          <mat-chip [class]="'round-status-' + round.status.toLowerCase()">
+                            {{ round.status }}
+                          </mat-chip>
+                        </div>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="round-details">
+                      <div class="round-info-grid">
+                        <div class="round-info-item">
+                          <mat-icon>event</mat-icon>
+                          <div>
+                            <span class="info-label">Scheduled</span>
+                            <span class="info-value">{{ formatDate(round.scheduledDate) }}</span>
+                          </div>
+                        </div>
+                        <div class="round-info-item">
+                          <mat-icon>schedule</mat-icon>
+                          <div>
+                            <span class="info-label">Duration</span>
+                            <span class="info-value">{{ round.durationMinutes }} minutes</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="interviewers-section">
+                        <h4>Interviewers</h4>
+                        <div class="interviewers-list">
+                          @for (interviewer of round.interviewers; track interviewer.id) {
+                          <mat-chip class="interviewer-chip">
+                            <mat-icon>person</mat-icon>
+                            {{ interviewer.name }}
+                            @if (interviewer.feedbackSubmitted) {
+                            <mat-icon class="feedback-icon">check_circle</mat-icon>
+                            }
+                          </mat-chip>
+                          }
+                        </div>
+                      </div>
+
+                      @if (canSubmitFeedback(round)) {
+                      <div class="feedback-form-section">
+                        <h4>Submit Feedback</h4>
+                        <form
+                          [formGroup]="getFeedbackForm(round.roundId)!"
+                          (ngSubmit)="submitFeedback(round.roundId)"
+                        >
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Recommendation</mat-label>
+                            <mat-select formControlName="recommendation">
+                              @for (rec of recommendations; track rec.value) {
+                              <mat-option [value]="rec.value">{{ rec.label }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Rating (1-10)</mat-label>
+                            <input
+                              matInput
+                              type="number"
+                              formControlName="rating"
+                              min="1"
+                              max="10"
+                            />
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Comments</mat-label>
+                            <textarea matInput formControlName="comments" rows="4"></textarea>
+                          </mat-form-field>
+
+                          <div class="chips-section">
+                            <h5>Strengths</h5>
+                            <div class="chip-inputs">
+                              <mat-form-field appearance="outline" class="chip-input">
+                                <mat-label>Add strength</mat-label>
+                                <input
+                                  matInput
+                                  #strengthInput
+                                  (keyup.enter)="
+                                    addStrength(round.roundId, strengthInput.value);
+                                    strengthInput.value = ''
+                                  "
+                                />
+                              </mat-form-field>
+                              <div class="chips-display">
+                                @for (strength of getStrengths(round.roundId); track $index; let i =
+                                $index) {
+                                <mat-chip class="strength-chip">
+                                  {{ strength }}
+                                  <button matChipRemove (click)="removeStrength(round.roundId, i)">
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                </mat-chip>
+                                }
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="chips-section">
+                            <h5>Areas for Improvement</h5>
+                            <div class="chip-inputs">
+                              <mat-form-field appearance="outline" class="chip-input">
+                                <mat-label>Add improvement</mat-label>
+                                <input
+                                  matInput
+                                  #improvementInput
+                                  (keyup.enter)="
+                                    addImprovement(round.roundId, improvementInput.value);
+                                    improvementInput.value = ''
+                                  "
+                                />
+                              </mat-form-field>
+                              <div class="chips-display">
+                                @for (improvement of getImprovements(round.roundId); track $index;
+                                let i = $index) {
+                                <mat-chip class="improvement-chip">
+                                  {{ improvement }}
+                                  <button
+                                    matChipRemove
+                                    (click)="removeImprovement(round.roundId, i)"
+                                  >
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                </mat-chip>
+                                }
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            type="submit"
+                            [disabled]="
+                              !getFeedbackForm(round.roundId)!.valid || isSubmittingFeedback()
+                            "
+                          >
+                            Submit Feedback
+                          </button>
+                        </form>
+                      </div>
+                      } @if (round.feedback && round.feedback.length > 0) {
+                      <div class="feedback-section">
+                        <h4>Feedback Received</h4>
+                        @for (feedback of round.feedback; track feedback.interviewerId) {
+                        <div class="feedback-card">
+                          <div class="feedback-header">
+                            <strong>{{ feedback.interviewerName || 'Anonymous' }}</strong>
+                            <mat-chip [class]="'rec-' + feedback.recommendation.toLowerCase()">
+                              {{ getRecommendationLabel(feedback.recommendation) }}
+                            </mat-chip>
+                          </div>
+                          <div class="feedback-rating">
+                            <span>Rating: {{ feedback.rating }}/10</span>
+                            <span class="feedback-date">{{
+                              formatDate(feedback.submittedAt)
+                            }}</span>
+                          </div>
+                          <p class="feedback-comments">{{ feedback.comments }}</p>
+                          @if (feedback.strengths && feedback.strengths.length > 0) {
+                          <div class="feedback-chips">
+                            <span class="chips-label">Strengths:</span>
+                            @for (strength of feedback.strengths; track $index) {
+                            <mat-chip class="strength-chip">{{ strength }}</mat-chip>
+                            }
+                          </div>
+                          } @if (feedback.improvements && feedback.improvements.length > 0) {
+                          <div class="feedback-chips">
+                            <span class="chips-label">Improvements:</span>
+                            @for (improvement of feedback.improvements; track $index) {
+                            <mat-chip class="improvement-chip">{{ improvement }}</mat-chip>
+                            }
+                          </div>
+                          }
+                        </div>
+                        }
+                      </div>
+                      } @if (canMakeDecision(round)) {
+                      <div class="decision-section">
+                        <h4>Make Decision</h4>
+                        @if (round.autoRecommendation) {
+                        <div class="auto-recommendation">
+                          <mat-icon>info</mat-icon>
+                          <span
+                            >System Recommendation:
+                            <strong>{{
+                              getRecommendationLabel(round.autoRecommendation)
+                            }}</strong></span
+                          >
+                        </div>
+                        }
+                        <div class="decision-buttons">
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="
+                              makeDecision(round.roundId, RoundDecision.SELECT_FOR_NEXT_ROUND)
+                            "
+                          >
+                            <mat-icon>arrow_forward</mat-icon>
+                            Select for Next Round
+                          </button>
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="makeDecision(round.roundId, RoundDecision.SELECTED)"
+                          >
+                            <mat-icon>check_circle</mat-icon>
+                            Select (Final)
+                          </button>
+                          <button
+                            mat-raised-button
+                            color="warn"
+                            (click)="makeDecision(round.roundId, RoundDecision.REJECTED)"
+                          >
+                            <mat-icon>cancel</mat-icon>
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                      } @if (round.recruiterDecision) {
+                      <div class="final-decision">
+                        <mat-icon>gavel</mat-icon>
+                        <div>
+                          <strong
+                            >Final Decision: {{ getDecisionLabel(round.recruiterDecision) }}</strong
+                          >
+                          <span class="decision-meta">
+                            By {{ round.decidedByName }} on {{ formatDate(round.decidedAt!) }}
+                          </span>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                  </mat-expansion-panel>
+                  }
+                </mat-accordion>
+                }
+              </div>
+            </mat-tab>
+
+            <!-- History Tab -->
+            <mat-tab label="History">
+              <div class="tab-content">
+                <div class="timeline">
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">event</mat-icon>
+                    <div class="timeline-content">
+                      <strong>Interview Created</strong>
+                      <span>{{ formatDate(interview()!.createdAt) }}</span>
+                    </div>
+                  </div>
+                  @for (round of interview()!.rounds; track round.roundId) {
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">layers</mat-icon>
+                    <div class="timeline-content">
+                      <strong
+                        >Round {{ round.roundNumber }} - {{ getRoundTypeLabel(round.type) }}</strong
+                      >
+                      <span>Scheduled: {{ formatDate(round.scheduledDate) }}</span>
+                      <span>Status: {{ round.status }}</span>
+                    </div>
+                  </div>
+                  @if (round.feedback.length > 0) {
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">feedback</mat-icon>
+                    <div class="timeline-content">
+                      <strong>{{ round.feedback.length }} Feedback(s) Submitted</strong>
+                      @for (fb of round.feedback; track fb.interviewerId) {
+                      <span
+                        >{{ fb.interviewerName }}:
+                        {{ getRecommendationLabel(fb.recommendation) }}</span
+                      >
+                      }
+                    </div>
+                  </div>
+                  } @if (round.recruiterDecision) {
+                  <div class="timeline-item">
+                    <mat-icon class="timeline-icon">gavel</mat-icon>
+                    <div class="timeline-content">
+                      <strong>Decision: {{ getDecisionLabel(round.recruiterDecision) }}</strong>
+                      <span
+                        >By {{ round.decidedByName }} on {{ formatDate(round.decidedAt!) }}</span
+                      >
+                    </div>
+                  </div>
+                  } }
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+      } @else {
+      <mat-card>
+        <mat-card-content>
+          <div class="error-state">
+            <mat-icon>error</mat-icon>
+            <h3>Interview Not Found</h3>
+            <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+  `,
+  styles: [
+    `
+      .detail-container {
+        padding: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .loading-card {
+        .loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 20px;
+          color: #9e9e9e;
+
+          mat-icon {
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+          }
+        }
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        margin-bottom: 16px;
+      }
+
+      .title-section {
+        mat-card-title {
+          font-size: 2rem;
+          margin-bottom: 8px;
+        }
+
+        mat-card-subtitle {
+          font-size: 1.125rem;
+        }
+      }
+
+      .status-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+      }
+
+      mat-chip {
+        font-weight: 500;
+
+        &.status-scheduled {
+          background-color: #e3f2fd;
+          color: #1976d2;
+        }
+
+        &.status-in_progress {
+          background-color: #fff3e0;
+          color: #f57c00;
+        }
+
+        &.status-completed {
+          background-color: #e8f5e9;
+          color: #388e3c;
+        }
+
+        &.status-cancelled {
+          background-color: #ffebee;
+          color: #d32f2f;
+        }
+
+        &.status-rescheduled {
+          background-color: #f3e5f5;
+          color: #7b1fa2;
+        }
+
+        &.candidate-status {
+          background-color: #e0f2f1;
+          color: #00796b;
+        }
+      }
+
+      .tab-content {
+        padding: 24px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .label {
+          font-size: 0.875rem;
+          color: #616161;
+          font-weight: 500;
+        }
+
+        .value {
+          font-size: 1rem;
+          color: #212121;
+        }
+      }
+
+      .section-divider {
+        margin: 24px 0;
+      }
+
+      .description-section {
+        h3 {
+          margin: 0 0 12px 0;
+          color: #2196f3;
+        }
+
+        p {
+          margin: 0;
+          line-height: 1.6;
+          color: #424242;
+        }
+      }
+
+      .empty-rounds {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+        color: #9e9e9e;
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          margin-bottom: 12px;
+        }
+      }
+
+      mat-expansion-panel {
+        margin-bottom: 16px;
+      }
+
+      .round-title {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+
+        .round-number {
+          font-weight: 600;
+          color: #212121;
+        }
+
+        .round-type {
+          color: #616161;
+        }
+
+        mat-chip {
+          margin-left: auto;
+        }
+      }
+
+      .round-status-scheduled {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      .round-status-in_progress {
+        background-color: #fff3e0;
+        color: #f57c00;
+      }
+
+      .round-status-completed {
+        background-color: #e8f5e9;
+        color: #388e3c;
+      }
+
+      .round-status-cancelled {
+        background-color: #ffebee;
+        color: #d32f2f;
+      }
+
+      .round-details {
+        padding: 16px 0;
+      }
+
+      .round-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .round-info-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+
+        mat-icon {
+          color: #2196f3;
+        }
+
+        div {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .info-label {
+          font-size: 0.75rem;
+          color: #616161;
+        }
+
+        .info-value {
+          font-size: 0.875rem;
+          color: #212121;
+          font-weight: 500;
+        }
+      }
+
+      .interviewers-section {
+        margin-bottom: 24px;
+
+        h4 {
+          margin: 0 0 12px 0;
+          color: #424242;
+        }
+      }
+
+      .interviewers-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .interviewer-chip {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background-color: #e8f5e9;
+        color: #388e3c;
+
+        .feedback-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: #4caf50;
+        }
+      }
+
+      .feedback-form-section,
+      .feedback-section,
+      .decision-section {
+        margin-top: 24px;
+        padding: 16px;
+        background-color: #fafafa;
+        border-radius: 8px;
+
+        h4 {
+          margin: 0 0 16px 0;
+          color: #2196f3;
+        }
+      }
+
+      .full-width {
+        width: 100%;
+        margin-bottom: 16px;
+      }
+
+      .chips-section {
+        margin-bottom: 16px;
+
+        h5 {
+          margin: 0 0 8px 0;
+          font-size: 0.875rem;
+          color: #616161;
+        }
+      }
+
+      .chip-inputs {
+        .chip-input {
+          width: 100%;
+          margin-bottom: 12px;
+        }
+
+        .chips-display {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+      }
+
+      .strength-chip {
+        background-color: #e8f5e9;
+        color: #388e3c;
+      }
+
+      .improvement-chip {
+        background-color: #fff3e0;
+        color: #f57c00;
+      }
+
+      .feedback-card {
+        margin-bottom: 16px;
+        padding: 16px;
+        background-color: white;
+        border-radius: 8px;
+        border-left: 4px solid #2196f3;
+      }
+
+      .feedback-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+
+        strong {
+          color: #212121;
+        }
+      }
+
+      .rec-strong_hire {
+        background-color: #c8e6c9;
+        color: #2e7d32;
+      }
+
+      .rec-hire {
+        background-color: #e8f5e9;
+        color: #388e3c;
+      }
+
+      .rec-hold {
+        background-color: #fff3e0;
+        color: #f57c00;
+      }
+
+      .rec-no_hire {
+        background-color: #ffcdd2;
+        color: #c62828;
+      }
+
+      .feedback-rating {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.875rem;
+        color: #616161;
+      }
+
+      .feedback-comments {
+        margin: 12px 0;
+        line-height: 1.6;
+        color: #424242;
+      }
+
+      .feedback-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+        align-items: center;
+
+        .chips-label {
+          font-size: 0.875rem;
+          color: #616161;
+          font-weight: 500;
+        }
+      }
+
+      .auto-recommendation {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        background-color: #e3f2fd;
+        border-radius: 4px;
+        margin-bottom: 16px;
+
+        mat-icon {
+          color: #1976d2;
+        }
+      }
+
+      .decision-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+      }
+
+      .final-decision {
+        display: flex;
+        gap: 12px;
+        padding: 16px;
+        background-color: #e8f5e9;
+        border-radius: 8px;
+        margin-top: 16px;
+
+        mat-icon {
+          color: #388e3c;
+        }
+
+        div {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .decision-meta {
+          font-size: 0.875rem;
+          color: #616161;
+        }
+      }
+
+      .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .timeline-item {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        background-color: #fafafa;
+        border-radius: 8px;
+
+        .timeline-icon {
+          color: #2196f3;
+        }
+
+        .timeline-content {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex: 1;
+
+          strong {
+            color: #212121;
+          }
+
+          span {
+            font-size: 0.875rem;
+            color: #616161;
+          }
+        }
+      }
+
+      .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 60px 20px;
+
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          color: #f44336;
+          margin-bottom: 16px;
+        }
+
+        h3 {
+          margin: 0 0 24px 0;
+          color: #424242;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .detail-container {
+          padding: 16px;
+        }
+
+        .header-content {
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .decision-buttons {
+          flex-direction: column;
+
+          button {
+            width: 100%;
+          }
+        }
+      }
+    `,
+  ],
+})
+export class InterviewDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private interviewService = inject(InterviewService);
+  private authService = inject(AuthService);
+  private notificationStore = inject(NotificationStore);
+
+  protected interview = signal<Interview | null>(null);
+  protected isLoading = signal(false);
+  protected isSubmittingFeedback = signal(false);
+  protected feedbackForms = new Map<string, FormGroup>();
+  protected strengthsArrays = new Map<string, string[]>();
+  protected improvementsArrays = new Map<string, string[]>();
+
+  protected RoundDecision = RoundDecision;
+
+  protected recommendations = [
+    { value: FeedbackRecommendation.STRONG_HIRE, label: 'Strong Hire' },
+    { value: FeedbackRecommendation.HIRE, label: 'Hire' },
+    { value: FeedbackRecommendation.HOLD, label: 'Hold' },
+    { value: FeedbackRecommendation.NO_HIRE, label: 'No Hire' },
+  ];
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadInterview(id);
+    }
+  }
+
+  private async loadInterview(id: string): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      const interview = await this.interviewService.getById(id).toPromise();
+      if (interview) {
+        this.interview.set(interview);
+        this.initializeFeedbackForms(interview);
+      }
+    } catch (error) {
+      this.notificationStore.error('Failed to load interview details');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  private initializeFeedbackForms(interview: Interview): void {
+    interview.rounds.forEach((round) => {
+      if (this.canSubmitFeedback(round)) {
+        const form = this.fb.group({
+          recommendation: ['', Validators.required],
+          rating: [5, [Validators.required, Validators.min(1), Validators.max(10)]],
+          comments: ['', Validators.required],
+        });
+        this.feedbackForms.set(round.roundId, form);
+        this.strengthsArrays.set(round.roundId, []);
+        this.improvementsArrays.set(round.roundId, []);
+      }
+    });
+  }
+
+  protected canSubmitFeedback(round: InterviewRound): boolean {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser || currentUser.role !== UserRole.INTERVIEWER) return false;
+
+    const isAssigned = round.interviewerIds.includes(currentUser.id);
+    const alreadySubmitted = round.feedback?.some((f) => f.interviewerId === currentUser.id);
+
+    return isAssigned && !alreadySubmitted && round.status !== RoundStatus.CANCELLED;
+  }
+
+  protected canMakeDecision(round: InterviewRound): boolean {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser || currentUser.role !== UserRole.RECRUITER) return false;
+
+    const hasFeedback = round.feedback && round.feedback.length > 0;
+    const noDecisionMade = !round.recruiterDecision;
+
+    return hasFeedback && noDecisionMade && round.status !== RoundStatus.CANCELLED;
+  }
+
+  protected canCancelInterview(): boolean {
+    const currentUser = this.authService.currentUser();
+    const interview = this.interview();
+    if (!currentUser || !interview || currentUser.role !== UserRole.RECRUITER) return false;
+
+    return (
+      interview.overallStatus !== InterviewStatus.CANCELLED &&
+      interview.overallStatus !== InterviewStatus.COMPLETED
+    );
+  }
+
+  protected getFeedbackForm(roundId: string): FormGroup | undefined {
+    return this.feedbackForms.get(roundId);
+  }
+
+  protected getStrengths(roundId: string): string[] {
+    return this.strengthsArrays.get(roundId) || [];
+  }
+
+  protected getImprovements(roundId: string): string[] {
+    return this.improvementsArrays.get(roundId) || [];
+  }
+
+  protected addStrength(roundId: string, value: string): void {
+    if (value.trim()) {
+      const strengths = this.strengthsArrays.get(roundId) || [];
+      strengths.push(value.trim());
+      this.strengthsArrays.set(roundId, strengths);
+    }
+  }
+
+  protected removeStrength(roundId: string, index: number): void {
+    const strengths = this.strengthsArrays.get(roundId) || [];
+    strengths.splice(index, 1);
+    this.strengthsArrays.set(roundId, strengths);
+  }
+
+  protected addImprovement(roundId: string, value: string): void {
+    if (value.trim()) {
+      const improvements = this.improvementsArrays.get(roundId) || [];
+      improvements.push(value.trim());
+      this.improvementsArrays.set(roundId, improvements);
+    }
+  }
+
+  protected removeImprovement(roundId: string, index: number): void {
+    const improvements = this.improvementsArrays.get(roundId) || [];
+    improvements.splice(index, 1);
+    this.improvementsArrays.set(roundId, improvements);
+  }
+
+  protected async submitFeedback(roundId: string): Promise<void> {
+    const form = this.feedbackForms.get(roundId);
+    if (!form || !form.valid || !this.interview()) return;
+
+    this.isSubmittingFeedback.set(true);
+    try {
+      const formValue = form.value;
+      const feedbackDto = {
+        recommendation: formValue.recommendation,
+        rating: formValue.rating,
+        comments: formValue.comments,
+        strengths: this.strengthsArrays.get(roundId),
+        improvements: this.improvementsArrays.get(roundId),
+      };
+
+      await this.interviewService
+        .submitFeedback(this.interview()!.id, roundId, feedbackDto)
+        .toPromise();
+
+      this.notificationStore.success('Feedback submitted successfully');
+      this.loadInterview(this.interview()!.id);
+    } catch (error) {
+      this.notificationStore.error('Failed to submit feedback');
+    } finally {
+      this.isSubmittingFeedback.set(false);
+    }
+  }
+
+  protected async makeDecision(roundId: string, decision: RoundDecision): Promise<void> {
+    if (!this.interview()) return;
+
+    const confirmed = confirm(
+      `Are you sure you want to make this decision: ${this.getDecisionLabel(decision)}?`
+    );
+    if (!confirmed) return;
+
+    try {
+      await this.interviewService
+        .submitDecision(this.interview()!.id, roundId, { decision })
+        .toPromise();
+
+      this.notificationStore.success('Decision recorded successfully');
+      this.loadInterview(this.interview()!.id);
+    } catch (error) {
+      this.notificationStore.error('Failed to record decision');
+    }
+  }
+
+  protected async cancelInterview(): Promise<void> {
+    if (!this.interview()) return;
+
+    const reason = prompt('Please provide a reason for cancellation:');
+    if (!reason) return;
+
+    try {
+      await this.interviewService.cancel(this.interview()!.id, reason).toPromise();
+      this.notificationStore.success('Interview cancelled successfully');
+      this.loadInterview(this.interview()!.id);
+    } catch (error) {
+      this.notificationStore.error('Failed to cancel interview');
+    }
+  }
+
+  protected goBack(): void {
+    this.router.navigate(['/interviews']);
+  }
+
+  protected getStatusLabel(status: InterviewStatus): string {
+    return status.replace(/_/g, ' ');
+  }
+
+  protected getCandidateStatusLabel(status: string): string {
+    return status.replace(/_/g, ' ');
+  }
+
+  protected getRoundTypeLabel(type: InterviewType): string {
+    const labels = {
+      [InterviewType.TECHNICAL]: 'Technical',
+      [InterviewType.HR]: 'HR',
+      [InterviewType.CULTURAL_FIT]: 'Cultural Fit',
+      [InterviewType.MANAGERIAL]: 'Managerial',
+    };
+    return labels[type] || type;
+  }
+
+  protected getRecommendationLabel(rec: FeedbackRecommendation): string {
+    const labels = {
+      [FeedbackRecommendation.STRONG_HIRE]: 'Strong Hire',
+      [FeedbackRecommendation.HIRE]: 'Hire',
+      [FeedbackRecommendation.HOLD]: 'Hold',
+      [FeedbackRecommendation.NO_HIRE]: 'No Hire',
+    };
+    return labels[rec] || rec;
+  }
+
+  protected getDecisionLabel(decision: RoundDecision): string {
+    const labels = {
+      [RoundDecision.SELECT_FOR_NEXT_ROUND]: 'Select for Next Round',
+      [RoundDecision.SELECTED]: 'Selected (Final)',
+      [RoundDecision.REJECTED]: 'Rejected',
+    };
+    return labels[decision] || decision;
+  }
+
+  protected formatDate(date: Date | string): string {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+}

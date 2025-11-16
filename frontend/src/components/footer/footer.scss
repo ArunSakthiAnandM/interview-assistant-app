@@ -1,13 +1,129 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
-.footer-container {
-  background-color: $neutral-50;
-  padding: 10px 0;
-  text-align: center;
-  border-top: 1px solid $border-light;
+.app-footer {
+  background: $background-secondary;
+  border-top: 1px solid $border-color;
+  margin-top: auto;
+  padding: $spacing-3xl 0 $spacing-xl;
+}
 
-  .footer {
-    font-size: 14px;
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-2xl;
+  margin-bottom: $spacing-2xl;
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+    gap: $spacing-xl;
+  }
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.footer-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $primary-700;
+  margin: 0 0 $spacing-sm 0;
+}
+
+.footer-description {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer-heading {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  margin: 0 0 $spacing-sm 0;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  li {
+    margin: 0;
+  }
+
+  a {
     color: $text-secondary;
+    text-decoration: none;
+    font-size: $font-size-sm;
+    transition: color $transition-base;
+    display: inline-block;
+
+    &:hover {
+      color: $primary-600;
+    }
+  }
+}
+
+.footer-divider {
+  margin: $spacing-xl 0;
+  background-color: $border-color;
+}
+
+.footer-bottom {
+  @include flex-row-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+
+  @include responsive(mobile) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.copyright {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.social-links {
+  @include flex-row;
+  gap: $spacing-sm;
+}
+
+.social-link {
+  @include flex-center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $background-tertiary;
+  color: $text-secondary;
+  transition: all $transition-base;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: $primary-600;
+    color: white;
+    transform: translateY(-2px);
   }
 }

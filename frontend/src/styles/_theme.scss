@@ -1,0 +1,291 @@
+/**
+ * Angular Material Theme Configuration
+ * Azure/Blue themed minimalist design
+ */
+
+@use '@angular/material' as mat;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// ========================================
+// Custom Color Palettes
+// ========================================
+
+// Define primary palette (Blue)
+$primary-palette: (
+  50: #e3f2fd,
+  100: #bbdefb,
+  200: #90caf9,
+  300: #64b5f6,
+  400: #42a5f5,
+  500: #2196f3,
+  600: #1e88e5,
+  700: #1976d2,
+  800: #1565c0,
+  900: #0d47a1,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  ),
+);
+
+// Define accent palette (Azure/Cyan)
+$accent-palette: (
+  50: #e0f7fa,
+  100: #b2ebf2,
+  200: #80deea,
+  300: #4dd0e1,
+  400: #26c6da,
+  500: #00bcd4,
+  600: #00acc1,
+  700: #0097a7,
+  800: #00838f,
+  900: #006064,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  ),
+);
+
+// Define warn palette (Red)
+$warn-palette: (
+  50: #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  500: #f44336,
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  900: #b71c1c,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  ),
+);
+
+// ========================================
+// Light Theme
+// ========================================
+
+$light-primary: mat.m2-define-palette($primary-palette, 500, 300, 700);
+$light-accent: mat.m2-define-palette($accent-palette, 500, 300, 700);
+$light-warn: mat.m2-define-palette($warn-palette, 500, 300, 700);
+
+$light-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $light-primary,
+      accent: $light-accent,
+      warn: $light-warn,
+    ),
+    typography:
+      mat.m2-define-typography-config(
+        $font-family: 'Roboto, "Helvetica Neue", sans-serif',
+      ),
+    density: 0,
+  )
+);
+
+// ========================================
+// Apply Theme
+// ========================================
+
+// Apply the light theme by default
+@include mat.all-component-themes($light-theme);
+
+// ========================================
+// Custom Material Component Overrides
+// ========================================
+
+// Buttons - Minimalist styling
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-stroked-button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+
+  &:not(:disabled) {
+    box-shadow: none !important;
+  }
+}
+
+.mat-mdc-raised-button,
+.mat-mdc-flat-button {
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+// Cards - Minimalist with subtle shadows
+.mat-mdc-card {
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+}
+
+// Form fields - Clean and minimal
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    border-radius: 4px !important;
+  }
+}
+
+// Chips - Rounded with subtle colors
+.mat-mdc-chip {
+  border-radius: 16px !important;
+  font-weight: 500 !important;
+}
+
+// Tables - Clean borders and hover states
+.mat-mdc-table {
+  border-radius: 8px !important;
+  overflow: hidden;
+
+  .mat-mdc-header-row {
+    background-color: #fafafa;
+  }
+
+  .mat-mdc-row {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+// Dialogs - Rounded corners
+.mat-mdc-dialog-container {
+  border-radius: 12px !important;
+}
+
+// Tabs - Clean minimal style
+.mat-mdc-tab-group {
+  .mat-mdc-tab-labels {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .mat-mdc-tab {
+    font-weight: 500 !important;
+  }
+}
+
+// Stepper - Clean horizontal layout
+.mat-stepper-horizontal {
+  .mat-step-header {
+    padding: 16px 24px !important;
+
+    .mat-step-icon {
+      border-radius: 50% !important;
+    }
+  }
+}
+
+// Snackbar - Rounded with shadows
+.mat-mdc-snack-bar-container {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+// Tooltips - Minimal styling
+.mat-mdc-tooltip {
+  font-size: 0.875rem !important;
+  border-radius: 4px !important;
+}
+
+// Menu - Clean dropdown
+.mat-mdc-menu-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+// Badges - Small and rounded
+.mat-badge-content {
+  border-radius: 10px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+// Progress bars - Rounded
+.mat-mdc-progress-bar {
+  border-radius: 4px !important;
+}
+
+// Paginator - Clean styling
+.mat-mdc-paginator {
+  border-top: 1px solid #e0e0e0;
+  border-radius: 0 0 8px 8px !important;
+}
+
+// Expansion panels - Rounded
+.mat-expansion-panel {
+  border-radius: 8px !important;
+  margin-bottom: 8px !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+
+  &:not(.mat-expanded) {
+    &:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+}
+
+// Slide toggle - Clean minimal design
+.mat-mdc-slide-toggle {
+  .mdc-switch {
+    .mdc-switch__track {
+      border-radius: 12px !important;
+    }
+
+    .mdc-switch__handle {
+      border-radius: 50% !important;
+    }
+  }
+}
+
+// Checkbox - Rounded
+.mat-mdc-checkbox {
+  .mdc-checkbox {
+    border-radius: 4px !important;
+  }
+}
+
+// Radio button - Clean styling
+.mat-mdc-radio-button {
+  .mdc-radio {
+    .mdc-radio__outer-circle {
+      border-width: 2px !important;
+    }
+  }
+}

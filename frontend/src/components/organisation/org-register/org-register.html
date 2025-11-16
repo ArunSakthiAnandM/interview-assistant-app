@@ -1,0 +1,367 @@
+<div class="register-container">
+      <mat-card class="register-card">
+        <mat-card-header>
+          <mat-card-title>Register Your Organisation</mat-card-title>
+          <mat-card-subtitle
+            >Complete the following steps to create your organisation profile</mat-card-subtitle
+          >
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-stepper [linear]="true" #stepper>
+            <!-- Step 1: Basic Information -->
+            <mat-step [stepControl]="basicInfoForm">
+              <form [formGroup]="basicInfoForm">
+                <ng-template matStepLabel>Basic Information</ng-template>
+
+                <div class="form-section">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Organisation Name</mat-label>
+                    <input matInput formControlName="name" placeholder="Enter organisation name" />
+                    @if (basicInfoForm.get('name')?.hasError('required')) {
+                    <mat-error>Organisation name is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Registration Number</mat-label>
+                    <input
+                      matInput
+                      formControlName="registrationNumber"
+                      placeholder="Enter registration number"
+                    />
+                    @if (basicInfoForm.get('registrationNumber')?.hasError('required')) {
+                    <mat-error>Registration number is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Industry</mat-label>
+                    <input
+                      matInput
+                      formControlName="industry"
+                      placeholder="e.g., Information Technology"
+                    />
+                    @if (basicInfoForm.get('industry')?.hasError('required')) {
+                    <mat-error>Industry is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Website URL</mat-label>
+                    <input
+                      matInput
+                      formControlName="websiteUrl"
+                      placeholder="https://www.example.com"
+                    />
+                    @if (basicInfoForm.get('websiteUrl')?.hasError('pattern')) {
+                    <mat-error>Please enter a valid URL</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="description"
+                      rows="4"
+                      placeholder="Describe your organisation"
+                    ></textarea>
+                  </mat-form-field>
+                </div>
+
+                <div class="step-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    matStepperNext
+                    [disabled]="!basicInfoForm.valid"
+                  >
+                    Next
+                  </button>
+                </div>
+              </form>
+            </mat-step>
+
+            <!-- Step 2: Contact Details -->
+            <mat-step [stepControl]="contactForm">
+              <form [formGroup]="contactForm">
+                <ng-template matStepLabel>Contact Details</ng-template>
+
+                <div class="form-section">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Email</mat-label>
+                    <input
+                      matInput
+                      type="email"
+                      formControlName="email"
+                      placeholder="contact@example.com"
+                    />
+                    @if (contactForm.get('email')?.hasError('required')) {
+                    <mat-error>Email is required</mat-error>
+                    } @if (contactForm.get('email')?.hasError('email')) {
+                    <mat-error>Please enter a valid email</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput formControlName="phoneNumber" placeholder="+1234567890" />
+                    @if (contactForm.get('phoneNumber')?.hasError('required')) {
+                    <mat-error>Phone number is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Address</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="address"
+                      rows="3"
+                      placeholder="Enter complete address"
+                    ></textarea>
+                    @if (contactForm.get('address')?.hasError('required')) {
+                    <mat-error>Address is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>City</mat-label>
+                    <input matInput formControlName="city" placeholder="Enter city" />
+                    @if (contactForm.get('city')?.hasError('required')) {
+                    <mat-error>City is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>State/Province</mat-label>
+                      <input matInput formControlName="state" placeholder="Enter state" />
+                      @if (contactForm.get('state')?.hasError('required')) {
+                      <mat-error>State is required</mat-error>
+                      }
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Postal Code</mat-label>
+                      <input
+                        matInput
+                        formControlName="postalCode"
+                        placeholder="Enter postal code"
+                      />
+                      @if (contactForm.get('postalCode')?.hasError('required')) {
+                      <mat-error>Postal code is required</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Country</mat-label>
+                    <input matInput formControlName="country" placeholder="Enter country" />
+                    @if (contactForm.get('country')?.hasError('required')) {
+                    <mat-error>Country is required</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="step-actions">
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    matStepperNext
+                    [disabled]="!contactForm.valid"
+                  >
+                    Next
+                  </button>
+                </div>
+              </form>
+            </mat-step>
+
+            <!-- Step 3: Documents -->
+            <mat-step>
+              <ng-template matStepLabel>Upload Documents</ng-template>
+
+              <div class="form-section">
+                <p class="section-description">
+                  Please upload required documents for verification. All documents should be clear
+                  and valid.
+                </p>
+
+                <div class="document-upload">
+                  <h4>Registration Certificate</h4>
+                  <input
+                    type="file"
+                    #regCertInput
+                    (change)="onFileSelected($event, 'REGISTRATION')"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    style="display: none"
+                  />
+                  <button mat-stroked-button (click)="regCertInput.click()">
+                    <mat-icon>upload_file</mat-icon>
+                    {{ uploadedFiles()['REGISTRATION'] ? 'Change File' : 'Upload File' }}
+                  </button>
+                  @if (uploadedFiles()['REGISTRATION']) {
+                  <div class="file-info">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>{{ uploadedFiles()['REGISTRATION'].name }}</span>
+                  </div>
+                  }
+                </div>
+
+                <div class="document-upload">
+                  <h4>Tax ID Document</h4>
+                  <input
+                    type="file"
+                    #taxIdInput
+                    (change)="onFileSelected($event, 'TAX_ID')"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    style="display: none"
+                  />
+                  <button mat-stroked-button (click)="taxIdInput.click()">
+                    <mat-icon>upload_file</mat-icon>
+                    {{ uploadedFiles()['TAX_ID'] ? 'Change File' : 'Upload File' }}
+                  </button>
+                  @if (uploadedFiles()['TAX_ID']) {
+                  <div class="file-info">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>{{ uploadedFiles()['TAX_ID'].name }}</span>
+                  </div>
+                  }
+                </div>
+
+                <div class="document-upload">
+                  <h4>Additional Documents (Optional)</h4>
+                  <input
+                    type="file"
+                    #additionalInput
+                    (change)="onFileSelected($event, 'ADDITIONAL')"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    style="display: none"
+                  />
+                  <button mat-stroked-button (click)="additionalInput.click()">
+                    <mat-icon>upload_file</mat-icon>
+                    {{ uploadedFiles()['ADDITIONAL'] ? 'Change File' : 'Upload File' }}
+                  </button>
+                  @if (uploadedFiles()['ADDITIONAL']) {
+                  <div class="file-info">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>{{ uploadedFiles()['ADDITIONAL'].name }}</span>
+                  </div>
+                  }
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button mat-button matStepperPrevious>Back</button>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  matStepperNext
+                  [disabled]="!uploadedFiles()['REGISTRATION'] || !uploadedFiles()['TAX_ID']"
+                >
+                  Next
+                </button>
+              </div>
+            </mat-step>
+
+            <!-- Step 4: Review & Submit -->
+            <mat-step>
+              <ng-template matStepLabel>Review & Submit</ng-template>
+
+              <div class="review-section">
+                <h3>Review Your Information</h3>
+
+                <div class="review-group">
+                  <h4>Basic Information</h4>
+                  <div class="review-item">
+                    <span class="label">Organisation Name:</span>
+                    <span class="value">{{ basicInfoForm.get('name')?.value }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Registration Number:</span>
+                    <span class="value">{{ basicInfoForm.get('registrationNumber')?.value }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Industry:</span>
+                    <span class="value">{{ basicInfoForm.get('industry')?.value }}</span>
+                  </div>
+                  @if (basicInfoForm.get('websiteUrl')?.value) {
+                  <div class="review-item">
+                    <span class="label">Website:</span>
+                    <span class="value">{{ basicInfoForm.get('websiteUrl')?.value }}</span>
+                  </div>
+                  }
+                </div>
+
+                <div class="review-group">
+                  <h4>Contact Details</h4>
+                  <div class="review-item">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ contactForm.get('email')?.value }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Phone:</span>
+                    <span class="value">{{ contactForm.get('phoneNumber')?.value }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Address:</span>
+                    <span class="value">
+                      {{ contactForm.get('address')?.value }}, {{ contactForm.get('city')?.value }},
+                      {{ contactForm.get('state')?.value }}
+                      {{ contactForm.get('postalCode')?.value }},
+                      {{ contactForm.get('country')?.value }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="review-group">
+                  <h4>Uploaded Documents</h4>
+                  <div class="review-item">
+                    <span class="label">Registration Certificate:</span>
+                    <span class="value">{{ uploadedFiles()['REGISTRATION']?.name }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Tax ID Document:</span>
+                    <span class="value">{{ uploadedFiles()['TAX_ID']?.name }}</span>
+                  </div>
+                  @if (uploadedFiles()['ADDITIONAL']) {
+                  <div class="review-item">
+                    <span class="label">Additional Documents:</span>
+                    <span class="value">{{ uploadedFiles()['ADDITIONAL']?.name }}</span>
+                  </div>
+                  }
+                </div>
+
+                <mat-checkbox class="terms-checkbox" [(ngModel)]="acceptedTerms">
+                  I agree to the terms and conditions and confirm that all information provided is
+                  accurate
+                </mat-checkbox>
+              </div>
+
+              <div class="step-actions">
+                <button mat-button matStepperPrevious>Back</button>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="submitRegistration()"
+                  [disabled]="isSubmitting() || !acceptedTerms"
+                >
+                  @if (isSubmitting()) {
+                  <ng-container>
+                    <mat-icon>hourglass_empty</mat-icon>
+                    Submitting...
+                  </ng-container>
+                  } @else {
+                  <ng-container>
+                    <mat-icon>check</mat-icon>
+                    Submit Registration
+                  </ng-container>
+                  }
+                </button>
+              </div>
+            </mat-step>
+          </mat-stepper>
+        </mat-card-content>
+      </mat-card>
+    </div>

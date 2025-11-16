@@ -4,17 +4,6 @@
 
 Contains business logic, API communication, data transformation, and shared functionality used across the application.
 
-## Files
-
-- `auth.service.ts` - Authentication and authorization
-- `candidate.service.ts` - Candidate-related operations
-- `interview.service.ts` - Interview management
-- `recruiter.service.ts` - Recruiter operations
-- `file-upload.service.ts` - File upload handling
-- `notification.service.ts` - Notifications and alerts
-- `otp.service.ts` - OTP verification
-- `index.ts` - Barrel export
-
 ## Angular 20 Service Pattern
 
 ### Basic Service Structure

@@ -4,16 +4,6 @@
 
 Contains TypeScript interfaces, types, and data models that define the shape of data used throughout the application.
 
-## Files
-
-- `user.model.ts` - User-related interfaces
-- `candidate.model.ts` - Candidate-specific models
-- `interviewer.model.ts` - Interviewer-specific models
-- `recruiter.model.ts` - Recruiter-specific models
-- `interview.model.ts` - Interview-related models
-- `api-response.model.ts` - API response wrapper types
-- `index.ts` - Barrel export
-
 ## TypeScript Best Practices
 
 ### Interface Naming

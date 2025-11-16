@@ -1,10 +1,8 @@
-// Re-export all services for easier imports
-export * from './auth.service';
-export * from './otp.service';
-export * from './file-upload.service';
-export * from './recruiter.service';
-export * from './candidate.service';
-export * from './interviewer.service';
-export * from './notification.service';
-export * from './interview.service';
-export * from './dashboard.service';
+/**
+ * Barrel export for services
+ */
+
+export { AuthService } from './auth/auth.service';
+export { NotificationService } from './notification/notification.service';
+export { FileService } from './file/file.service';
+export type { UploadProgress } from './file/file.service';

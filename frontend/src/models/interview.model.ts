@@ -1,102 +1,246 @@
 /**
- * Interview details
- */
-export interface Interview {
-  id: string;
-  title: string;
-  description?: string;
-  recruiterId: string;
-  candidateId?: string;
-  interviewerIds: string[];
-  scheduledDate?: Date;
-  duration: number; // minutes
-  type: InterviewType;
-  round: number;
-  status: InterviewStatus;
-  location?: string; // physical location or meeting link
-  notes?: string;
-  feedback?: InterviewFeedback[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-/**
- * Interview type enumeration
- */
-export enum InterviewType {
-  TECHNICAL = 'TECHNICAL',
-  HR = 'HR',
-  MANAGERIAL = 'MANAGERIAL',
-  CODING = 'CODING',
-  BEHAVIORAL = 'BEHAVIORAL',
-  SYSTEM_DESIGN = 'SYSTEM_DESIGN',
-}
-
-/**
- * Interview status enumeration
+ * Interview Status
  */
 export enum InterviewStatus {
   SCHEDULED = 'SCHEDULED',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
-  NO_SHOW = 'NO_SHOW',
+  RESCHEDULED = 'RESCHEDULED',
 }
 
 /**
- * Interview outcome enumeration
+ * Interview Type (Round Type)
  */
-export enum InterviewOutcome {
+export enum InterviewType {
+  TECHNICAL = 'TECHNICAL',
+  HR = 'HR',
+  CULTURAL_FIT = 'CULTURAL_FIT',
+  MANAGERIAL = 'MANAGERIAL',
+}
+
+/**
+ * Candidate Status in Interview Process
+ */
+export enum CandidateStatus {
+  INVITED = 'INVITED',
+  INVITATION_ACCEPTED = 'INVITATION_ACCEPTED',
+  INVITATION_DECLINED = 'INVITATION_DECLINED',
+  SELECT_FOR_NEXT_ROUND = 'SELECT_FOR_NEXT_ROUND',
   SELECTED = 'SELECTED',
-  SELECTED_NEXT_ROUND = 'SELECTED_NEXT_ROUND',
   REJECTED = 'REJECTED',
-  ON_HOLD = 'ON_HOLD',
-  PENDING = 'PENDING',
 }
 
 /**
- * Interview result enumeration (as per API.md)
+ * Round Status
  */
-export enum InterviewResult {
+export enum RoundStatus {
+  SCHEDULED = 'SCHEDULED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+/**
+ * Feedback Recommendation
+ */
+export enum FeedbackRecommendation {
+  STRONG_HIRE = 'STRONG_HIRE',
+  HIRE = 'HIRE',
+  HOLD = 'HOLD',
+  NO_HIRE = 'NO_HIRE',
+}
+
+/**
+ * Round Decision
+ */
+export enum RoundDecision {
+  SELECT_FOR_NEXT_ROUND = 'SELECT_FOR_NEXT_ROUND',
   SELECTED = 'SELECTED',
   REJECTED = 'REJECTED',
-  NEXT_ROUND = 'NEXT_ROUND',
 }
 
 /**
- * Interview feedback
+ * Interviewer Info (minimal info for display)
  */
-export interface InterviewFeedback {
+export interface InterviewerInfo {
+  id: string;
+  name: string;
+  email: string;
+  expertise?: string;
+  yearsOfExperience?: number;
+  feedbackSubmitted?: boolean;
+}
+
+/**
+ * Feedback Interface
+ */
+export interface Feedback {
   interviewerId: string;
-  rating: number; // 1-5 or 1-10
-  comments?: string;
+  interviewerName?: string;
+  recommendation: FeedbackRecommendation;
+  rating: number;
+  comments: string;
   strengths?: string[];
-  weaknesses?: string[];
-  outcome: InterviewOutcome;
-  submittedAt: Date;
+  improvements?: string[];
+  submittedAt: string;
 }
 
 /**
- * Interview creation request
+ * Interview Round Interface
  */
-export interface InterviewCreateRequest {
-  title: string;
-  description?: string;
-  candidateEmail?: string; // if inviting specific candidate
-  interviewerIds: string[];
-  scheduledDate?: Date;
-  duration: number;
+export interface InterviewRound {
+  roundId: string;
+  roundNumber: number;
   type: InterviewType;
-  round: number;
-  location?: string;
+  scheduledDate: string;
+  durationMinutes: number;
+  interviewerIds: string[];
+  interviewers?: InterviewerInfo[];
+  status: RoundStatus;
+  feedback: Feedback[];
+  autoRecommendation?: FeedbackRecommendation;
+  recruiterDecision?: RoundDecision;
+  decidedBy?: string;
+  decidedByName?: string;
+  decidedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /**
- * Candidate interview link
+ * Interview Interface
  */
-export interface CandidateInviteLink {
+export interface Interview {
+  id: string;
+  organisationId: string;
+  organisationName?: string;
+  jobPosition: string;
+  jobDescription?: string;
+  candidateEmail: string;
+  candidateId?: string;
+  candidateName?: string;
+  candidateStatus: CandidateStatus;
+  overallStatus: InterviewStatus;
+  createdBy?: string;
+  createdByName?: string;
+  totalRounds?: number;
+  completedRounds?: number;
+  currentRoundNumber?: number;
+  rounds: InterviewRound[];
+  cancellationReason?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Interview Response (from API)
+ */
+export interface InterviewResponse extends Interview {}
+
+/**
+ * Create Interview DTO
+ */
+export interface CreateInterviewDto {
+  jobPosition: string;
+  jobDescription?: string;
+  candidateEmail: string;
+  rounds: CreateRoundDto[];
+}
+
+/**
+ * Create Round DTO
+ */
+export interface CreateRoundDto {
+  roundNumber: number;
+  type: InterviewType;
+  scheduledDate: string;
+  durationMinutes: number;
+  interviewerIds: string[];
+}
+
+/**
+ * Update Interview DTO
+ */
+export interface UpdateInterviewDto {
+  jobPosition?: string;
+  jobDescription?: string;
+  rounds?: CreateRoundDto[];
+}
+
+/**
+ * Update Round DTO
+ */
+export interface UpdateRoundDto {
+  type?: InterviewType;
+  scheduledDate?: string;
+  durationMinutes?: number;
+  interviewerIds?: string[];
+}
+
+/**
+ * Submit Feedback DTO
+ */
+export interface SubmitFeedbackDto {
+  recommendation: FeedbackRecommendation;
+  rating: number;
+  comments: string;
+  strengths?: string[];
+  improvements?: string[];
+}
+
+/**
+ * Make Decision DTO
+ */
+export interface MakeDecisionDto {
+  decision: RoundDecision;
+}
+
+/**
+ * Cancel Interview DTO
+ */
+export interface CancelInterviewDto {
+  reason: string;
+}
+
+/**
+ * Feedback History Entry
+ */
+export interface FeedbackHistoryEntry {
+  roundId: string;
+  roundNumber: number;
+  roundType: InterviewType;
+  autoRecommendation?: FeedbackRecommendation;
+  recruiterDecision?: RoundDecision;
+  feedbackList: Feedback[];
+  decidedBy?: string;
+  decidedByName?: string;
+  decidedAt?: string;
+}
+
+/**
+ * Interview Filter Options
+ */
+export interface InterviewFilterOptions {
+  candidateEmail?: string;
+  candidateName?: string;
+  interviewerId?: string;
+  status?: InterviewStatus[];
+  startDate?: string;
+  endDate?: string;
+  jobPosition?: string;
+}
+
+/**
+ * Upcoming Interview (for dashboard)
+ */
+export interface UpcomingInterview {
   interviewId: string;
-  token: string;
-  expiresAt: Date;
-  isUsed: boolean;
+  roundId: string;
+  roundNumber: number;
+  roundType: InterviewType;
+  jobPosition: string;
+  candidateName: string;
+  scheduledDate: string;
+  durationMinutes: number;
 }

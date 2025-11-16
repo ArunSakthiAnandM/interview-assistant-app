@@ -1,0 +1,120 @@
+.invite-container {
+        padding: 24px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      mat-card-header {
+        margin-bottom: 24px;
+      }
+
+      mat-card-title {
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+      }
+
+      .invite-form {
+        padding: 24px 0;
+      }
+
+      .form-section {
+        max-width: 600px;
+      }
+
+      .full-width {
+        width: 100%;
+        margin-bottom: 16px;
+      }
+
+      .bulk-info {
+        display: flex;
+        gap: 12px;
+        padding: 16px;
+        background-color: #e3f2fd;
+        border-radius: 8px;
+        margin-bottom: 24px;
+
+        mat-icon {
+          color: #2196f3;
+          flex-shrink: 0;
+        }
+
+        p {
+          margin: 0;
+          color: #1565c0;
+          font-size: 0.875rem;
+        }
+      }
+
+      .invitees-section {
+        margin-bottom: 24px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        h3 {
+          margin: 0;
+          font-size: 1.125rem;
+          color: #212121;
+        }
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+      }
+
+      .invitees-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .invitee-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: start;
+
+        mat-form-field {
+          margin-bottom: 0;
+        }
+
+        button {
+          margin-top: 8px;
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e0e0e0;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+      }
+
+      ::ng-deep .mat-mdc-tab-body-content {
+        padding: 16px 0;
+      }
+
+      @media (max-width: 768px) {
+        .invitee-row {
+          grid-template-columns: 1fr;
+
+          button {
+            justify-self: flex-end;
+            margin-top: 0;
+          }
+        }
+      }

@@ -1,0 +1,192 @@
+<div class="invite-container">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Invite Users to Organisation</mat-card-title>
+          <mat-card-subtitle>Send invitations to join your organisation</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-tab-group>
+            <!-- Single Invitation Tab -->
+            <mat-tab label="Single Invitation">
+              <form [formGroup]="singleInviteForm" class="invite-form">
+                <div class="form-section">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Email Address</mat-label>
+                    <input
+                      matInput
+                      type="email"
+                      formControlName="email"
+                      placeholder="user@example.com"
+                    />
+                    @if (singleInviteForm.get('email')?.hasError('required')) {
+                    <mat-error>Email is required</mat-error>
+                    } @if (singleInviteForm.get('email')?.hasError('email')) {
+                    <mat-error>Please enter a valid email</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Role</mat-label>
+                    <mat-select formControlName="role">
+                      @for (role of availableRoles(); track role.value) {
+                      <mat-option [value]="role.value">
+                        {{ role.label }}
+                      </mat-option>
+                      }
+                    </mat-select>
+                    @if (singleInviteForm.get('role')?.hasError('required')) {
+                    <mat-error>Role is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Expiry Days</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="expiryDays"
+                      placeholder="7"
+                      min="1"
+                    />
+                    <mat-hint>Number of days before invitation expires</mat-hint>
+                    @if (singleInviteForm.get('expiryDays')?.hasError('required')) {
+                    <mat-error>Expiry days is required</mat-error>
+                    } @if (singleInviteForm.get('expiryDays')?.hasError('min')) {
+                    <mat-error>Must be at least 1 day</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="form-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="sendSingleInvitation()"
+                    [disabled]="!singleInviteForm.valid || isSending()"
+                  >
+                    @if (isSending()) {
+                    <ng-container>
+                      <mat-icon>hourglass_empty</mat-icon>
+                      Sending...
+                    </ng-container>
+                    } @else {
+                    <ng-container>
+                      <mat-icon>send</mat-icon>
+                      Send Invitation
+                    </ng-container>
+                    }
+                  </button>
+                </div>
+              </form>
+            </mat-tab>
+
+            <!-- Bulk Invitation Tab -->
+            <mat-tab label="Bulk Invitation">
+              <form [formGroup]="bulkInviteForm" class="invite-form">
+                <div class="form-section">
+                  <div class="bulk-info">
+                    <mat-icon>info</mat-icon>
+                    <p>
+                      Add multiple email addresses. All users will receive the same role assignment
+                      and expiry period.
+                    </p>
+                  </div>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Role for All Users</mat-label>
+                    <mat-select formControlName="role">
+                      @for (role of availableRoles(); track role.value) {
+                      <mat-option [value]="role.value">
+                        {{ role.label }}
+                      </mat-option>
+                      }
+                    </mat-select>
+                    @if (bulkInviteForm.get('role')?.hasError('required')) {
+                    <mat-error>Role is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Expiry Days</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="expiryDays"
+                      placeholder="7"
+                      min="1"
+                    />
+                    <mat-hint>Number of days before invitations expire</mat-hint>
+                    @if (bulkInviteForm.get('expiryDays')?.hasError('required')) {
+                    <mat-error>Expiry days is required</mat-error>
+                    } @if (bulkInviteForm.get('expiryDays')?.hasError('min')) {
+                    <mat-error>Must be at least 1 day</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <div class="invitees-section">
+                    <div class="section-header">
+                      <h3>Users to Invite</h3>
+                      <button mat-button (click)="addInvitee()" type="button">
+                        <mat-icon>add</mat-icon>
+                        Add User
+                      </button>
+                    </div>
+
+                    <div formArrayName="invitees" class="invitees-list">
+                      @for (invitee of invitees.controls; track $index; let i = $index) {
+                      <div [formGroupName]="i" class="invitee-row">
+                        <mat-form-field appearance="outline" class="invitee-email">
+                          <mat-label>Email {{ i + 1 }}</mat-label>
+                          <input
+                            matInput
+                            type="email"
+                            formControlName="email"
+                            placeholder="user@example.com"
+                          />
+                          @if (invitee.get('email')?.hasError('email')) {
+                          <mat-error>Invalid email</mat-error>
+                          }
+                        </mat-form-field>
+
+                        <button
+                          mat-icon-button
+                          color="warn"
+                          (click)="removeInvitee(i)"
+                          type="button"
+                          [disabled]="invitees.length === 1"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="sendBulkInvitations()"
+                    [disabled]="!bulkInviteForm.valid || isSending()"
+                  >
+                    @if (isSending()) {
+                    <ng-container>
+                      <mat-icon>hourglass_empty</mat-icon>
+                      Sending...
+                    </ng-container>
+                    } @else {
+                    <ng-container>
+                      <mat-icon>send</mat-icon>
+                      Send {{ invitees.length }} Invitation{{ invitees.length > 1 ? 's' : '' }}
+                    </ng-container>
+                    }
+                  </button>
+                </div>
+              </form>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+    </div>

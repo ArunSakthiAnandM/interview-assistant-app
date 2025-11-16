@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "interview-assitant-frontend": {
+    "interview-organiser": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -33,22 +33,16 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "600kB",
+                  "maximumWarning": "500kB",
                   "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kB",
-                  "maximumError": "10kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.development.ts",
-                  "with": "src/environments/environment.ts"
-                }
-              ]
+              "outputHashing": "all"
             },
             "development": {
               "optimization": false,
@@ -62,10 +56,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "interview-assitant-frontend:build:production"
+              "buildTarget": "interview-organiser:build:production"
             },
             "development": {
-              "buildTarget": "interview-assitant-frontend:build:development"
+              "buildTarget": "interview-organiser:build:development"
             }
           },
           "defaultConfiguration": "development"

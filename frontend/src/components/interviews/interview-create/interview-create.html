@@ -1,0 +1,273 @@
+<div class="create-container">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Create New Interview</mat-card-title>
+          <mat-card-subtitle>Set up interview process with multiple rounds</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-stepper [linear]="true" #stepper>
+            <!-- Step 1: Job & Candidate Details -->
+            <mat-step [stepControl]="jobDetailsForm">
+              <form [formGroup]="jobDetailsForm">
+                <ng-template matStepLabel>Job & Candidate Details</ng-template>
+
+                <div class="form-section">
+                  <h3>Job Information</h3>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Job Position</mat-label>
+                    <input
+                      matInput
+                      formControlName="jobPosition"
+                      placeholder="e.g., Senior Software Engineer"
+                    />
+                    @if (jobDetailsForm.get('jobPosition')?.hasError('required')) {
+                    <mat-error>Job position is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Job Description</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="jobDescription"
+                      rows="4"
+                      placeholder="Enter job description and requirements"
+                    ></textarea>
+                  </mat-form-field>
+
+                  <h3>Candidate Information</h3>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Candidate Email</mat-label>
+                    <input
+                      matInput
+                      type="email"
+                      formControlName="candidateEmail"
+                      placeholder="candidate@example.com"
+                    />
+                    @if (jobDetailsForm.get('candidateEmail')?.hasError('required')) {
+                    <mat-error>Candidate email is required</mat-error>
+                    } @if (jobDetailsForm.get('candidateEmail')?.hasError('email')) {
+                    <mat-error>Please enter a valid email</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="step-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    matStepperNext
+                    [disabled]="!jobDetailsForm.valid"
+                  >
+                    Next
+                  </button>
+                </div>
+              </form>
+            </mat-step>
+
+            <!-- Step 2: Schedule Rounds -->
+            <mat-step [stepControl]="roundsForm">
+              <form [formGroup]="roundsForm">
+                <ng-template matStepLabel>Schedule Rounds</ng-template>
+
+                <div class="form-section">
+                  <div class="section-header">
+                    <h3>Interview Rounds</h3>
+                    <button mat-button (click)="addRound()" type="button">
+                      <mat-icon>add</mat-icon>
+                      Add Round
+                    </button>
+                  </div>
+
+                  <div formArrayName="rounds" class="rounds-list">
+                    @for (round of rounds.controls; track $index; let i = $index) {
+                    <mat-card class="round-card" [formGroupName]="i">
+                      <mat-card-header>
+                        <mat-card-title>
+                          <div class="round-header">
+                            <span>Round {{ i + 1 }}</span>
+                            <button
+                              mat-icon-button
+                              color="warn"
+                              (click)="removeRound(i)"
+                              type="button"
+                              [disabled]="rounds.length === 1"
+                            >
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
+                        </mat-card-title>
+                      </mat-card-header>
+
+                      <mat-card-content>
+                        <div class="round-fields">
+                          <mat-form-field appearance="outline" class="half-width">
+                            <mat-label>Round Type</mat-label>
+                            <mat-select formControlName="type">
+                              @for (type of interviewTypes; track type.value) {
+                              <mat-option [value]="type.value">
+                                {{ type.label }}
+                              </mat-option>
+                              }
+                            </mat-select>
+                            @if (round.get('type')?.hasError('required')) {
+                            <mat-error>Type is required</mat-error>
+                            }
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="half-width">
+                            <mat-label>Duration (minutes)</mat-label>
+                            <input
+                              matInput
+                              type="number"
+                              formControlName="durationMinutes"
+                              placeholder="60"
+                              min="15"
+                              max="480"
+                            />
+                            @if (round.get('durationMinutes')?.hasError('required')) {
+                            <mat-error>Duration is required</mat-error>
+                            } @if (round.get('durationMinutes')?.hasError('min')) {
+                            <mat-error>Minimum 15 minutes</mat-error>
+                            }
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Scheduled Date & Time</mat-label>
+                            <input
+                              matInput
+                              [matDatepicker]="picker"
+                              formControlName="scheduledDate"
+                            />
+                            <mat-datepicker-toggle matSuffix [for]="picker">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            @if (round.get('scheduledDate')?.hasError('required')) {
+                            <mat-error>Date is required</mat-error>
+                            }
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Select Interviewers</mat-label>
+                            <mat-select formControlName="interviewerIds" multiple>
+                              @if (isLoadingInterviewers()) {
+                              <mat-option disabled>Loading interviewers...</mat-option>
+                              } @else { @for (interviewer of availableInterviewers(); track
+                              interviewer.id) {
+                              <mat-option [value]="interviewer.id">
+                                {{ interviewer.name }} ({{ interviewer.email }})
+                              </mat-option>
+                              } }
+                            </mat-select>
+                            @if (round.get('interviewerIds')?.hasError('required')) {
+                            <mat-error>At least one interviewer is required</mat-error>
+                            }
+                            <mat-hint>Select one or more interviewers for this round</mat-hint>
+                          </mat-form-field>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                    }
+                  </div>
+                </div>
+
+                <div class="step-actions">
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    matStepperNext
+                    [disabled]="!roundsForm.valid"
+                  >
+                    Next
+                  </button>
+                </div>
+              </form>
+            </mat-step>
+
+            <!-- Step 3: Review & Submit -->
+            <mat-step>
+              <ng-template matStepLabel>Review & Submit</ng-template>
+
+              <div class="review-section">
+                <h3>Review Interview Details</h3>
+
+                <div class="review-group">
+                  <h4>Job & Candidate</h4>
+                  <div class="review-item">
+                    <span class="label">Job Position:</span>
+                    <span class="value">{{ jobDetailsForm.get('jobPosition')?.value }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Candidate Email:</span>
+                    <span class="value">{{ jobDetailsForm.get('candidateEmail')?.value }}</span>
+                  </div>
+                  @if (jobDetailsForm.get('jobDescription')?.value) {
+                  <div class="review-item">
+                    <span class="label">Description:</span>
+                    <span class="value description">{{
+                      jobDetailsForm.get('jobDescription')?.value
+                    }}</span>
+                  </div>
+                  }
+                </div>
+
+                <div class="review-group">
+                  <h4>Scheduled Rounds ({{ rounds.length }})</h4>
+                  @for (round of rounds.controls; track $index; let i = $index) {
+                  <div class="round-review">
+                    <div class="round-review-header">
+                      <strong
+                        >Round {{ i + 1 }}:
+                        {{ getRoundTypeLabel(round.get('type')?.value) }}</strong
+                      >
+                      <mat-chip class="duration-chip">
+                        {{ round.get('durationMinutes')?.value }} min
+                      </mat-chip>
+                    </div>
+                    <div class="round-review-details">
+                      <div class="detail-item">
+                        <mat-icon>event</mat-icon>
+                        <span>{{ formatDate(round.get('scheduledDate')?.value) }}</span>
+                      </div>
+                      <div class="detail-item">
+                        <mat-icon>people</mat-icon>
+                        <span>{{
+                          getInterviewerNames(round.get('interviewerIds')?.value).join(', ')
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button mat-button matStepperPrevious>Back</button>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="submitInterview()"
+                  [disabled]="isSubmitting()"
+                >
+                  @if (isSubmitting()) {
+                  <ng-container>
+                    <mat-icon>hourglass_empty</mat-icon>
+                    Creating...
+                  </ng-container>
+                  } @else {
+                  <ng-container>
+                    <mat-icon>check</mat-icon>
+                    Create Interview
+                  </ng-container>
+                  }
+                </button>
+              </div>
+            </mat-step>
+          </mat-stepper>
+        </mat-card-content>
+      </mat-card>
+    </div>

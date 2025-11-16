@@ -1,0 +1,65 @@
+<aside
+  class="sidebar"
+  [class.sidebar-open]="isSidebarOpen()"
+  [class.sidebar-pinned]="isSidebarPinned()"
+>
+  <div class="sidebar-content">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Navigation</h2>
+      <button
+        mat-icon-button
+        (click)="togglePin()"
+        [attr.aria-label]="isSidebarPinned() ? 'Unpin sidebar' : 'Pin sidebar'"
+        class="pin-button"
+      >
+        <mat-icon>{{ isSidebarPinned() ? 'push_pin' : 'push_pin' }}</mat-icon>
+      </button>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Navigation Sections -->
+    <nav class="sidebar-nav">
+      @for (section of navSections(); track section.title || $index) {
+      <div class="nav-section">
+        @if (section.title) {
+        <div class="section-title">{{ section.title }}</div>
+        }
+
+        <mat-nav-list class="nav-list">
+          @for (item of section.items; track item.route) {
+          <a
+            mat-list-item
+            [routerLink]="['/' + item.route]"
+            routerLinkActive="active"
+            (click)="closeSidebar()"
+            class="nav-item"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+            @if (item.badge) {
+            <span matListItemMeta class="badge">{{ item.badge }}</span>
+            }
+          </a>
+          }
+        </mat-nav-list>
+      </div>
+      }
+    </nav>
+  </div>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <mat-divider></mat-divider>
+    <div class="footer-content">
+      <span class="footer-text">Interview Organiser</span>
+      <span class="footer-version">v1.0.0</span>
+    </div>
+  </div>
+</aside>
+
+<!-- Overlay for mobile -->
+@if (isSidebarOpen() && !isSidebarPinned()) {
+<div class="sidebar-overlay" (click)="closeSidebar()"></div>
+}

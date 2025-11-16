@@ -1,72 +1,148 @@
-/**
- * Dashboard Models
- * Contains all dashboard-related interfaces for different user roles
- */
+import { UpcomingInterview } from './interview.model';
 
 /**
- * Admin Dashboard Stats
+ * Admin Dashboard Response
  */
-export interface AdminDashboardStats {
-  stats: {
-    totalRecruiters: number;
-    verifiedRecruiters: number;
-    pendingRecruiters: number;
-    totalUsers: number;
-    totalInterviews: number;
-    totalCandidates: number;
-    activeInterviews: number;
+export interface AdminDashboardResponse {
+  totalOrganisations: number;
+  verifiedOrganisations: number;
+  pendingVerifications: number;
+  rejectedOrganisations: number;
+  totalUsers: number;
+  usersByRole: {
+    RECRUITER: number;
+    INTERVIEWER: number;
+    CANDIDATE: number;
+    ORGANISATION_ADMIN: number;
   };
-  pendingRecruiters: any[];
-  recentRecruiters: any[];
-  recentUsers: any[];
+  activeInterviews: number;
+  completedInterviews: number;
+  interviewsByStatus: {
+    SCHEDULED: number;
+    IN_PROGRESS: number;
+    COMPLETED: number;
+    CANCELLED: number;
+  };
+  recentActivity: ActivityEntry[];
 }
 
 /**
- * Recruiter Dashboard Stats
+ * Organisation Dashboard Response
  */
-export interface RecruiterDashboardStats {
-  stats: {
-    totalCandidates: number;
-    activeCandidates: number;
-    totalInterviews: number;
-    upcomingInterviews: number;
-    completedInterviews: number;
-    totalInterviewers: number;
-    pendingFeedbacks: number;
-  };
-  recentCandidates: any[];
-  upcomingInterviews: any[];
-  availableInterviewers: any[];
+export interface OrganisationDashboardResponse {
+  organisationId: string;
+  organisationName: string;
+  totalRecruiters: number;
+  totalInterviewers: number;
+  totalCandidates: number;
+  interviewsInProgress: number;
+  interviewsCompleted: number;
+  pendingDecisions: number;
+  upcomingInterviews: UpcomingInterview[];
+  successRate?: number;
+  averageInterviewDuration?: number;
 }
 
 /**
- * Interviewer Dashboard Stats
+ * Recruiter Dashboard Response
  */
-export interface InterviewerDashboardStats {
-  stats: {
-    totalInterviews: number;
-    upcomingInterviews: number;
-    completedInterviews: number;
-    pendingFeedbacks: number;
-    availability: boolean;
-  };
-  assignedInterviews: any[];
-  upcomingInterviews: any[];
-  pendingFeedback: any[];
+export interface RecruiterDashboardResponse {
+  recruiterId: string;
+  recruiterName: string;
+  interviewsCreated: number;
+  candidatesInPipeline: number;
+  upcomingInterviews: UpcomingInterview[];
+  pendingDecisions: number;
+  completedThisMonth: number;
+  successRate: number;
+  recentInterviews: RecentInterviewSummary[];
 }
 
 /**
- * Candidate Dashboard Stats
+ * Interviewer Dashboard Response
  */
-export interface CandidateDashboardStats {
-  stats: {
-    totalInterviews: number;
-    upcomingInterviews: number;
-    completedInterviews: number;
-    pendingConfirmations: number;
-    currentStatus: string;
+export interface InterviewerDashboardResponse {
+  interviewerId: string;
+  interviewerName: string;
+  assignedInterviews: number;
+  pendingFeedback: number;
+  upcomingInterviews: UpcomingInterview[];
+  feedbackSubmittedCount: number;
+  averageRatingGiven: number;
+  nextScheduledRound?: UpcomingInterview;
+  recentFeedback: RecentFeedbackSummary[];
+}
+
+/**
+ * Candidate Dashboard Response
+ */
+export interface CandidateDashboardResponse {
+  candidateId: string;
+  candidateName: string;
+  appliedInterviews: number;
+  roundStatuses: {
+    pending: number;
+    scheduled: number;
+    completed: number;
+    selected: number;
+    rejected: number;
   };
-  upcomingInterviews: any[];
-  pastInterviews: any[];
-  pendingConfirmations: any[];
+  upcomingScheduledRounds: UpcomingInterview[];
+  recentUpdates: RecentUpdateEntry[];
+  nextInterview?: UpcomingInterview;
+}
+
+/**
+ * Activity Entry (for Admin Dashboard)
+ */
+export interface ActivityEntry {
+  id: string;
+  type:
+    | 'ORGANISATION_REGISTERED'
+    | 'ORGANISATION_VERIFIED'
+    | 'INTERVIEW_CREATED'
+    | 'INTERVIEW_COMPLETED'
+    | 'USER_REGISTERED';
+  description: string;
+  timestamp: string;
+  actorId?: string;
+  actorName?: string;
+}
+
+/**
+ * Recent Interview Summary
+ */
+export interface RecentInterviewSummary {
+  interviewId: string;
+  jobPosition: string;
+  candidateName: string;
+  status: string;
+  currentRound: number;
+  totalRounds: number;
+  lastUpdated: string;
+}
+
+/**
+ * Recent Feedback Summary
+ */
+export interface RecentFeedbackSummary {
+  interviewId: string;
+  roundNumber: number;
+  jobPosition: string;
+  candidateName: string;
+  recommendation: string;
+  rating: number;
+  submittedAt: string;
+}
+
+/**
+ * Recent Update Entry (for Candidate Dashboard)
+ */
+export interface RecentUpdateEntry {
+  id: string;
+  interviewId: string;
+  jobPosition: string;
+  updateType: 'INVITATION' | 'SCHEDULED' | 'COMPLETED' | 'DECISION';
+  message: string;
+  timestamp: string;
 }

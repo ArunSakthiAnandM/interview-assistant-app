@@ -4,13 +4,6 @@
 
 Contains route guards for protecting routes and controlling access based on authentication, authorization, and permissions.
 
-## Files
-
-- `auth.guard.ts` - Authentication guard (checks if user is logged in)
-- `role.guard.ts` - Role-based authorization guard
-- `permission.guard.ts` - Permission-based authorization guard
-- `index.ts` - Barrel export
-
 ## Angular 20 Functional Guards
 
 Angular 20 prefers **functional guards** over class-based guards.
