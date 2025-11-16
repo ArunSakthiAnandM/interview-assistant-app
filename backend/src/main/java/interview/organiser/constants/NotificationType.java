@@ -1,0 +1,22 @@
+package interview.organiser.constants;
+
+/**
+ * Enum representing notification types
+ */
+public enum NotificationType {
+    INTERVIEW_INVITATION,
+    ROUND_DECISION,
+    FEEDBACK_REQUEST,
+    ROUND_SCHEDULED,
+    ROUND_RESCHEDULED,
+    ROUND_CANCELLED,
+    INVITATION_RECEIVED,
+    INVITATION_ACCEPTED,
+    INVITATION_DECLINED,
+    ORGANISATION_VERIFIED,
+    ORGANISATION_REJECTED,
+    INTERVIEW_CANCELLED,
+    FEEDBACK_SUBMITTED,
+    DECISION_MADE
+}
+
