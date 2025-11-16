@@ -1,5 +1,6 @@
 package interview.organiser.controller;
 
+import interview.organiser.model.dto.request.CancelInterviewRequest;
 import interview.organiser.model.dto.request.FeedbackRequest;
 import interview.organiser.model.dto.request.InterviewCreateRequest;
 import interview.organiser.model.dto.request.RoundDecisionRequest;
@@ -206,15 +207,33 @@ public class InterviewController {
     }
 
     /**
+     * Search interviews
+     */
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ORGANISATION_ADMIN', 'RECRUITER')")
+    public ResponseEntity<Page<InterviewResponse>> searchInterviews(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String organisationId,
+            @RequestParam(required = false) String candidateEmail,
+            @RequestParam(required = false) String status,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        log.info("Search interviews request: query={}, org={}, candidate={}, status={}",
+                query, organisationId, candidateEmail, status);
+        Page<InterviewResponse> response = interviewService.searchInterviews(
+                query, organisationId, candidateEmail, status, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Cancel interview with reason and notifications
      */
     @PostMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('ADMIN', 'ORGANISATION_ADMIN', 'RECRUITER')")
     public ResponseEntity<MessageResponse> cancelInterview(
             @PathVariable String id,
-            @RequestParam String reason) {
+            @Valid @RequestBody CancelInterviewRequest request) {
         log.info("Cancel interview request received for ID: {}", id);
-        MessageResponse response = interviewService.cancelInterview(id, reason);
+        MessageResponse response = interviewService.cancelInterview(id, request.getReason());
         return ResponseEntity.ok(response);
     }
 }

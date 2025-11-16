@@ -115,7 +115,7 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     @Transactional
-    public MessageResponse acceptInvitation(String invitationId) {
+    public InvitationResponse acceptInvitation(String invitationId) {
         log.info("Accepting invitation: {}", invitationId);
 
         String currentUserId = SecurityUtil.getCurrentUserId();
@@ -152,7 +152,7 @@ public class InvitationServiceImpl implements InvitationService {
         invitation.setStatus(InvitationStatus.ACCEPTED);
         invitation.setAcceptedAt(LocalDateTime.now());
         invitation.setUpdatedAt(LocalDateTime.now());
-        invitationRepository.save(invitation);
+        invitation = invitationRepository.save(invitation);
 
         // Associate user with organisation
         currentUser.setOrganisationId(invitation.getOrganisationId());
@@ -163,12 +163,12 @@ public class InvitationServiceImpl implements InvitationService {
 
         log.info("Invitation accepted successfully by: {}", currentUser.getEmail());
 
-        return new MessageResponse("Invitation accepted successfully. You are now part of the organisation.");
+        return entityMapper.toInvitationResponse(invitation);
     }
 
     @Override
     @Transactional
-    public MessageResponse declineInvitation(String invitationId) {
+    public InvitationResponse declineInvitation(String invitationId) {
         log.info("Declining invitation: {}", invitationId);
 
         String currentUserId = SecurityUtil.getCurrentUserId();
@@ -193,11 +193,11 @@ public class InvitationServiceImpl implements InvitationService {
         invitation.setStatus(InvitationStatus.DECLINED);
         invitation.setDeclinedAt(LocalDateTime.now());
         invitation.setUpdatedAt(LocalDateTime.now());
-        invitationRepository.save(invitation);
+        invitation = invitationRepository.save(invitation);
 
         log.info("Invitation declined by: {}", currentUser.getEmail());
 
-        return new MessageResponse("Invitation declined successfully");
+        return entityMapper.toInvitationResponse(invitation);
     }
 
     @Override

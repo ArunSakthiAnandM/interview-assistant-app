@@ -138,7 +138,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Page<NotificationResponse> getUserNotifications(String userId, Boolean unreadOnly, Pageable pageable) {
+    public List<NotificationResponse> getUserNotifications(String userId, Boolean unreadOnly) {
         log.info("Getting notifications for user {}, unreadOnly={}", userId, unreadOnly);
 
         // Verify user is requesting their own notifications or is admin
@@ -147,11 +147,13 @@ public class NotificationServiceImpl implements NotificationService {
             throw new InvalidOperationException("You can only view your own notifications");
         }
 
-        Page<Notification> notifications = unreadOnly != null && unreadOnly ?
-                notificationRepository.findByUserIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId, pageable) :
-                notificationRepository.findByUserIdAndDeletedFalseOrderByCreatedAtDesc(userId, pageable);
+        List<Notification> notifications = unreadOnly != null && unreadOnly ?
+                notificationRepository.findByUserIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId) :
+                notificationRepository.findByUserIdAndDeletedFalseOrderByCreatedAtDesc(userId);
 
-        return notifications.map(this::mapToResponse);
+        return notifications.stream()
+                .map(this::mapToResponse)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
@@ -248,11 +250,15 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationResponse mapToResponse(Notification notification) {
         return NotificationResponse.builder()
                 .id(notification.getId())
+                .userId(notification.getUserId())
                 .type(notification.getType())
                 .title(notification.getTitle())
                 .message(notification.getMessage())
                 .relatedEntityId(notification.getRelatedEntityId())
                 .relatedEntityType(notification.getRelatedEntityType())
+                .actionUrl(notification.getActionUrl())
+                .actionText(notification.getActionText())
+                .metadata(notification.getMetadata())
                 .read(notification.getRead())
                 .readAt(notification.getReadAt())
                 .createdAt(notification.getCreatedAt())

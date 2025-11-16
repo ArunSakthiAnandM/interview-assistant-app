@@ -521,6 +521,26 @@ public class InterviewServiceImpl implements InterviewService {
                 .map(entityMapper::toInterviewResponse);
     }
 
+    @Override
+    public Page<InterviewResponse> searchInterviews(String query, String organisationId,
+                                                     String candidateEmail, String status, Pageable pageable) {
+        log.debug("Searching interviews with query={}, org={}, candidate={}, status={}",
+                query, organisationId, candidateEmail, status);
+
+        // For now, implement basic search. Can be enhanced with more complex queries
+        if (organisationId != null && !organisationId.isEmpty()) {
+            return interviewRepository.findByOrganisationIdAndDeletedFalse(organisationId, pageable)
+                    .map(entityMapper::toInterviewResponse);
+        } else if (candidateEmail != null && !candidateEmail.isEmpty()) {
+            return interviewRepository.findByCandidateEmailAndDeletedFalse(candidateEmail, pageable)
+                    .map(entityMapper::toInterviewResponse);
+        } else {
+            // Get all interviews if no specific filter
+            return interviewRepository.findByDeletedFalse(pageable)
+                    .map(entityMapper::toInterviewResponse);
+        }
+    }
+
     /**
      * Generate auto recommendation based on interviewer feedback
      */

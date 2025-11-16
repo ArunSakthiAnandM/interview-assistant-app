@@ -29,6 +29,10 @@ public interface InterviewRepository extends MongoRepository<Interview, String> 
     Page<Interview> findByCreatedByUserIdAndDeletedFalse(String createdByUserId, Pageable pageable);
 
     Page<Interview> findByCandidateUserIdAndDeletedFalse(String candidateUserId, Pageable pageable);
+    
+    Page<Interview> findByCandidateEmailAndDeletedFalse(String candidateEmail, Pageable pageable);
+    
+    Page<Interview> findByDeletedFalse(Pageable pageable);
 
     @Query("{ 'rounds.interviewerIds': ?0, 'deleted': false }")
     Page<Interview> findByInterviewerId(String interviewerId, Pageable pageable);

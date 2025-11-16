@@ -7,6 +7,8 @@ import interview.organiser.model.entity.InterviewRound;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Service interface for sending notifications (email + in-app)
  */
@@ -60,9 +62,9 @@ public interface NotificationService {
                                            String message, String relatedEntityId, String relatedEntityType);
 
     /**
-     * Get user notifications with pagination
+     * Get user notifications
      */
-    Page<NotificationResponse> getUserNotifications(String userId, Boolean unreadOnly, Pageable pageable);
+    List<NotificationResponse> getUserNotifications(String userId, Boolean unreadOnly);
 
     /**
      * Mark notification as read

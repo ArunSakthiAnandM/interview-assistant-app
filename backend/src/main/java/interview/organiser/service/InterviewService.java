@@ -77,6 +77,12 @@ public interface InterviewService {
     Page<InterviewResponse> getInterviewsByCandidate(String candidateId, Pageable pageable);
 
     /**
+     * Search interviews
+     */
+    Page<InterviewResponse> searchInterviews(String query, String organisationId, 
+                                             String candidateEmail, String status, Pageable pageable);
+
+    /**
      * Cancel interview with reason and notifications
      */
     MessageResponse cancelInterview(String interviewId, String reason);

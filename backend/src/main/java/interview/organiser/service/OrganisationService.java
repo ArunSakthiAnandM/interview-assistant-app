@@ -61,5 +61,10 @@ public interface OrganisationService {
      * Get organisation verification history
      */
     List<VerificationHistoryResponse> getVerificationHistory(String id);
+
+    /**
+     * Get current user's organisation
+     */
+    OrganisationResponse getMyOrganisation();
 }
 

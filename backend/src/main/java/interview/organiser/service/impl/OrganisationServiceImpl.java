@@ -396,4 +396,19 @@ public class OrganisationServiceImpl implements OrganisationService {
                 })
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public OrganisationResponse getMyOrganisation() {
+        log.debug("Fetching current user's organisation");
+
+        String currentUserId = SecurityUtil.getCurrentUserId();
+        User currentUser = userRepository.findByIdAndDeletedFalse(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", currentUserId));
+
+        if (currentUser.getOrganisationId() == null) {
+            throw new InvalidOperationException("User is not associated with any organisation");
+        }
+
+        return getOrganisationById(currentUser.getOrganisationId());
+    }
 }

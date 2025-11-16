@@ -44,9 +44,9 @@ public class InvitationController {
      */
     @PostMapping("/{id}/accept")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MessageResponse> acceptInvitation(@PathVariable String id) {
+    public ResponseEntity<InvitationResponse> acceptInvitation(@PathVariable String id) {
         log.info("Accept invitation request received for ID: {}", id);
-        MessageResponse response = invitationService.acceptInvitation(id);
+        InvitationResponse response = invitationService.acceptInvitation(id);
         return ResponseEntity.ok(response);
     }
 
@@ -55,9 +55,9 @@ public class InvitationController {
      */
     @PostMapping("/{id}/decline")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MessageResponse> declineInvitation(@PathVariable String id) {
+    public ResponseEntity<InvitationResponse> declineInvitation(@PathVariable String id) {
         log.info("Decline invitation request received for ID: {}", id);
-        MessageResponse response = invitationService.declineInvitation(id);
+        InvitationResponse response = invitationService.declineInvitation(id);
         return ResponseEntity.ok(response);
     }
 

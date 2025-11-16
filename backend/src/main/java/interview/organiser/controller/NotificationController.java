@@ -5,15 +5,12 @@ import interview.organiser.model.dto.response.NotificationResponse;
 import interview.organiser.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,12 +29,11 @@ public class NotificationController {
      */
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<NotificationResponse>> getMyNotifications(
-            @RequestParam(required = false) Boolean unreadOnly,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<List<NotificationResponse>> getMyNotifications(
+            @RequestParam(required = false) Boolean unreadOnly) {
         log.info("Get my notifications request, unreadOnly={}", unreadOnly);
         String userId = interview.organiser.util.SecurityUtil.getCurrentUserId();
-        Page<NotificationResponse> response = notificationService.getUserNotifications(userId, unreadOnly, pageable);
+        List<NotificationResponse> response = notificationService.getUserNotifications(userId, unreadOnly);
         return ResponseEntity.ok(response);
     }
 

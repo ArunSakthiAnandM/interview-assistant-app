@@ -140,4 +140,15 @@ public class OrganisationController {
         List<VerificationHistoryResponse> response = organisationService.getVerificationHistory(id);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Get current user's organisation
+     */
+    @GetMapping("/my")
+    @PreAuthorize("hasAnyRole('ORGANISATION_ADMIN', 'RECRUITER', 'INTERVIEWER')")
+    public ResponseEntity<OrganisationResponse> getMyOrganisation() {
+        log.info("Get my organisation request received");
+        OrganisationResponse response = organisationService.getMyOrganisation();
+        return ResponseEntity.ok(response);
+    }
 }

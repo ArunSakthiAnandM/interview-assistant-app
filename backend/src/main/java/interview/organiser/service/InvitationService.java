@@ -20,12 +20,12 @@ public interface InvitationService {
     /**
      * Accept invitation
      */
-    MessageResponse acceptInvitation(String invitationId);
+    InvitationResponse acceptInvitation(String invitationId);
 
     /**
      * Decline invitation
      */
-    MessageResponse declineInvitation(String invitationId);
+    InvitationResponse declineInvitation(String invitationId);
 
     /**
      * Get invitation by ID
