@@ -69,11 +69,11 @@ export class NotificationService {
   /**
    * Mark notification as read
    */
-  markAsRead(id: string): Observable<void> {
-    return this.http.put<void>(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {}).pipe(
-      tap(() => {
+  markAsRead(id: string): Observable<Notification> {
+    return this.http.post<Notification>(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {}).pipe(
+      tap((notification) => {
         this.notifications.update((notifications) =>
-          notifications.map((n) => (n.id === id ? { ...n, read: true } : n))
+          notifications.map((n) => (n.id === id ? notification : n))
         );
       })
     );
@@ -82,8 +82,8 @@ export class NotificationService {
   /**
    * Mark all notifications as read
    */
-  markAllAsRead(): Observable<void> {
-    return this.http.put<void>(API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ, {}).pipe(
+  markAllAsRead(): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ, {}).pipe(
       tap(() => {
         this.notifications.update((notifications) =>
           notifications.map((n) => ({ ...n, read: true }))

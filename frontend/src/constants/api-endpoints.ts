@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
   ORGANISATIONS: {
     BASE: `${API_BASE_URL}/organisations`,
     REGISTER: `${API_BASE_URL}/organisations/register`,
+    MY: `${API_BASE_URL}/organisations/my`,
     DETAIL: (id: string) => `${API_BASE_URL}/organisations/${id}`,
     VERIFY: (id: string) => `${API_BASE_URL}/organisations/${id}/verify`,
     RESUBMIT: (id: string) => `${API_BASE_URL}/organisations/${id}/resubmit`,
@@ -56,7 +57,6 @@ export const API_ENDPOINTS = {
     BY_ROLE: (role: string) => `${API_BASE_URL}/users/role/${role}`,
     BY_ORGANISATION: (orgId: string) => `${API_BASE_URL}/users/organisation/${orgId}`,
     SEARCH: `${API_BASE_URL}/users/search`,
-    BULK_DELETE: `${API_BASE_URL}/users/bulk-delete`,
   },
 
   /**
@@ -71,7 +71,6 @@ export const API_ENDPOINTS = {
     EXTEND: (id: string) => `${API_BASE_URL}/invitations/${id}/extend`,
     MY: `${API_BASE_URL}/invitations/my`,
     BY_ORGANISATION: (orgId: string) => `${API_BASE_URL}/invitations/organisation/${orgId}`,
-    BULK_SEND: `${API_BASE_URL}/invitations/bulk-send`,
   },
 
   /**
@@ -112,7 +111,6 @@ export const API_ENDPOINTS = {
     RECRUITER: (id: string) => `${API_BASE_URL}/dashboard/recruiter/${id}`,
     INTERVIEWER: (id: string) => `${API_BASE_URL}/dashboard/interviewer/${id}`,
     CANDIDATE: (id: string) => `${API_BASE_URL}/dashboard/candidate/${id}`,
-    RECRUITER_ANALYTICS: (id: string) => `${API_BASE_URL}/dashboard/recruiter/${id}/analytics`,
   },
 
   /**
@@ -135,7 +133,6 @@ export const API_ENDPOINTS = {
     GET: (interviewerId: string) => `${API_BASE_URL}/interviewers/${interviewerId}/availability`,
     SET: (interviewerId: string) => `${API_BASE_URL}/interviewers/${interviewerId}/availability`,
     CALENDAR: (interviewerId: string) => `${API_BASE_URL}/interviewers/${interviewerId}/calendar`,
-    CHECK: `${API_BASE_URL}/interviewers/check-availability`,
   },
 
   /**
@@ -150,12 +147,10 @@ export const API_ENDPOINTS = {
    */
   FILES: {
     UPLOAD: `${API_BASE_URL}/files/upload`,
-    UPLOAD_VERSION: `${API_BASE_URL}/files/upload-version`,
     PREVIEW: (fileId: string) => `${API_BASE_URL}/files/preview/${fileId}`,
     DOWNLOAD: (fileId: string) => `${API_BASE_URL}/files/download/${fileId}`,
     VERSIONS: (entityType: string, entityId: string) =>
       `${API_BASE_URL}/files/versions/${entityType}/${entityId}`,
     DELETE: (fileId: string) => `${API_BASE_URL}/files/${fileId}`,
-    BULK_DELETE: `${API_BASE_URL}/files/bulk-delete`,
   },
 } as const;

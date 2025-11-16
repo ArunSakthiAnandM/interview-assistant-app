@@ -135,13 +135,6 @@ export class UserService {
   }
 
   /**
-   * Bulk delete users (Admin only)
-   */
-  bulkDelete(ids: string[]): Observable<void> {
-    return this.http.post<void>(API_ENDPOINTS.USERS.BULK_DELETE, { ids });
-  }
-
-  /**
    * Clear current profile
    */
   clearCurrentProfile(): void {

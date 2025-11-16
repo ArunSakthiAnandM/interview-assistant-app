@@ -30,13 +30,6 @@ export class InvitationService {
   }
 
   /**
-   * Send bulk invitations
-   */
-  bulkSend(data: BulkSendInvitationsDto): Observable<Invitation[]> {
-    return this.http.post<Invitation[]>(API_ENDPOINTS.INVITATIONS.BULK_SEND, data);
-  }
-
-  /**
    * Get invitation by ID
    */
   getById(id: string): Observable<Invitation> {
@@ -105,8 +98,8 @@ export class InvitationService {
   /**
    * Accept invitation
    */
-  accept(id: string, password: string): Observable<Invitation> {
-    return this.http.post<Invitation>(API_ENDPOINTS.INVITATIONS.ACCEPT(id), { password });
+  accept(id: string): Observable<Invitation> {
+    return this.http.post<Invitation>(API_ENDPOINTS.INVITATIONS.ACCEPT(id), {});
   }
 
   /**

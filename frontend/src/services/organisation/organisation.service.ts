@@ -53,9 +53,8 @@ export class OrganisationService {
    * Get current user's organisation profile
    */
   getMyOrganisation(): Observable<Organisation> {
-    // TODO: Use correct endpoint when backend provides organisation-specific ME endpoint
     return this.http
-      .get<Organisation>(`${API_ENDPOINTS.ORGANISATIONS.BASE}/my`)
+      .get<Organisation>(API_ENDPOINTS.ORGANISATIONS.MY)
       .pipe(tap((org) => this.currentOrganisationSignal.set(org)));
   }
 

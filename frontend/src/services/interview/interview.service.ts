@@ -225,40 +225,22 @@ export class InterviewService {
   /**
    * Accept interview invitation
    */
-  accept(id: string): Observable<Interview> {
-    return this.http.post<Interview>(API_ENDPOINTS.INTERVIEWS.ACCEPT(id), {}).pipe(
-      tap((interview) => {
-        if (this.currentInterviewSignal()?.id === id) {
-          this.currentInterviewSignal.set(interview);
-        }
-      })
-    );
+  accept(id: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(API_ENDPOINTS.INTERVIEWS.ACCEPT(id), {});
   }
 
   /**
    * Decline interview invitation
    */
-  decline(id: string, reason?: string): Observable<Interview> {
-    return this.http.post<Interview>(API_ENDPOINTS.INTERVIEWS.DECLINE(id), { reason }).pipe(
-      tap((interview) => {
-        if (this.currentInterviewSignal()?.id === id) {
-          this.currentInterviewSignal.set(interview);
-        }
-      })
-    );
+  decline(id: string, reason?: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(API_ENDPOINTS.INTERVIEWS.DECLINE(id), { reason });
   }
 
   /**
    * Cancel interview
    */
-  cancel(id: string, reason?: string): Observable<Interview> {
-    return this.http.post<Interview>(API_ENDPOINTS.INTERVIEWS.CANCEL(id), { reason }).pipe(
-      tap((interview) => {
-        if (this.currentInterviewSignal()?.id === id) {
-          this.currentInterviewSignal.set(interview);
-        }
-      })
-    );
+  cancel(id: string, reason: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(API_ENDPOINTS.INTERVIEWS.CANCEL(id), { reason });
   }
 
   /**
