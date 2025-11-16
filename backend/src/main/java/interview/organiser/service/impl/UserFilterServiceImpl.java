@@ -1,7 +1,6 @@
 package interview.organiser.service.impl;
 
 import interview.organiser.constants.UserRole;
-import interview.organiser.exception.ResourceNotFoundException;
 import interview.organiser.model.dto.request.InterviewerFilterRequest;
 import interview.organiser.model.dto.response.InterviewerMatchResponse;
 import interview.organiser.model.dto.response.UserResponse;

@@ -8,7 +8,6 @@ import interview.organiser.model.dto.response.AvailabilitySlotResponse;
 import interview.organiser.model.dto.response.CalendarViewResponse;
 import interview.organiser.model.entity.AvailabilitySlot;
 import interview.organiser.model.entity.Interview;
-import interview.organiser.model.entity.InterviewRound;
 import interview.organiser.model.entity.User;
 import interview.organiser.repository.AvailabilitySlotRepository;
 import interview.organiser.repository.InterviewRepository;
@@ -19,14 +18,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

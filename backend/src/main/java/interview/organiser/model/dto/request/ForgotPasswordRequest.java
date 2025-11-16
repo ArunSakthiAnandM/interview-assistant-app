@@ -1,6 +1,5 @@
 package interview.organiser.model.dto.request;
 
-import interview.organiser.constants.AppConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

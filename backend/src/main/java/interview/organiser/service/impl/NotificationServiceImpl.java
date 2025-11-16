@@ -7,7 +7,6 @@ import interview.organiser.model.dto.response.NotificationResponse;
 import interview.organiser.model.entity.Interview;
 import interview.organiser.model.entity.InterviewRound;
 import interview.organiser.model.entity.Notification;
-import interview.organiser.model.entity.User;
 import interview.organiser.repository.NotificationRepository;
 import interview.organiser.repository.UserRepository;
 import interview.organiser.service.NotificationService;

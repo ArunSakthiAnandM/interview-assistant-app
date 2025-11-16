@@ -1,6 +1,5 @@
 package interview.organiser.model.dto.response;
 
-import interview.organiser.constants.CandidateStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

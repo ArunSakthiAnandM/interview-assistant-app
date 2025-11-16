@@ -8,7 +8,6 @@ import interview.organiser.exception.ResourceNotFoundException;
 import interview.organiser.exception.UnauthorizedException;
 import interview.organiser.model.dto.response.*;
 import interview.organiser.model.entity.Interview;
-import interview.organiser.model.entity.InterviewRound;
 import interview.organiser.model.entity.User;
 import interview.organiser.repository.InterviewRepository;
 import interview.organiser.repository.OrganisationRepository;
