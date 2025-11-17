@@ -16,10 +16,13 @@ docs/
 
 ### IntelliJ IDEA ###
 .idea
-.mvn
 *.iws
 *.iml
 *.ipr
+
+# Maven Wrapper - Keep the wrapper files but ignore the downloaded JAR
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 
 ### NetBeans ###
 /nbproject/private/
