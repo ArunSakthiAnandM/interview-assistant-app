@@ -27,5 +27,9 @@ public interface InvitationRepository extends MongoRepository<Invitation, String
     Page<Invitation> findByOrganisationId(String organisationId, Pageable pageable);
 
     Page<Invitation> findByEmail(String email, Pageable pageable);
+
+    Page<Invitation> findByStatus(InvitationStatus status, Pageable pageable);
+
+    Page<Invitation> findByStatusAndOrganisationId(InvitationStatus status, String organisationId, Pageable pageable);
 }
 

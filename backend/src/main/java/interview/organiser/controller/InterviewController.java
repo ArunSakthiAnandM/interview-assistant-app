@@ -5,6 +5,7 @@ import interview.organiser.model.dto.request.FeedbackRequest;
 import interview.organiser.model.dto.request.InterviewCreateRequest;
 import interview.organiser.model.dto.request.RoundDecisionRequest;
 import interview.organiser.model.dto.request.RoundRequest;
+import interview.organiser.model.dto.response.FeedbackResponse;
 import interview.organiser.model.dto.response.InterviewResponse;
 import interview.organiser.model.dto.response.MessageResponse;
 import interview.organiser.service.InterviewService;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * REST Controller for interview operations
@@ -234,6 +237,17 @@ public class InterviewController {
             @Valid @RequestBody CancelInterviewRequest request) {
         log.info("Cancel interview request received for ID: {}", id);
         MessageResponse response = interviewService.cancelInterview(id, request.getReason());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get feedback history for interview
+     */
+    @GetMapping("/{id}/feedback-history")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<FeedbackResponse>> getFeedbackHistory(@PathVariable String id) {
+        log.info("Get feedback history request received for interview: {}", id);
+        List<FeedbackResponse> response = interviewService.getFeedbackHistory(id);
         return ResponseEntity.ok(response);
     }
 }

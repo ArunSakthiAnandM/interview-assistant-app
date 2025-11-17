@@ -44,6 +44,8 @@ public class Invitation {
 
     private LocalDateTime declinedAt;
 
+    private String declineReason; // Reason for declining invitation
+
     // Audit fields
     private LocalDateTime createdAt;
 

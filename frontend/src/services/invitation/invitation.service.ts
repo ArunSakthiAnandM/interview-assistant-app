@@ -120,8 +120,8 @@ export class InvitationService {
   /**
    * Extend invitation expiry
    */
-  extend(id: string, newExpiryDate: string): Observable<Invitation> {
-    return this.http.post<Invitation>(API_ENDPOINTS.INVITATIONS.EXTEND(id), { newExpiryDate });
+  extend(id: string, additionalDays: number): Observable<Invitation> {
+    return this.http.post<Invitation>(API_ENDPOINTS.INVITATIONS.EXTEND(id), { additionalDays });
   }
 
   /**

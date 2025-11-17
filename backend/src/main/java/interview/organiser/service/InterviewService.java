@@ -1,10 +1,13 @@
 package interview.organiser.service;
 
 import interview.organiser.model.dto.request.*;
+import interview.organiser.model.dto.response.FeedbackResponse;
 import interview.organiser.model.dto.response.InterviewResponse;
 import interview.organiser.model.dto.response.MessageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * Service interface for interview operations
@@ -86,4 +89,9 @@ public interface InterviewService {
      * Cancel interview with reason and notifications
      */
     MessageResponse cancelInterview(String interviewId, String reason);
+
+    /**
+     * Get feedback history for interview
+     */
+    List<FeedbackResponse> getFeedbackHistory(String interviewId);
 }

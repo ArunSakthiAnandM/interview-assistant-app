@@ -5,6 +5,7 @@ import interview.organiser.exception.InvalidOperationException;
 import interview.organiser.exception.ResourceNotFoundException;
 import interview.organiser.exception.UnauthorizedException;
 import interview.organiser.model.dto.request.*;
+import interview.organiser.model.dto.response.FeedbackResponse;
 import interview.organiser.model.dto.response.InterviewResponse;
 import interview.organiser.model.dto.response.MessageResponse;
 import interview.organiser.model.entity.*;
@@ -640,4 +641,58 @@ public class InterviewServiceImpl implements InterviewService {
 
         return new MessageResponse("Interview cancelled successfully and all participants have been notified");
     }
+
+    @Override
+    public List<FeedbackResponse> getFeedbackHistory(String interviewId) {
+        log.debug("Fetching feedback history for interview: {}", interviewId);
+
+        Interview interview = interviewRepository.findByIdAndDeletedFalse(interviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview", "id", interviewId));
+
+        // Verify user has access to this interview
+        String currentUserId = SecurityUtil.getCurrentUserId();
+        String currentRole = SecurityUtil.getCurrentUserRole();
+
+        if (!"ROLE_ADMIN".equals(currentRole) &&
+            !"ROLE_ORGANISATION_ADMIN".equals(currentRole) &&
+            !interview.getOrganisationId().equals(getUserOrganisationId(currentUserId)) &&
+            !interview.getCreatedByUserId().equals(currentUserId) &&
+            !interview.getCandidateUserId().equals(currentUserId)) {
+            throw new UnauthorizedException("You are not authorized to view feedback for this interview");
+        }
+
+        List<FeedbackResponse> feedbackList = new ArrayList<>();
+
+        if (interview.getRounds() != null) {
+            for (InterviewRound round : interview.getRounds()) {
+                if (round.getFeedbacks() != null) {
+                    for (InterviewerFeedback feedback : round.getFeedbacks()) {
+                        User interviewer = userRepository.findById(feedback.getInterviewerId()).orElse(null);
+                        feedbackList.add(FeedbackResponse.builder()
+                                .interviewerId(feedback.getInterviewerId())
+                                .interviewerName(interviewer != null ? interviewer.getName() : "Unknown")
+                                .recommendation(feedback.getRecommendation())
+                                .rating(feedback.getRating())
+                                .comments(feedback.getComments())
+                                .submittedAt(feedback.getSubmittedAt())
+                                .build());
+                    }
+                }
+            }
+        }
+
+        log.debug("Retrieved {} feedback entries for interview {}", feedbackList.size(), interviewId);
+
+        return feedbackList;
+    }
+
+    /**
+     * Helper method to get user's organisation ID
+     */
+    private String getUserOrganisationId(String userId) {
+        return userRepository.findById(userId)
+                .map(User::getOrganisationId)
+                .orElse(null);
+    }
 }
+

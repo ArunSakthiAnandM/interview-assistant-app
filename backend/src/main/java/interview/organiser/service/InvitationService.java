@@ -1,7 +1,10 @@
 package interview.organiser.service;
 
+import interview.organiser.model.dto.request.BulkInvitationRequest;
+import interview.organiser.model.dto.request.DeclineInvitationRequest;
 import interview.organiser.model.dto.request.InvitationExtensionRequest;
 import interview.organiser.model.dto.request.InvitationRequest;
+import interview.organiser.model.dto.response.BulkInvitationResponse;
 import interview.organiser.model.dto.response.InvitationResponse;
 import interview.organiser.model.dto.response.MessageResponse;
 import org.springframework.data.domain.Page;
@@ -18,19 +21,29 @@ public interface InvitationService {
     InvitationResponse sendInvitation(InvitationRequest request);
 
     /**
+     * Send multiple invitations at once
+     */
+    BulkInvitationResponse bulkSendInvitations(BulkInvitationRequest request);
+
+    /**
      * Accept invitation
      */
     InvitationResponse acceptInvitation(String invitationId);
 
     /**
-     * Decline invitation
+     * Decline invitation with optional reason
      */
-    InvitationResponse declineInvitation(String invitationId);
+    InvitationResponse declineInvitation(String invitationId, DeclineInvitationRequest request);
 
     /**
      * Get invitation by ID
      */
     InvitationResponse getInvitationById(String id);
+
+    /**
+     * Get all invitations with filters (Admin only)
+     */
+    Page<InvitationResponse> getAllInvitations(Pageable pageable, String status, String organisationId);
 
     /**
      * Get invitations for current user
@@ -46,4 +59,9 @@ public interface InvitationService {
      * Extend invitation expiry
      */
     InvitationResponse extendInvitation(String invitationId, InvitationExtensionRequest request);
+
+    /**
+     * Delete invitation
+     */
+    MessageResponse deleteInvitation(String invitationId);
 }

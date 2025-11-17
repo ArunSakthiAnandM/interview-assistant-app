@@ -18,10 +18,12 @@ export interface Invitation {
   organisationId: string;
   organisationName?: string;
   email: string;
-  role: UserRole;
+  invitedRole: UserRole; // Backend returns invitedRole, not role
   status: InvitationStatus;
+  expiryDays?: number;
   expiryDate: string;
-  sentBy?: string;
+  invitedBy?: string;
+  sentBy?: string; // Alias for invitedBy for backward compatibility
   sentByName?: string;
   canExtend?: boolean;
   createdAt: string;
@@ -37,7 +39,7 @@ export interface InvitationResponse extends Invitation {}
  */
 export interface SendInvitationDto {
   email: string;
-  role: UserRole;
+  role: UserRole; // Request uses 'role', backend expects this
   expiryDays: number;
 }
 

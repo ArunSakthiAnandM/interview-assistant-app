@@ -8,7 +8,10 @@ import interview.organiser.exception.InvalidOperationException;
 import interview.organiser.exception.InvitationExpiredException;
 import interview.organiser.exception.ResourceNotFoundException;
 import interview.organiser.exception.UnauthorizedException;
+import interview.organiser.model.dto.request.BulkInvitationRequest;
+import interview.organiser.model.dto.request.DeclineInvitationRequest;
 import interview.organiser.model.dto.request.InvitationRequest;
+import interview.organiser.model.dto.response.BulkInvitationResponse;
 import interview.organiser.model.dto.response.InvitationResponse;
 import interview.organiser.model.dto.response.MessageResponse;
 import interview.organiser.model.entity.Invitation;
@@ -29,6 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of InvitationService
@@ -115,6 +121,35 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     @Transactional
+    public BulkInvitationResponse bulkSendInvitations(BulkInvitationRequest request) {
+        log.info("Bulk sending {} invitations", request.getInvitations().size());
+
+        List<BulkInvitationResponse.FailedInvitation> failed = new ArrayList<>();
+        int sent = 0;
+
+        for (InvitationRequest invitationRequest : request.getInvitations()) {
+            try {
+                sendInvitation(invitationRequest);
+                sent++;
+            } catch (Exception e) {
+                log.warn("Failed to send invitation to {}: {}", invitationRequest.getEmail(), e.getMessage());
+                failed.add(BulkInvitationResponse.FailedInvitation.builder()
+                        .email(invitationRequest.getEmail())
+                        .reason(e.getMessage())
+                        .build());
+            }
+        }
+
+        log.info("Bulk invitation complete: {} sent, {} failed", sent, failed.size());
+
+        return BulkInvitationResponse.builder()
+                .sent(sent)
+                .failed(failed)
+                .build();
+    }
+
+    @Override
+    @Transactional
     public InvitationResponse acceptInvitation(String invitationId) {
         log.info("Accepting invitation: {}", invitationId);
 
@@ -168,7 +203,7 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     @Transactional
-    public InvitationResponse declineInvitation(String invitationId) {
+    public InvitationResponse declineInvitation(String invitationId, DeclineInvitationRequest request) {
         log.info("Declining invitation: {}", invitationId);
 
         String currentUserId = SecurityUtil.getCurrentUserId();
@@ -193,9 +228,16 @@ public class InvitationServiceImpl implements InvitationService {
         invitation.setStatus(InvitationStatus.DECLINED);
         invitation.setDeclinedAt(LocalDateTime.now());
         invitation.setUpdatedAt(LocalDateTime.now());
+        
+        // Store decline reason if provided
+        if (request != null && request.getReason() != null && !request.getReason().isEmpty()) {
+            invitation.setDeclineReason(request.getReason());
+        }
+        
         invitation = invitationRepository.save(invitation);
 
-        log.info("Invitation declined by: {}", currentUser.getEmail());
+        log.info("Invitation declined by: {} with reason: {}", currentUser.getEmail(), 
+                request != null ? request.getReason() : "none");
 
         return entityMapper.toInvitationResponse(invitation);
     }
@@ -208,6 +250,33 @@ public class InvitationServiceImpl implements InvitationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Invitation", "id", id));
 
         return entityMapper.toInvitationResponse(invitation);
+    }
+
+    @Override
+    public Page<InvitationResponse> getAllInvitations(Pageable pageable, String status, String organisationId) {
+        log.debug("Fetching all invitations with filters - status: {}, organisationId: {}", status, organisationId);
+
+        // Verify user is ADMIN
+        String currentRole = SecurityUtil.getCurrentUserRole();
+        if (!"ROLE_ADMIN".equals(currentRole)) {
+            throw new UnauthorizedException("Only ADMIN can view all invitations");
+        }
+
+        Page<Invitation> invitations;
+
+        if (status != null && organisationId != null) {
+            InvitationStatus invitationStatus = InvitationStatus.valueOf(status.toUpperCase());
+            invitations = invitationRepository.findByStatusAndOrganisationId(invitationStatus, organisationId, pageable);
+        } else if (status != null) {
+            InvitationStatus invitationStatus = InvitationStatus.valueOf(status.toUpperCase());
+            invitations = invitationRepository.findByStatus(invitationStatus, pageable);
+        } else if (organisationId != null) {
+            invitations = invitationRepository.findByOrganisationId(organisationId, pageable);
+        } else {
+            invitations = invitationRepository.findAll(pageable);
+        }
+
+        return invitations.map(entityMapper::toInvitationResponse);
     }
 
     @Override
@@ -273,5 +342,39 @@ public class InvitationServiceImpl implements InvitationService {
         log.info("Invitation {} extended until {}", invitationId, newExpiryDate);
 
         return entityMapper.toInvitationResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse deleteInvitation(String invitationId) {
+        log.info("Deleting invitation: {}", invitationId);
+
+        Invitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invitation", "id", invitationId));
+
+        // Verify user is from the same organisation or is ADMIN
+        String currentUserId = SecurityUtil.getCurrentUserId();
+        User currentUser = userRepository.findByIdAndDeletedFalse(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", currentUserId));
+
+        String currentRole = SecurityUtil.getCurrentUserRole();
+        if (!"ROLE_ADMIN".equals(currentRole) &&
+            !"ROLE_ORGANISATION_ADMIN".equals(currentRole) &&
+            !invitation.getOrganisationId().equals(currentUser.getOrganisationId())) {
+            throw new UnauthorizedException("You can only delete invitations for your own organisation");
+        }
+
+        // Verify invitation can be deleted (only PENDING or EXPIRED invitations)
+        if (invitation.getStatus() == InvitationStatus.ACCEPTED) {
+            throw new InvalidOperationException("Cannot delete accepted invitations");
+        }
+
+        invitationRepository.delete(invitation);
+
+        log.info("Invitation {} deleted successfully", invitationId);
+
+        return MessageResponse.builder()
+                .message("Invitation deleted successfully")
+                .build();
     }
 }

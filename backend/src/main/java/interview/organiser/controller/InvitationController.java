@@ -1,7 +1,10 @@
 package interview.organiser.controller;
 
+import interview.organiser.model.dto.request.BulkInvitationRequest;
+import interview.organiser.model.dto.request.DeclineInvitationRequest;
 import interview.organiser.model.dto.request.InvitationExtensionRequest;
 import interview.organiser.model.dto.request.InvitationRequest;
+import interview.organiser.model.dto.response.BulkInvitationResponse;
 import interview.organiser.model.dto.response.InvitationResponse;
 import interview.organiser.model.dto.response.MessageResponse;
 import interview.organiser.service.InvitationService;
@@ -40,6 +43,17 @@ public class InvitationController {
     }
 
     /**
+     * Send multiple invitations at once
+     */
+    @PostMapping("/bulk-send")
+    @PreAuthorize("hasAnyRole('ORGANISATION_ADMIN', 'RECRUITER')")
+    public ResponseEntity<BulkInvitationResponse> bulkSendInvitations(@Valid @RequestBody BulkInvitationRequest request) {
+        log.info("Bulk send invitations request received with {} invitations", request.getInvitations().size());
+        BulkInvitationResponse response = invitationService.bulkSendInvitations(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
      * Accept invitation
      */
     @PostMapping("/{id}/accept")
@@ -51,13 +65,15 @@ public class InvitationController {
     }
 
     /**
-     * Decline invitation
+     * Decline invitation with optional reason
      */
     @PostMapping("/{id}/decline")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<InvitationResponse> declineInvitation(@PathVariable String id) {
+    public ResponseEntity<InvitationResponse> declineInvitation(
+            @PathVariable String id,
+            @RequestBody(required = false) DeclineInvitationRequest request) {
         log.info("Decline invitation request received for ID: {}", id);
-        InvitationResponse response = invitationService.declineInvitation(id);
+        InvitationResponse response = invitationService.declineInvitation(id, request);
         return ResponseEntity.ok(response);
     }
 
@@ -69,6 +85,20 @@ public class InvitationController {
     public ResponseEntity<InvitationResponse> getInvitationById(@PathVariable String id) {
         log.info("Get invitation by ID request received: {}", id);
         InvitationResponse response = invitationService.getInvitationById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get all invitations (ADMIN only)
+     */
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<InvitationResponse>> getAllInvitations(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String organisationId,
+            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        log.info("Get all invitations request received");
+        Page<InvitationResponse> response = invitationService.getAllInvitations(pageable, status, organisationId);
         return ResponseEntity.ok(response);
     }
 
@@ -107,6 +137,17 @@ public class InvitationController {
             @Valid @RequestBody InvitationExtensionRequest request) {
         log.info("Extend invitation request received for ID: {}", id);
         InvitationResponse response = invitationService.extendInvitation(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Delete invitation
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ORGANISATION_ADMIN')")
+    public ResponseEntity<MessageResponse> deleteInvitation(@PathVariable String id) {
+        log.info("Delete invitation request received for ID: {}", id);
+        MessageResponse response = invitationService.deleteInvitation(id);
         return ResponseEntity.ok(response);
     }
 }

@@ -411,4 +411,62 @@ public class OrganisationServiceImpl implements OrganisationService {
 
         return getOrganisationById(currentUser.getOrganisationId());
     }
+
+    @Override
+    @Transactional
+    public OrganisationResponse submitForVerification(String id) {
+        log.info("Submitting organisation {} for verification", id);
+
+        Organisation organisation = organisationRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Organisation", "id", id));
+
+        // Verify user is from the same organisation or is ADMIN
+        String currentUserId = SecurityUtil.getCurrentUserId();
+        User currentUser = userRepository.findByIdAndDeletedFalse(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", currentUserId));
+
+        if (!currentUser.getRole().equals(UserRole.ADMIN) &&
+            !currentUser.getRole().equals(UserRole.ORGANISATION_ADMIN)) {
+            throw new UnauthorizedException("Only ADMIN or ORGANISATION_ADMIN can submit for verification");
+        }
+
+        if (!currentUser.getRole().equals(UserRole.ADMIN) &&
+            !organisation.getId().equals(currentUser.getOrganisationId())) {
+            throw new UnauthorizedException("You can only submit your own organisation for verification");
+        }
+
+        // Check current status
+        if (organisation.getVerificationStatus() == VerificationStatus.VERIFIED) {
+            throw new InvalidOperationException("Organisation is already verified");
+        }
+
+        if (organisation.getVerificationStatus() == VerificationStatus.PENDING) {
+            throw new InvalidOperationException("Organisation verification is already pending");
+        }
+
+        // Update status to PENDING
+        organisation.setVerificationStatus(VerificationStatus.PENDING);
+        organisation.setUpdatedAt(LocalDateTime.now());
+        organisation.setUpdatedBy(currentUserId);
+
+        Organisation saved = organisationRepository.save(organisation);
+
+        // Create verification history entry
+        VerificationHistory historyEntry = VerificationHistory.builder()
+                .status(VerificationStatus.PENDING)
+                .verifiedBy(currentUserId)
+                .verifiedAt(LocalDateTime.now())
+                .reason("Submitted for verification")
+                .build();
+
+        if (organisation.getVerificationHistory() == null) {
+            organisation.setVerificationHistory(new ArrayList<>());
+        }
+        organisation.getVerificationHistory().add(historyEntry);
+        organisationRepository.save(organisation);
+
+        log.info("Organisation {} submitted for verification", id);
+
+        return entityMapper.toOrganisationResponse(saved);
+    }
 }

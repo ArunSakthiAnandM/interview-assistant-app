@@ -66,5 +66,10 @@ public interface OrganisationService {
      * Get current user's organisation
      */
     OrganisationResponse getMyOrganisation();
+
+    /**
+     * Submit organisation for verification
+     */
+    OrganisationResponse submitForVerification(String id);
 }
 

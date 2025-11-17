@@ -151,4 +151,15 @@ public class OrganisationController {
         OrganisationResponse response = organisationService.getMyOrganisation();
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Submit organisation for verification
+     */
+    @PostMapping("/{id}/submit-verification")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ORGANISATION_ADMIN')")
+    public ResponseEntity<OrganisationResponse> submitForVerification(@PathVariable String id) {
+        log.info("Submit organisation {} for verification", id);
+        OrganisationResponse response = organisationService.submitForVerification(id);
+        return ResponseEntity.ok(response);
+    }
 }

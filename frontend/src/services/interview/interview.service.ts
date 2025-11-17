@@ -10,6 +10,7 @@ import {
   UpdateRoundDto,
   SubmitFeedbackDto,
   MakeDecisionDto,
+  Feedback,
 } from '../../models/interview.model';
 import { PaginatedResponse } from '../../models/common.model';
 
@@ -246,8 +247,8 @@ export class InterviewService {
   /**
    * Get feedback history for interview
    */
-  getFeedbackHistory(id: string): Observable<any[]> {
-    return this.http.get<any[]>(API_ENDPOINTS.INTERVIEWS.FEEDBACK_HISTORY(id));
+  getFeedbackHistory(id: string): Observable<Feedback[]> {
+    return this.http.get<Feedback[]>(API_ENDPOINTS.INTERVIEWS.FEEDBACK_HISTORY(id));
   }
 
   /**
