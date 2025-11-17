@@ -4,9 +4,6 @@ import interview.organiser.constants.NotificationType;
 import interview.organiser.model.dto.response.NotificationResponse;
 import interview.organiser.model.entity.Interview;
 import interview.organiser.model.entity.InterviewRound;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 /**

@@ -8,13 +8,11 @@ import interview.organiser.model.entity.Interview;
 import interview.organiser.model.entity.InterviewRound;
 import interview.organiser.model.entity.Notification;
 import interview.organiser.repository.NotificationRepository;
-import interview.organiser.repository.UserRepository;
 import interview.organiser.service.NotificationService;
 import interview.organiser.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,7 +29,6 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
 
     @Value("${notification.read-retention-days:30}")
     private Integer readRetentionDays;

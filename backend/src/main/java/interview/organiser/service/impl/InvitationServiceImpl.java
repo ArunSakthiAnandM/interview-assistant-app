@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Implementation of InvitationService
@@ -56,8 +55,6 @@ public class InvitationServiceImpl implements InvitationService {
         log.info("Sending invitation to: {}", request.getEmail());
 
         String currentUserId = SecurityUtil.getCurrentUserId();
-        String currentRole = SecurityUtil.getCurrentUserRole();
-
         // Get current user to determine organisation
         User currentUser = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", currentUserId));
