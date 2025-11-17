@@ -198,6 +198,7 @@ backend/src/main/resources/application-secret.properties
 *.jks
 secrets/
 credentials/
+.github/setup-github-env.sh
 
 #############################################
 # Temporary Files
