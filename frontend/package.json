@@ -17,7 +17,11 @@
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,css,json}\"",
     "analyze": "ng build --configuration production --stats-json && webpack-bundle-analyzer dist/interview-organiser/browser/stats.json",
     "serve:prod": "ng serve --configuration production --host 0.0.0.0 --port 4200",
-    "clean": "rm -rf dist node_modules/.cache"
+    "clean": "rm -rf dist node_modules/.cache",
+    "deploy:build": "npm run build:prod",
+    "deploy:s3": "aws s3 sync dist/interview-organiser/browser/ s3://interview-organiser-cloudfront-frontend --delete",
+    "deploy:invalidate": "aws cloudfront create-invalidation --distribution-id E3F2UK8P9B8LAT --paths '/*'",
+    "deploy": "npm run deploy:build && npm run deploy:s3 && npm run deploy:invalidate"
   },
   "prettier": {
     "printWidth": 100,
