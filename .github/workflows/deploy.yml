@@ -46,13 +46,24 @@ jobs:
       - name: Load Backend Properties
         run: |
           echo "Loading properties from GitHub environment..."
-          echo "MONGO_DB_URI=${{ secrets.MONGO_DB_URI }}" >> $GITHUB_ENV
+          echo "SPRING_DATA_MONGODB_URI=${{ secrets.MONGO_DB_URI }}" >> $GITHUB_ENV
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
           echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> $GITHUB_ENV
           echo "AWS_S3_REGION=${{ vars.AWS_REGION }}" >> $GITHUB_ENV
           echo "AWS_S3_BUCKET_NAME=${{ vars.S3_DOCUMENTS_BUCKET }}" >> $GITHUB_ENV
-          echo "Loaded AWS_S3_REGION: ${{ vars.AWS_REGION }}"
+          echo "PORT=8080" >> $GITHUB_ENV
+          echo "ACTIVE_PROFILE=prod" >> $GITHUB_ENV
+          echo ""
+          echo "=== Loaded Backend Properties ==="
+          echo "SPRING_DATA_MONGODB_URI: ${{ secrets.MONGO_DB_URI }}"
+          echo "JWT_SECRET: [REDACTED]"
+          echo "AWS_S3_ACCESS_KEY: [REDACTED]"
+          echo "AWS_S3_REGION: ${{ vars.AWS_REGION }}"
+          echo "AWS_S3_BUCKET_NAME: ${{ vars.S3_DOCUMENTS_BUCKET }}"
+          echo "PORT: 8080"
+          echo "ACTIVE_PROFILE: prod"
+          echo "================================="
 
       - name: Build with Maven
         working-directory: ./backend
@@ -150,17 +161,40 @@ jobs:
           echo "Found JAR: $JAR_FILE"
 
           # Create deployment package with JAR and Procfile
-          mkdir -p deploy
+          mkdir -p deploy/.ebextensions
           cp $JAR_FILE deploy/application.jar
 
-          # Create Procfile for Elastic Beanstalk
-          echo "web: java -jar application.jar" > deploy/Procfile
+          # Create Procfile for Elastic Beanstalk (using port 8080)
+          echo "web: java -Dserver.port=8080 -jar application.jar" > deploy/Procfile
+
+          # Create .ebextensions configuration for environment variables
+          cat > deploy/.ebextensions/environment.config << EOF
+          option_settings:
+            aws:elasticbeanstalk:application:environment:
+              SPRING_DATA_MONGODB_URI: "${{ secrets.MONGO_DB_URI }}"
+              JWT_SECRET: "${{ secrets.JWT_SECRET }}"
+              AWS_S3_ACCESS_KEY: "${{ secrets.AWS_S3_ACCESS_KEY }}"
+              AWS_S3_SECRET_KEY: "${{ secrets.AWS_S3_SECRET_KEY }}"
+              AWS_S3_REGION: "${{ vars.AWS_REGION }}"
+              AWS_S3_BUCKET_NAME: "${{ vars.S3_DOCUMENTS_BUCKET }}"
+              PORT: "8080"
+              ACTIVE_PROFILE: "prod"
+          EOF
+
+          echo ""
+          echo "=== Environment Configuration ==="
+          cat deploy/.ebextensions/environment.config
+          echo "================================="
+          echo ""
 
           # Zip the package
           cd deploy
           zip -r ../deployment-package.zip .
           cd ..
           echo "Deployment package created: deployment-package.zip"
+          echo ""
+          echo "Package contents:"
+          unzip -l deployment-package.zip
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
