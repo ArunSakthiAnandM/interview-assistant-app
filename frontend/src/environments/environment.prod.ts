@@ -3,7 +3,7 @@
  */
 export const environment = {
   production: true,
-  apiUrl: 'http://aruns-interview-organiser.ap-south-1.elasticbeanstalk.com/api/v1',
+  apiUrl: 'https://d19iccr2exkcmi.cloudfront.net/api/v1',
   enableDebugMode: false,
   enableServiceWorker: true,
 };

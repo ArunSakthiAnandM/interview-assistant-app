@@ -23,7 +23,8 @@ public class CorsConfig {
         // Allow specific origins
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "http://aruns-interview-organiser.ap-south-1.elasticbeanstalk.com"
+                "http://aruns-interview-organiser.ap-south-1.elasticbeanstalk.com",
+                "https://d3ifqjjgbn3buc.cloudfront.net/"
         ));
         
         // Allow all HTTP methods
