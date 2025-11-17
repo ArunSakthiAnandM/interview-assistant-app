@@ -111,12 +111,11 @@ jobs:
 
       - name: Build Angular App
         working-directory: ./frontend
-        run: |
-          npm run build -- --configuration=production
+        run: npm run build:prod
 
       - name: Run Tests
         working-directory: ./frontend
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        run: npm run test:ci
 
       - name: Upload Frontend Artifact
         uses: actions/upload-artifact@v4
