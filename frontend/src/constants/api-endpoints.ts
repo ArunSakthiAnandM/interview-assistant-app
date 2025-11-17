@@ -1,8 +1,10 @@
+import { environment } from '../environments/environment';
+
 /**
  * Base API URL
- * Note: In production, this should be configured via environment variables
+ * Automatically uses the correct URL based on the environment
  */
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = environment.apiUrl;
 
 /**
  * API Endpoints organized by feature
