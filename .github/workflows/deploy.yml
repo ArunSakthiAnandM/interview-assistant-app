@@ -29,6 +29,8 @@ jobs:
   build-backend:
     name: Build Spring Backend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
     steps:
       - name: Checkout code
@@ -73,6 +75,8 @@ jobs:
   build-frontend:
     name: Build Angular Frontend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
     steps:
       - name: Checkout code
