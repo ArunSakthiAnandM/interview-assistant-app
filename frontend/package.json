@@ -20,7 +20,7 @@
     "clean": "rm -rf dist node_modules/.cache",
     "deploy:build": "npm run build:prod",
     "deploy:s3": "aws s3 sync dist/interview-organiser/browser/ s3://interview-organiser-cloudfront-frontend --delete",
-    "deploy:invalidate": "aws cloudfront create-invalidation --distribution-id E3F2UK8P9B8LAT --paths '/*'",
+    "deploy:invalidate": "aws cloudfront create-invalidation --distribution-id E3QC6GJPB4L4CY --paths '/*'",
     "deploy": "npm run deploy:build && npm run deploy:s3 && npm run deploy:invalidate"
   },
   "prettier": {
