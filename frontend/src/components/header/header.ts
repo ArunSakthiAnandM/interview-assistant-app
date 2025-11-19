@@ -1,5 +1,4 @@
 import { Component, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,9 +15,7 @@ import { UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     RouterLinkActive,
     MatToolbarModule,

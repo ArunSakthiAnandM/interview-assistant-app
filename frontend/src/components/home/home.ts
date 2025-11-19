@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,8 +30,7 @@ interface RoleInfo {
  */
 @Component({
   selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule],
+  imports: [MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

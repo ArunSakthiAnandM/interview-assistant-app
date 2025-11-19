@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,8 +15,7 @@ import { ROUTES } from '../../../constants/routes';
  */
 @Component({
   selector: 'app-organisation-dashboard',
-  standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, MatChipsModule],
+  imports: [DatePipe, MatCardModule, MatIconModule, MatButtonModule, MatChipsModule],
   templateUrl: './organisation-dashboard.html',
   styleUrl: './organisation-dashboard.scss',
 })

@@ -1,5 +1,4 @@
 import { Component, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,15 +30,7 @@ interface NavSection {
  */
 @Component({
   selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatListModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDividerModule,
-  ],
+  imports: [RouterLink, MatListModule, MatIconModule, MatButtonModule, MatDividerModule],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.scss'],
 })

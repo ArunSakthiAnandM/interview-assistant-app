@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,8 +8,7 @@ import { ROUTES } from '../../../constants/routes';
 
 @Component({
   selector: 'app-candidate-dashboard',
-  standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule],
+  imports: [MatCardModule, MatIconModule, MatButtonModule],
   templateUrl: './candidate-dashboard.html',
   styleUrl: './candidate-dashboard.scss',
 })

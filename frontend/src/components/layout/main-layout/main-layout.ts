@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
 import { UiStore } from '../../../stores/ui/ui.store';
@@ -18,8 +17,7 @@ import { SidebarComponent } from '../sidebar';
  */
 @Component({
   selector: 'app-main-layout',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, Header, Footer, SidebarComponent],
+  imports: [RouterOutlet, Header, Footer, SidebarComponent],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })

@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -37,9 +36,7 @@ import { UserRole } from '../../../models/user.model';
  */
 @Component({
   selector: 'app-interview-detail',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatTabsModule,

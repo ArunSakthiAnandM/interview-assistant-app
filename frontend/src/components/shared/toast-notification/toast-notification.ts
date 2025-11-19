@@ -1,5 +1,4 @@
 import { Component, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NotificationStore } from '../../../stores/notification/notification.store';
@@ -16,8 +15,7 @@ import { NotificationStore } from '../../../stores/notification/notification.sto
  */
 @Component({
   selector: 'app-toast-notification',
-  standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule],
   templateUrl: './toast-notification.html',
   styleUrl: './toast-notification.scss',
 })

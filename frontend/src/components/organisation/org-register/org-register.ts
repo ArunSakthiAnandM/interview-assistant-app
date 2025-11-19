@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -30,9 +29,7 @@ import { RegisterOrganisationDto } from '../../../models/organisation.model';
  */
 @Component({
   selector: 'app-org-register',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     MatCardModule,

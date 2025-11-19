@@ -19,10 +19,11 @@
           [class.error]="hasError('name')"
           placeholder="Enter your full name"
         />
-        <div class="error-message" *ngIf="hasError('name', 'required')">Name is required</div>
-        <div class="error-message" *ngIf="hasError('name', 'minlength')">
-          Name must be at least 2 characters
-        </div>
+        @if (hasError('name', 'required')) {
+        <div class="error-message">Name is required</div>
+        } @if (hasError('name', 'minlength')) {
+        <div class="error-message">Name must be at least 2 characters</div>
+        }
       </div>
 
       <!-- Email Field -->
@@ -36,10 +37,11 @@
           [class.error]="hasError('email')"
           placeholder="your.email@example.com"
         />
-        <div class="error-message" *ngIf="hasError('email', 'required')">Email is required</div>
-        <div class="error-message" *ngIf="hasError('email', 'email')">
-          Please enter a valid email address
-        </div>
+        @if (hasError('email', 'required')) {
+        <div class="error-message">Email is required</div>
+        } @if (hasError('email', 'email')) {
+        <div class="error-message">Please enter a valid email address</div>
+        }
       </div>
 
       <!-- Phone Number Field -->
@@ -53,21 +55,20 @@
           [class.error]="hasError('phoneNumber')"
           placeholder="1234567890"
         />
-        <div class="error-message" *ngIf="hasError('phoneNumber', 'required')">
-          Phone number is required
-        </div>
-        <div class="error-message" *ngIf="hasError('phoneNumber', 'pattern')">
-          Please enter a valid 10-digit phone number
-        </div>
+        @if (hasError('phoneNumber', 'required')) {
+        <div class="error-message">Phone number is required</div>
+        } @if (hasError('phoneNumber', 'pattern')) {
+        <div class="error-message">Please enter a valid 10-digit phone number</div>
+        }
       </div>
 
       <!-- Role Selection -->
       <div class="form-group">
         <label for="role" class="form-label">I want to register as *</label>
         <select id="role" formControlName="role" class="form-control">
-          <option *ngFor="let role of roleOptions" [value]="role.value">
-            {{ role.label }} - {{ role.description }}
-          </option>
+          @for (role of roleOptions; track role.value) {
+          <option [value]="role.value">{{ role.label }} - {{ role.description }}</option>
+          }
         </select>
       </div>
 
@@ -92,15 +93,15 @@
             {{ showPassword ? '👁️' : '👁️‍🗨️' }}
           </button>
         </div>
-        <div class="error-message" *ngIf="hasError('password', 'required')">
-          Password is required
-        </div>
-        <div class="error-message" *ngIf="hasError('password', 'minlength')">
-          Password must be at least 8 characters
-        </div>
-        <div class="error-message" *ngIf="hasError('password', 'passwordStrength')">
+        @if (hasError('password', 'required')) {
+        <div class="error-message">Password is required</div>
+        } @if (hasError('password', 'minlength')) {
+        <div class="error-message">Password must be at least 8 characters</div>
+        } @if (hasError('password', 'passwordStrength')) {
+        <div class="error-message">
           Password must contain uppercase, lowercase, number, and special character
         </div>
+        }
       </div>
 
       <!-- Confirm Password Field -->
@@ -124,12 +125,11 @@
             {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
           </button>
         </div>
-        <div class="error-message" *ngIf="hasError('confirmPassword', 'required')">
-          Please confirm your password
-        </div>
-        <div class="error-message" *ngIf="hasFormError('passwordMismatch')">
-          Passwords do not match
-        </div>
+        @if (hasError('confirmPassword', 'required')) {
+        <div class="error-message">Please confirm your password</div>
+        } @if (hasFormError('passwordMismatch')) {
+        <div class="error-message">Passwords do not match</div>
+        }
       </div>
 
       <!-- Optional Fields Section -->
@@ -225,8 +225,11 @@
 
       <!-- Submit Button -->
       <button type="submit" class="btn btn-primary" [disabled]="isLoading || registerForm.invalid">
-        <span *ngIf="!isLoading">Create Account</span>
-        <span *ngIf="isLoading">Creating Account...</span>
+        @if (!isLoading) {
+        <span>Create Account</span>
+        } @if (isLoading) {
+        <span>Creating Account...</span>
+        }
       </button>
 
       <!-- Login Link -->
