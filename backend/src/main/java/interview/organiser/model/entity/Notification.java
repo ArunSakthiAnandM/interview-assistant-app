@@ -49,7 +49,6 @@ public class Notification {
 
     private LocalDateTime readAt;
 
-    @Indexed
     private LocalDateTime createdAt;
 
     // Soft delete
