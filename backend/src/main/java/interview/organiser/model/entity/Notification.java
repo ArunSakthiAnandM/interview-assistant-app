@@ -49,7 +49,7 @@ public class Notification {
 
     private LocalDateTime readAt;
 
-    @Indexed(expireAfterSeconds = 2592000) // 30 days in seconds (auto-delete after 30 days if read)
+    @Indexed
     private LocalDateTime createdAt;
 
     // Soft delete
