@@ -144,7 +144,7 @@ export const APP_METADATA = {
   NAME: 'Interview Organiser',
   DESCRIPTION: 'Professional interview management platform',
   VERSION: '1.0.0',
-  AUTHOR: 'Interview Assistant Team',
+  AUTHOR: 'Interview Organiser Team',
   SUPPORT_EMAIL: 'support@intervieworganiser.com',
 };
 

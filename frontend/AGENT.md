@@ -1,8 +1,8 @@
-# Interview Assistant App - Frontend
+# Interview Organiser App - Frontend
 
 ## Project Overview
 
-This is the frontend application for the Interview Assistant platform, built with **Angular 20** using modern best practices and features.
+This is the frontend application for the Interview Organiser platform, built with **Angular 20** using modern best practices and features.
 
 ## Technology Stack
 

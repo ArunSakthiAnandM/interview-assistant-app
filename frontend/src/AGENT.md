@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This directory contains all the source code for the Interview Assistant frontend application built with Angular 20.
+This directory contains all the source code for the Interview Organiser frontend application built with Angular 20.
 
 ## Structure Overview
 

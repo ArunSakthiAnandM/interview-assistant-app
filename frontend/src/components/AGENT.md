@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Contains all UI components for the Interview Assistant application, organized by feature or domain.
+Contains all UI components for the Interview Organiser application, organized by feature or domain.
 
 ## Angular 20 Component Standards
 

@@ -50,7 +50,7 @@ export const HTTP_STATUS = {
 ```typescript
 // app.constants.ts
 export const APP_CONFIG = {
-  APP_NAME: 'Interview Assistant',
+  APP_NAME: 'Interview Organiser',
   VERSION: '1.0.0',
   DEFAULT_LANGUAGE: 'en',
   ITEMS_PER_PAGE: 10,
