@@ -1,18 +1,7 @@
 <mat-toolbar class="app-header" color="primary">
   <div class="header-content">
-    <!-- Left Section: Menu Toggle & Logo -->
+    <!-- Left Section: Logo -->
     <div class="header-left">
-      @if (isAuthenticated()) {
-      <button
-        mat-icon-button
-        (click)="toggleSidebar()"
-        aria-label="Toggle menu"
-        class="menu-toggle"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
-      }
-
       <a [routerLink]="['/']" class="app-logo">
         <mat-icon class="logo-icon">work</mat-icon>
         <span class="logo-text">Interview Organiser</span>

@@ -269,8 +269,7 @@ frontend/
 │   │   │   ├── user-list/
 │   │   │   └── user-invite/
 │   │   ├── layout/                   # Layout components
-│   │   │   ├── main-layout/
-│   │   │   └── sidebar.ts
+│   │   │   └── main-layout/
 │   │   ├── shared/                   # Shared/reusable components
 │   │   │   └── toast-notification/
 │   │   ├── header/                   # Header component
@@ -287,7 +286,7 @@ frontend/
 │   │   └── file/                     # File upload service
 │   │
 │   ├── stores/                       # Signal-based state stores
-│   │   ├── ui/                       # UI state (sidebar, modals, theme)
+│   │   ├── ui/                       # UI state (modals, theme, loading)
 │   │   └── notification/             # Notification state
 │   │
 │   ├── guards/                       # Route guards
@@ -616,10 +615,10 @@ The application uses Angular Signals for state management:
 
 Manages global UI state:
 
-- Sidebar open/closed state
 - Modal visibility
 - Loading states
 - Theme preferences
+- Mobile detection
 
 ```typescript
 // Usage example

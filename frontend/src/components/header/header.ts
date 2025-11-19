@@ -9,7 +9,6 @@ import { MatDividerModule } from '@angular/material/divider';
 
 import { AuthService } from '../../services/auth/auth.service';
 import { NotificationService } from '../../services/notification/notification.service';
-import { UiStore } from '../../stores/ui/ui.store';
 import { ROUTES } from '../../constants/routes';
 import { UserRole } from '../../models/user.model';
 
@@ -31,7 +30,6 @@ import { UserRole } from '../../models/user.model';
 export class Header {
   protected authService = inject(AuthService);
   protected notificationService = inject(NotificationService);
-  protected uiStore = inject(UiStore);
   protected router = inject(Router);
 
   // Expose constants for template
@@ -86,13 +84,6 @@ export class Header {
         return [];
     }
   });
-
-  /**
-   * Toggle sidebar
-   */
-  protected toggleSidebar(): void {
-    this.uiStore.toggleSidebar();
-  }
 
   /**
    * Navigate to notifications

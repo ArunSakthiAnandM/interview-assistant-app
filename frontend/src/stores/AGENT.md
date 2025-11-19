@@ -175,13 +175,11 @@ export interface Modal {
 export class UiStore {
   // Private state
   private _isLoading = signal(false);
-  private _isSidebarOpen = signal(true);
   private _modals = signal<Modal[]>([]);
   private _theme = signal<'light' | 'dark'>('light');
 
   // Public readonly signals
   readonly isLoading = this._isLoading.asReadonly();
-  readonly isSidebarOpen = this._isSidebarOpen.asReadonly();
   readonly modals = this._modals.asReadonly();
   readonly theme = this._theme.asReadonly();
 
@@ -192,15 +190,6 @@ export class UiStore {
   // Loading actions
   setLoading(loading: boolean): void {
     this._isLoading.set(loading);
-  }
-
-  // Sidebar actions
-  toggleSidebar(): void {
-    this._isSidebarOpen.update((state) => !state);
-  }
-
-  setSidebarOpen(isOpen: boolean): void {
-    this._isSidebarOpen.set(isOpen);
   }
 
   // Modal actions

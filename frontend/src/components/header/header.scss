@@ -25,10 +25,6 @@
   gap: $spacing-md;
 }
 
-.menu-toggle {
-  color: white;
-}
-
 .app-logo {
   @include flex-row;
   align-items: center;

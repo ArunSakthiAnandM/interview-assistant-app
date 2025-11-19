@@ -2,15 +2,6 @@ import { Injectable, signal, computed, effect } from '@angular/core';
 import { STORAGE_KEYS } from '../../constants/app-config';
 
 /**
- * Sidebar State
- */
-export interface SidebarState {
-  isOpen: boolean;
-  isPinned: boolean;
-  width: number;
-}
-
-/**
  * Loading State
  */
 export interface LoadingState {
@@ -22,7 +13,6 @@ export interface LoadingState {
  * UI Store
  *
  * Manages global UI state across the application:
- * - Sidebar state (open/closed, pinned)
  * - Loading indicators
  * - Theme preferences
  * - Mobile detection
@@ -33,12 +23,6 @@ export interface LoadingState {
   providedIn: 'root',
 })
 export class UiStore {
-  // Sidebar state
-  private sidebar = signal<SidebarState>(this.loadSidebarState());
-  readonly sidebar$ = this.sidebar.asReadonly();
-  readonly isSidebarOpen = computed(() => this.sidebar().isOpen);
-  readonly isSidebarPinned = computed(() => this.sidebar().isPinned);
-
   // Loading state
   private loading = signal<LoadingState>({ isLoading: false });
   readonly loading$ = this.loading.asReadonly();
@@ -59,11 +43,6 @@ export class UiStore {
   readonly pageTitle$ = this.pageTitle.asReadonly();
 
   constructor() {
-    // Auto-save sidebar state
-    effect(() => {
-      this.saveSidebarState(this.sidebar());
-    });
-
     // Auto-save theme
     effect(() => {
       this.saveTheme(this.theme());
@@ -75,43 +54,6 @@ export class UiStore {
         this.isMobile.set(this.detectMobile());
       });
     }
-  }
-
-  // Sidebar methods
-
-  /**
-   * Toggle sidebar open/closed
-   */
-  toggleSidebar(): void {
-    this.sidebar.update((state) => ({ ...state, isOpen: !state.isOpen }));
-  }
-
-  /**
-   * Open sidebar
-   */
-  openSidebar(): void {
-    this.sidebar.update((state) => ({ ...state, isOpen: true }));
-  }
-
-  /**
-   * Close sidebar
-   */
-  closeSidebar(): void {
-    this.sidebar.update((state) => ({ ...state, isOpen: false }));
-  }
-
-  /**
-   * Toggle sidebar pinned state
-   */
-  toggleSidebarPinned(): void {
-    this.sidebar.update((state) => ({ ...state, isPinned: !state.isPinned }));
-  }
-
-  /**
-   * Set sidebar width
-   */
-  setSidebarWidth(width: number): void {
-    this.sidebar.update((state) => ({ ...state, width }));
   }
 
   // Loading methods
@@ -161,45 +103,6 @@ export class UiStore {
   }
 
   // Private helper methods
-
-  /**
-   * Load sidebar state from localStorage
-   */
-  private loadSidebarState(): SidebarState {
-    if (typeof localStorage === 'undefined') {
-      return this.getDefaultSidebarState();
-    }
-
-    const stored = localStorage.getItem(STORAGE_KEYS.SIDEBAR_STATE);
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return this.getDefaultSidebarState();
-      }
-    }
-    return this.getDefaultSidebarState();
-  }
-
-  /**
-   * Save sidebar state to localStorage
-   */
-  private saveSidebarState(state: SidebarState): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.SIDEBAR_STATE, JSON.stringify(state));
-    }
-  }
-
-  /**
-   * Get default sidebar state
-   */
-  private getDefaultSidebarState(): SidebarState {
-    return {
-      isOpen: !this.detectMobile(),
-      isPinned: !this.detectMobile(),
-      width: 260,
-    };
-  }
 
   /**
    * Load theme from localStorage

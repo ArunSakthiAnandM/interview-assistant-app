@@ -20,7 +20,6 @@ export const STORAGE_KEYS = {
   USER: 'user',
   THEME: 'theme',
   LANGUAGE: 'language',
-  SIDEBAR_STATE: 'sidebar_state',
   DRAFT_INTERVIEW: 'draft_interview',
   DRAFT_ORG_REGISTRATION: 'draft_org_registration',
 };
