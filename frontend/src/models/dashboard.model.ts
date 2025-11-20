@@ -79,17 +79,19 @@ export interface InterviewerDashboardResponse {
 export interface CandidateDashboardResponse {
   candidateId: string;
   candidateName: string;
-  appliedInterviews: number;
-  roundStatuses: {
-    pending: number;
-    scheduled: number;
-    completed: number;
-    selected: number;
-    rejected: number;
+  totalInterviews: number;
+  upcomingRounds: number;
+  interviewsByStatus: {
+    IN_PROGRESS: number;
+    CANCELLED: number;
+    COMPLETED: number;
+    RESCHEDULED: number;
+    SCHEDULED: number;
   };
-  upcomingScheduledRounds: UpcomingInterview[];
-  recentUpdates: RecentUpdateEntry[];
-  nextInterview?: UpcomingInterview;
+  selectedCount: number;
+  rejectedCount: number;
+  inProgressCount: number;
+  upcomingSchedule: UpcomingInterview[];
 }
 
 /**

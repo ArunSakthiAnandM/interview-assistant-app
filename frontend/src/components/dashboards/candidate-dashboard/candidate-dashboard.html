@@ -20,8 +20,8 @@
       <mat-card-content>
         <div class="stat-icon"><mat-icon>work</mat-icon></div>
         <div class="stat-details">
-          <div class="stat-value">{{ stats()!.appliedInterviews || 0 }}</div>
-          <div class="stat-label">Applied Interviews</div>
+          <div class="stat-value">{{ stats()!.totalInterviews || 0 }}</div>
+          <div class="stat-label">Total Interviews</div>
         </div>
       </mat-card-content>
     </mat-card>
@@ -30,8 +30,8 @@
       <mat-card-content>
         <div class="stat-icon"><mat-icon>pending</mat-icon></div>
         <div class="stat-details">
-          <div class="stat-value">{{ stats()!.roundStatuses.pending || 0 }}</div>
-          <div class="stat-label">Pending Rounds</div>
+          <div class="stat-value">{{ stats()!.upcomingRounds || 0 }}</div>
+          <div class="stat-label">Upcoming Rounds</div>
         </div>
       </mat-card-content>
     </mat-card>
@@ -40,8 +40,18 @@
       <mat-card-content>
         <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
         <div class="stat-details">
-          <div class="stat-value">{{ stats()!.roundStatuses.completed || 0 }}</div>
-          <div class="stat-label">Completed Rounds</div>
+          <div class="stat-value">{{ stats()!.interviewsByStatus.COMPLETED || 0 }}</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card info">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>schedule</mat-icon></div>
+        <div class="stat-details">
+          <div class="stat-value">{{ stats()!.interviewsByStatus.SCHEDULED || 0 }}</div>
+          <div class="stat-label">Scheduled</div>
         </div>
       </mat-card-content>
     </mat-card>
