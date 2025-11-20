@@ -200,6 +200,45 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { roles: [UserRole.CANDIDATE] },
       },
+      {
+        path: ROUTES.CANDIDATE.PROFILE,
+        loadComponent: () =>
+          import('../components/dashboards/candidate-dashboard/candidate-dashboard').then(
+            (m) => m.CandidateDashboardComponent
+          ),
+        canActivate: [authGuard],
+        data: { roles: [UserRole.CANDIDATE] },
+      },
+
+      // Shared authenticated routes
+      {
+        path: ROUTES.PROFILE,
+        loadComponent: () =>
+          import('../components/shared/profile/profile').then((m) => m.ProfileComponent),
+        canActivate: [authGuard],
+      },
+      {
+        path: ROUTES.NOTIFICATIONS,
+        loadComponent: () =>
+          import('../components/shared/notifications/notifications').then(
+            (m) => m.NotificationsComponent
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: ROUTES.INVITATIONS,
+        loadComponent: () =>
+          import('../components/shared/invitations/invitations').then(
+            (m) => m.InvitationsComponent
+          ),
+        canActivate: [authGuard],
+      },
+
+      // Error routes
+      {
+        path: ROUTES.UNAUTHORIZED,
+        loadComponent: () => import('../components/home/home').then((m) => m.Home),
+      },
 
       // Fallback
       {
