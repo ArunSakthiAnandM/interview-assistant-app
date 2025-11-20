@@ -1,144 +1,141 @@
 <div class="dashboard-container">
-      <div class="dashboard-header">
-        <h1>Admin Dashboard</h1>
-        <p>System-wide overview and management</p>
+  @if (isLoading()) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading dashboard...</p>
+  </div>
+  } @else if (error()) {
+  <div class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error() }}</p>
+  </div>
+  } @else if (stats()) {
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p>System-wide overview and management</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card primary">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ stats()!.totalOrganisations }}</div>
+          <div class="stat-label">Total Organisations</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card success">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ stats()!.totalUsers }}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card warning">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>event</mat-icon>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ stats()!.activeInterviews }}</div>
+          <div class="stat-label">Active Interviews</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card info">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ stats()!.verifiedOrganisations }}</div>
+          <div class="stat-label">Verified Organisations</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <mat-card class="quick-actions-card">
+    <mat-card-header>
+      <mat-card-title>Quick Actions</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="actions-grid">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="router.navigate([ROUTES.ADMIN.ORGANISATIONS])"
+        >
+          <mat-icon>business</mat-icon>
+          Manage Organisations
+        </button>
+        <button mat-raised-button color="primary" (click)="router.navigate([ROUTES.ADMIN.USERS])">
+          <mat-icon>people</mat-icon>
+          Manage Users
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="router.navigate([ROUTES.ADMIN.ANALYTICS])"
+        >
+          <mat-icon>analytics</mat-icon>
+          View Analytics
+        </button>
       </div>
+    </mat-card-content>
+  </mat-card>
 
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <mat-card class="stat-card primary">
-          <mat-card-content>
-            <div class="stat-icon">
-              <mat-icon>business</mat-icon>
-            </div>
-            <div class="stat-details">
-              <div class="stat-value">{{ stats().totalOrganisations }}</div>
-              <div class="stat-label">Total Organisations</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
+  <!-- Recent Activity -->
+  <div class="dashboard-grid">
+    <mat-card class="recent-activity-card">
+      <mat-card-header>
+        <mat-card-title>Recent Organisation Registrations</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="empty-state">
+          <mat-icon>business</mat-icon>
+          <p>No recent organisations data available</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-        <mat-card class="stat-card success">
-          <mat-card-content>
-            <div class="stat-icon">
-              <mat-icon>people</mat-icon>
-            </div>
-            <div class="stat-details">
-              <div class="stat-value">{{ stats().totalUsers }}</div>
-              <div class="stat-label">Total Users</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="stat-card warning">
-          <mat-card-content>
-            <div class="stat-icon">
-              <mat-icon>event</mat-icon>
-            </div>
-            <div class="stat-details">
-              <div class="stat-value">{{ stats().activeInterviews }}</div>
-              <div class="stat-label">Active Interviews</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="stat-card info">
-          <mat-card-content>
-            <div class="stat-icon">
-              <mat-icon>check_circle</mat-icon>
-            </div>
-            <div class="stat-details">
-              <div class="stat-value">{{ stats().verifiedOrganisations }}</div>
-              <div class="stat-label">Verified Organisations</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <!-- Quick Actions -->
-      <mat-card class="quick-actions-card">
-        <mat-card-header>
-          <mat-card-title>Quick Actions</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="actions-grid">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="navigateTo(ROUTES.ADMIN.ORGANISATIONS)"
-            >
-              <mat-icon>business</mat-icon>
-              Manage Organisations
-            </button>
-            <button mat-raised-button color="primary" (click)="navigateTo(ROUTES.ADMIN.USERS)">
-              <mat-icon>people</mat-icon>
-              Manage Users
-            </button>
-            <button mat-raised-button color="primary" (click)="navigateTo(ROUTES.ADMIN.ANALYTICS)">
-              <mat-icon>analytics</mat-icon>
-              View Analytics
-            </button>
+    <mat-card class="system-health-card">
+      <mat-card-header>
+        <mat-card-title>System Health</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="health-metrics">
+          <div class="health-item">
+            <div class="health-label">API Status</div>
+            <mat-chip color="primary">Operational</mat-chip>
           </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Recent Activity -->
-      <div class="dashboard-grid">
-        <mat-card class="recent-activity-card">
-          <mat-card-header>
-            <mat-card-title>Recent Organisation Registrations</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            @if (recentOrganisations().length > 0) {
-            <div class="activity-list">
-              @for (org of recentOrganisations(); track org.id) {
-              <div class="activity-item">
-                <div class="activity-icon">
-                  <mat-icon>business</mat-icon>
-                </div>
-                <div class="activity-details">
-                  <div class="activity-title">{{ org.name }}</div>
-                  <div class="activity-subtitle">{{ org.email }}</div>
-                </div>
-                <mat-chip [color]="org.verified ? 'primary' : 'warn'">
-                  {{ org.verified ? 'Verified' : 'Pending' }}
-                </mat-chip>
-              </div>
-              }
-            </div>
-            } @else {
-            <div class="empty-state">
-              <mat-icon>business</mat-icon>
-              <p>No recent organisations</p>
-            </div>
-            }
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="system-health-card">
-          <mat-card-header>
-            <mat-card-title>System Health</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="health-metrics">
-              <div class="health-item">
-                <div class="health-label">API Status</div>
-                <mat-chip color="primary">Operational</mat-chip>
-              </div>
-              <div class="health-item">
-                <div class="health-label">Database</div>
-                <mat-chip color="primary">Healthy</mat-chip>
-              </div>
-              <div class="health-item">
-                <div class="health-label">Storage</div>
-                <mat-chip color="primary">Available</mat-chip>
-              </div>
-              <div class="health-item">
-                <div class="health-label">Notifications</div>
-                <mat-chip color="primary">Active</mat-chip>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
+          <div class="health-item">
+            <div class="health-label">Database</div>
+            <mat-chip color="primary">Healthy</mat-chip>
+          </div>
+          <div class="health-item">
+            <div class="health-label">Storage</div>
+            <mat-chip color="primary">Available</mat-chip>
+          </div>
+          <div class="health-item">
+            <div class="health-label">Notifications</div>
+            <mat-chip color="primary">Active</mat-chip>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+</div>
