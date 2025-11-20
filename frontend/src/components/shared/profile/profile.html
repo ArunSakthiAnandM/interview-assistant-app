@@ -1,0 +1,316 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>My Profile</h1>
+    <p class="subtitle">Manage your personal information and settings</p>
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading profile...</p>
+  </div>
+  } @else if (error()) {
+  <mat-card class="error-card">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error() }}</p>
+        <button mat-raised-button color="primary" (click)="loadProfile()">Retry</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  } @else {
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <div class="profile-content">
+      <!-- Personal Information Section -->
+      <mat-card class="profile-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            Personal Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Name -->
+            <mat-form-field appearance="outline">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="name" placeholder="Enter your full name" />
+              <mat-icon matPrefix>badge</mat-icon>
+              @if (profileForm.get('name')?.hasError('required')) {
+              <mat-error>Name is required</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Email (Read-only) -->
+            <mat-form-field appearance="outline">
+              <mat-label>Email Address</mat-label>
+              <input matInput formControlName="email" readonly />
+              <mat-icon matPrefix>email</mat-icon>
+              <mat-hint>Email cannot be changed</mat-hint>
+            </mat-form-field>
+
+            <!-- Phone Number -->
+            <mat-form-field appearance="outline">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="phoneNumber" placeholder="Enter phone number" />
+              <mat-icon matPrefix>phone</mat-icon>
+              @if (profileForm.get('phoneNumber')?.hasError('required')) {
+              <mat-error>Phone number is required</mat-error>
+              } @if (profileForm.get('phoneNumber')?.hasError('pattern')) {
+              <mat-error>Please enter a valid phone number</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Role (Read-only) -->
+            <mat-form-field appearance="outline">
+              <mat-label>Role</mat-label>
+              <input matInput [value]="getRoleLabel(user()?.role)" readonly />
+              <mat-icon matPrefix>work</mat-icon>
+            </mat-form-field>
+
+            <!-- Address -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Address</mat-label>
+              <textarea
+                matInput
+                formControlName="address"
+                placeholder="Enter your address"
+                rows="3"
+              ></textarea>
+              <mat-icon matPrefix>location_on</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Professional Information Section (Not for Candidates) -->
+      @if (!isCandidate()) {
+      <mat-card class="profile-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>work_outline</mat-icon>
+            Professional Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Expertise -->
+            <mat-form-field appearance="outline">
+              <mat-label>Expertise</mat-label>
+              <input matInput formControlName="expertise" placeholder="e.g., Full Stack, DevOps" />
+              <mat-icon matPrefix>star</mat-icon>
+            </mat-form-field>
+
+            <!-- Years of Experience -->
+            <mat-form-field appearance="outline">
+              <mat-label>Years of Experience</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="yearsOfExperience"
+                placeholder="0"
+                min="0"
+                max="50"
+              />
+              <mat-icon matPrefix>timeline</mat-icon>
+            </mat-form-field>
+
+            <!-- Specialization -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Specialization</mat-label>
+              <input
+                matInput
+                formControlName="specialization"
+                placeholder="e.g., Cloud Architecture, Machine Learning"
+              />
+              <mat-icon matPrefix>psychology</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
+
+      <!-- Skills & Experience Section -->
+      <mat-card class="profile-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>code</mat-icon>
+            Skills & Experience
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Skills -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Skills</mat-label>
+              <textarea
+                matInput
+                formControlName="skills"
+                placeholder="Enter your skills (comma-separated)"
+                rows="3"
+              ></textarea>
+              <mat-icon matPrefix>list</mat-icon>
+              <mat-hint>e.g., Angular, TypeScript, Node.js, AWS, Docker</mat-hint>
+            </mat-form-field>
+
+            <!-- Experience -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Experience Details</mat-label>
+              <textarea
+                matInput
+                formControlName="experience"
+                placeholder="Describe your professional experience"
+                rows="4"
+              ></textarea>
+              <mat-icon matPrefix>description</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Resume Section (Candidates & Interviewers) -->
+      @if (isCandidate() || isInterviewer()) {
+      <mat-card class="profile-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>attach_file</mat-icon>
+            Resume
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Current Resume -->
+          @if (user()?.resumeUrl) {
+          <div class="resume-info">
+            <mat-icon>check_circle</mat-icon>
+            <span>Resume uploaded</span>
+            <button mat-button color="primary" (click)="viewResume()" type="button">
+              <mat-icon>visibility</mat-icon>
+              View
+            </button>
+            <button mat-button color="accent" (click)="downloadResume()" type="button">
+              <mat-icon>download</mat-icon>
+              Download
+            </button>
+          </div>
+          } @else {
+          <div class="resume-info">
+            <mat-icon color="warn">info</mat-icon>
+            <span>No resume uploaded</span>
+          </div>
+          }
+
+          <!-- Upload New Resume -->
+          <div class="resume-upload">
+            <button
+              mat-raised-button
+              color="primary"
+              type="button"
+              (click)="fileInput.click()"
+              [disabled]="isUploading()"
+            >
+              <mat-icon>upload</mat-icon>
+              {{ user()?.resumeUrl ? 'Update Resume' : 'Upload Resume' }}
+            </button>
+            <input
+              #fileInput
+              type="file"
+              accept=".pdf,.doc,.docx"
+              (change)="onFileSelected($event)"
+              hidden
+            />
+            @if (isUploading()) {
+            <mat-spinner diameter="24"></mat-spinner>
+            }
+          </div>
+          <p class="file-hint">Accepted formats: PDF, DOC, DOCX (Max: 5MB)</p>
+        </mat-card-content>
+      </mat-card>
+      }
+
+      <!-- Expected Salary Section (Candidates only) -->
+      @if (isCandidate()) {
+      <mat-card class="profile-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>payments</mat-icon>
+            Salary Expectations
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline">
+            <mat-label>Expected Salary (Annual)</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="expectedSalary"
+              placeholder="0"
+              min="0"
+            />
+            <mat-icon matPrefix>attach_money</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      }
+
+      <!-- Availability Status Section (Interviewers only) -->
+      @if (isInterviewer()) {
+      <mat-card class="profile-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>event_available</mat-icon>
+            Availability Status
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline">
+            <mat-label>Current Status</mat-label>
+            <mat-select formControlName="availabilityStatus">
+              <mat-option value="AVAILABLE">
+                <mat-icon class="status-icon available">check_circle</mat-icon>
+                Available
+              </mat-option>
+              <mat-option value="BUSY">
+                <mat-icon class="status-icon busy">schedule</mat-icon>
+                Busy
+              </mat-option>
+              <mat-option value="UNAVAILABLE">
+                <mat-icon class="status-icon unavailable">cancel</mat-icon>
+                Unavailable
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>event_available</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      }
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="profileForm.invalid || isSaving() || !profileForm.dirty"
+        >
+          @if (isSaving()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+          <mat-icon>save</mat-icon>
+          } Save Changes
+        </button>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="onCancel()"
+          [disabled]="isSaving() || !profileForm.dirty"
+        >
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+  }
+</div>

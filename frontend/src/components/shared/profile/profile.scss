@@ -1,0 +1,203 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.profile-container {
+  padding: $spacing-xl;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @include responsive(tablet) {
+    padding: $spacing-lg;
+  }
+
+  @include responsive(mobile) {
+    padding: $spacing-md;
+  }
+}
+
+.profile-header {
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  .subtitle {
+    font-size: $font-size-md;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.loading-container {
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-3xl 0;
+
+  p {
+    color: $text-secondary;
+  }
+}
+
+.error-card {
+  margin-bottom: $spacing-lg;
+
+  .error-content {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-md;
+    padding: $spacing-xl 0;
+    text-align: center;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    p {
+      color: $text-secondary;
+      margin: 0;
+    }
+  }
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.profile-section {
+  mat-card-header {
+    margin-bottom: $spacing-lg;
+
+    mat-card-title {
+      @include flex-row;
+      align-items: center;
+      gap: $spacing-sm;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+
+      mat-icon {
+        color: $primary-600;
+      }
+    }
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-lg;
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.resume-info {
+  @include flex-row;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $background-secondary;
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-md;
+
+  mat-icon {
+    &.mat-icon {
+      color: $success-600;
+    }
+
+    &[color='warn'] {
+      color: $warning-600;
+    }
+  }
+
+  span {
+    flex: 1;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+
+  button {
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+.resume-upload {
+  @include flex-row;
+  align-items: center;
+  gap: $spacing-md;
+
+  button {
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+.file-hint {
+  margin-top: $spacing-sm;
+  font-size: $font-size-sm;
+  color: $text-tertiary;
+}
+
+.status-icon {
+  vertical-align: middle;
+  margin-right: $spacing-xs;
+
+  &.available {
+    color: $success-600;
+  }
+
+  &.busy {
+    color: $warning-600;
+  }
+
+  &.unavailable {
+    color: $error-600;
+  }
+}
+
+.action-buttons {
+  @include flex-row;
+  gap: $spacing-md;
+  justify-content: flex-start;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $border-color;
+
+  @include responsive(mobile) {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  button {
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+
+    mat-spinner {
+      display: inline-block;
+      margin-right: $spacing-xs;
+    }
+  }
+}

@@ -203,9 +203,7 @@ export const routes: Routes = [
       {
         path: ROUTES.CANDIDATE.PROFILE,
         loadComponent: () =>
-          import('../components/dashboards/candidate-dashboard/candidate-dashboard').then(
-            (m) => m.CandidateDashboardComponent
-          ),
+          import('../components/shared/profile/profile').then((m) => m.ProfileComponent),
         canActivate: [authGuard],
         data: { roles: [UserRole.CANDIDATE] },
       },

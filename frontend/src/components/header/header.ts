@@ -96,17 +96,7 @@ export class Header {
    * Navigate to profile
    */
   protected goToProfile(): void {
-    const role = this.userRole();
-    switch (role) {
-      case UserRole.ORGANISATION_ADMIN:
-        this.router.navigate([ROUTES.ORGANISATION.PROFILE]);
-        break;
-      case UserRole.CANDIDATE:
-        this.router.navigate([ROUTES.CANDIDATE.PROFILE]);
-        break;
-      default:
-        this.router.navigate([ROUTES.PROFILE]);
-    }
+    this.router.navigate([ROUTES.PROFILE]);
   }
 
   /**
